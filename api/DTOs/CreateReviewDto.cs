@@ -7,9 +7,6 @@ namespace api.DTOs
 {
     public class CreateReviewDto
     {
-        [Required]
-        [MinLength(1, ErrorMessage = "Title length must be at least 1")]
-        public string Author { get; set; } = "";
 
         [Required]
         [MinLength(1, ErrorMessage = "Title length must be at least 1")]

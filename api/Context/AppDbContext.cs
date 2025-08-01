@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.DTOs;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -33,9 +34,26 @@ namespace api.Context
                     Id = "User",
                     Name = "User",
                     NormalizedName = "USER"
+                },
+                new IdentityRole{
+                    Id = "MainAdmin",
+                    Name = "MainAdmin",
+                    NormalizedName = "MAINADMIN"
                 }
             ];
             builder.Entity<IdentityRole>().HasData(roles);
+
+            builder.Entity<ReviewModel>()
+            .HasOne(r => r.AppUser)
+            .WithMany(u => u.Reviews)
+            .HasForeignKey(r => r.AppUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ReviewModel>()
+            .HasOne(r => r.film)
+            .WithMany(u => u.Reviews)
+            .HasForeignKey(r => r.FilmId)
+            .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

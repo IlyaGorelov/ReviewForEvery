@@ -17,7 +17,7 @@ namespace api.Mappers
                 Title = model.Title,
                 ImageUrl = model.ImageUrl,
                 Rating = model.Rating,
-                Reviews = model.Reviews.ToList()
+                Reviews = model.Reviews!.Select(x=>x.ToReviewDTO()).ToList()
             };
         }
 

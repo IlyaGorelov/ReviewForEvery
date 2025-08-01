@@ -1,33 +1,39 @@
-import { useState } from 'react';                         
-import FilmCard from '../Components/SearchPage/FilmCard';
-
-const mockFilms = [
-  {
-    title: 'Inception',                                   
-    rating: 9.2,                                         
-    reviewsCount: 1200,                                 
-    imageUrl: '/img/NotFoundImg.jpg',                     
-  },
-  {
-    title: 'Interstellar',
-    rating: 8.7,
-    reviewsCount: 950,
-    imageUrl: '/img/NotFoundImg.jpg',
-  },
-  {
-    title: 'The Matrix',
-    rating: 8.9,
-    reviewsCount: 1020,
-    imageUrl: '/img/NotFoundImg.jpg',
-  },
-];
+import { useEffect, useState } from "react";
+import FilmCard from "../Components/SearchPage/FilmCard";
+import { FilmGet } from "../Models/Film";
+import { getAllFilmsApi } from "../Services/FilmService";
+import { toast } from "react-toastify";
 
 export default function SearchPage() {
-  const [query, setQuery] = useState('');            
+  const [query, setQuery] = useState("");
+  const [filmsData, setFilmsData] = useState<FilmGet[] | null>([]);
 
-  const filteredFilms = mockFilms
-    .filter(f => f.title.toLowerCase().includes(query.toLowerCase())) 
-    .sort((a, b) => b.reviewsCount - a.reviewsCount);     
+  const filteredFilms = filmsData?.filter(film =>
+    film.title.toLowerCase().includes(query.toLowerCase())
+  );
+
+  const getFilms = () => {
+    getAllFilmsApi()
+      .then((res) => {
+        if (res?.data) {
+          setFilmsData(res?.data);
+        }
+      })
+      .catch((e) => {
+        toast.warning("No films found");
+      });
+  };
+
+  useEffect(() => {
+    getFilms();
+  }, []);
+
+  useEffect(() => {
+    if (filmsData != null)
+      for (let i of filmsData) {
+        console.log(i.title);
+      }
+  }, [filmsData]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -35,17 +41,19 @@ export default function SearchPage() {
       <input
         type="text"
         placeholder="Введите название ..."
-        value={query}                                     
-        onChange={e => setQuery(e.target.value)}      
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
         className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-md mb-8 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {/* Сетка карточек фильмов: 2 на маленьких экранах, 3 — на средних, 4 — на больших */}
 
-        {filteredFilms.map((film, index) => (
-          <FilmCard key={index} {...film} />
-        ))}
+        {filmsData === null ? (
+          <p>Films not found</p>
+        ) : (
+          filteredFilms?.map((film, index) => <FilmCard key={index} film={film} />)
+        )}
       </div>
     </div>
   );

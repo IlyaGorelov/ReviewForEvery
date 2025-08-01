@@ -24,36 +24,38 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetFilms()
         {
-            var films = await _context.Films.Include(f => f.Reviews).ToListAsync();
+            var films = await _context.Films.Include(f => f.Reviews!)
+            .ThenInclude(x=>x.AppUser).Select(x=>x.ToFilmDto()).ToListAsync();
             return Ok(films);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetFilmById(int id)
         {
-            var film = await _context.Films.Include(f => f.Reviews)
+            var film = await _context.Films.Include(f => f.Reviews!).ThenInclude(x=>x.AppUser)
             .FirstOrDefaultAsync(x => x.Id == id);
 
             if (film == null) return NotFound();
 
-            return Ok(film);
+            return Ok(film.ToFilmDto());
         }
 
+        [Authorize(Roles = "Admin,MainAdmin")]
         [HttpPost]
         public async Task<IActionResult> CreateFilm([FromBody] CreateFilmDto filmDto)
         {
             var filmModel = filmDto.ToFilmFromCreateDTO();
             _context.Films.Add(filmModel);
-            await _context.SaveChangesAsync();  
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetFilmById), new { id = filmModel.Id }, filmModel);
         }
 
+        [Authorize(Roles = "Admin,MainAdmin")]
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateFilm(int id,[FromBody] UpdateFilmDto updateFilm)
+        public async Task<IActionResult> UpdateFilm(int id, [FromBody] UpdateFilmDto updateFilm)
         {
             var filmModel = await _context.Films.FirstOrDefaultAsync(f => f.Id == id);
 
@@ -69,6 +71,7 @@ namespace api.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "MainAdmin")]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteFilmById(int id)
         {

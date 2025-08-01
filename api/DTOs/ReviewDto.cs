@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace api.Models
+namespace api.DTOs
 {
-    public class ReviewModel
+    public class ReviewDto
     {
-        [Key]
         public int Id { get; set; }
 
         public string Author { get; set; } = "";
@@ -20,12 +17,6 @@ namespace api.Models
 
         public DateTime Date { get; set; } = DateTime.UtcNow;
 
-        [ForeignKey("Film")]
         public int FilmId { get; set; }
-        public FilmModel? film { get; set; }
-
-        [ForeignKey("User")]
-        public string? AppUserId { get; set; }
-        public AppUser? AppUser{ get; set; }
     }
 }

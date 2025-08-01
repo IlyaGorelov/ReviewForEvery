@@ -16,6 +16,6 @@ namespace api.DTOs
 
         public double Rating { get; set; }
 
-        public List<ReviewModel>? Reviews { get; set; }
+        public List<ReviewDto>? Reviews { get; set; }
     }
 }
