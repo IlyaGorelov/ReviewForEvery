@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Enums;
 
 namespace api.Models
 {
@@ -16,9 +17,16 @@ namespace api.Models
 
         public string Text { get; set; } = "";
 
-        public int Rate { get; set; }
+        public double Rate { get; set; }
+        public ReviewStatus Status { get; set; }
 
         public DateTime Date { get; set; } = DateTime.UtcNow;
+        public string CountOfSeasons { get; set; } = "";
+
+     
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+
 
         [ForeignKey("Film")]
         public int FilmId { get; set; }
@@ -26,6 +34,6 @@ namespace api.Models
 
         [ForeignKey("User")]
         public string? AppUserId { get; set; }
-        public AppUser? AppUser{ get; set; }
+        public AppUser? AppUser { get; set; }
     }
 }

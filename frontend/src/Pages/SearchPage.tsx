@@ -46,13 +46,13 @@ export default function SearchPage() {
         className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-md mb-8 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {/* Сетка карточек фильмов: 2 на маленьких экранах, 3 — на средних, 4 — на больших */}
 
         {filmsData === null ? (
           <p>Films not found</p>
         ) : (
-          filteredFilms?.map((film, index) => <FilmCard key={index} film={film} />)
+          filteredFilms?.map((film, index) => <FilmCard key={index} film={film} getFilms={getFilms}/>)
         )}
       </div>
     </div>

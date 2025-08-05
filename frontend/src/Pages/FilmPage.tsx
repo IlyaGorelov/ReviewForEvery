@@ -1,70 +1,199 @@
 // src/pages/FilmPage.tsx
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { FilmGet } from "../Models/Film";
+import { getFilmByIdApi } from "../Services/FilmService";
+import { toast } from "react-toastify";
+import { useAuth } from "../Context/useAuth";
+import { ReviewGet } from "../Models/Review";
+import AddReview from "../Components/AddReview";
+import { deleteReviewAPI } from "../Services/ReviewService";
+import ReviewsList from "../Components/ReviewsList";
+import { blankSrc } from "../Components/SearchPage/FilmCard";
 
-const mockFilm = {
-  id: '1',
-  title: 'Inception',
-  rating: 9.2,
-  imageUrl: '/img/NotFoundImg.jpg',
-  reviews: [
-    { id: 1, author: 'Alice', text: 'Amazing movie!', rate: 10, date: '2023-07-20' },
-    { id: 2, author: 'Bob', text: 'Mind-blowing visuals and story.', rate: 9, date: '2023-07-18' },
-  ],
-};
-
-  function formatDate(dateStr: string) {
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateStr).toLocaleDateString(undefined, options);
-  }
+function formatDate(dateStr: Date) {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  return new Date(dateStr).toLocaleDateString(undefined, options);
+}
 
 export default function FilmPage() {
-  const { id } = useParams(); // получаем id из URL (например, /film/1)
+  const [isFormShowed, setIsFormShowed] = useState(false);
+  const [isCreateFormShowed, setIsCreateFormShowed] = useState(false);
 
-  const film = mockFilm; 
+  const { id } = useParams();
+  const [film, setFilm] = useState<FilmGet | null>(null);
+  const { isLoggedIn, user } = useAuth();
 
-  const isLoggedIn = true;
+  const userReviews = film?.reviews.filter(
+    (r: ReviewGet) => r.author === user?.userName
+  );
+
+  const getStatus = (n: number) => {
+    switch (n) {
+      case 0:
+        return "Завершён";
+      case 1:
+        return "Брошен";
+      case 2:
+        return "Отложен";
+      case 3:
+        return "Смотрю";
+    }
+  };
+
+ const getFilm = async () => {
+    await getFilmByIdApi(Number(id))
+      .then((res) => {
+        if (res?.data) {
+          setFilm(res.data);
+        }
+      })
+      .catch((e) => {
+        toast.warning("No film found");
+      });
+  };
+
+  const deleteReview = async (reviewId: number) => {
+    await deleteReviewAPI(reviewId);
+    getFilm();
+  };
+
+  useEffect(() => {
+    getFilm();
+  }, []);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">{film.title}</h1>
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      {isCreateFormShowed && (
+        <AddReview
+          closeForm={() => setIsCreateFormShowed(false)}
+          updateFilm={() => getFilm()}
+          hasSeasons={film?.filmType === 1}
+        />
+      )}
 
-      <div className="flex flex-col md:flex-row gap-6">
+      {isFormShowed && userReviews && (
+        <ReviewsList
+          reviews={userReviews}
+          onClose={() => setIsFormShowed(false)}
+          onSuccess={getFilm}
+          hasSeasons={film?.filmType === 1}
+        />
+      )}
+
+      <h1 className="text-3xl font-bold mb-4">{film?.title}</h1>
+
+      <div className="flex flex-row md:flex-row gap-6 mb-8">
         <img
-          src={film.imageUrl}
-          alt={film.title}
-          className="w-full md:w-1/3 rounded-lg shadow-md"
+          src={film?.imageUrl}
+          alt={film?.title}
+          className="w-1/3 md:w-1/3 aspect-[2/3] object-cover rounded-lg shadow-md"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = blankSrc;
+          }}
         />
 
-         {!isLoggedIn && (
-            <div className="mb-6 p-4 bg-yellow-100 border border-yellow-300 rounded">
+        <div className="flex-1">
+          <p className="text-xl mb-4">⭐ {film?.rating.toFixed(1)} / 10</p>
+          {!isLoggedIn() && (
+            <div className="w-[40%] mb-6 p-4 bg-yellow-100 border border-yellow-300 rounded">
               <p className="mb-2 text-yellow-800 font-medium">
-                Чтобы оставить отзыв, пожалуйста, <Link to="/login" className="underline text-blue-600">войдите</Link> или <Link to="/register" className="underline text-blue-600">зарегистрируйтесь</Link>.
+                Чтобы оставить отзыв, пожалуйста,{" "}
+                <Link to="/login" className="underline text-blue-600">
+                  войдите
+                </Link>{" "}
+                или{" "}
+                <Link to="/register" className="underline text-blue-600">
+                  зарегистрируйтесь
+                </Link>
+                .
               </p>
             </div>
           )}
 
-          {isLoggedIn && (
-            <button className="h-1/2 mb-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-              Оставить отзыв
-            </button>
-          )}
-
-        <div>
-          <p className="text-xl mb-4">⭐ {film.rating.toFixed(1)} / 10</p>
-          <h2 className="text-2xl font-semibold mb-2">Отзывы:</h2>
-          <ul className="space-y-4">
-            {film.reviews.map((review) => (
-              <li key={review.id} className="border-b pb-4">
-                <div className="flex justify-between items-center mb-1">
-                  <strong>{review.author}</strong>
-                  <span className="text-sm text-gray-600">{formatDate(review.date)}</span>
-                </div>
-                <p className="mb-1">Оценка: <span className="font-semibold">{review.rate} / 10</span></p>
-                <p>{review.text}</p>
-              </li>
-            ))}
-          </ul>
+          <div className="flex flex-col md:flex-row gap-6">
+            {isLoggedIn() && (
+              <>
+                <button
+                  onClick={() => setIsCreateFormShowed(!isFormShowed)}
+                  className="mb-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                >
+                  Оставить отзыв
+                </button>
+                {userReviews && (
+                  <button
+                    onClick={() => setIsFormShowed(!isFormShowed)}
+                    className="mb-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                  >
+                    Редактировать отзывы
+                  </button>
+                )}
+              </>
+            )}
+          </div>
         </div>
+      </div>
+      <div>
+        <h2 className="text-2xl font-semibold mb-2">Отзывы:</h2>
+        <ul className="space-y-4 ">
+          {film?.reviews.map((review: ReviewGet) => (
+            <li key={review.id} className="border-b border-t pb-4">
+              <div className="flex justify-between items-center mb-1 gap-x-4">
+                <strong>{review.author}</strong>
+
+                {user?.role.includes("Admin") && (
+                  <button
+                    onClick={() => deleteReview(review.id)}
+                    className="mt-2 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                  >
+                    Удалить
+                  </button>
+                )}
+
+                <span className="text-sm text-gray-600">
+                  {formatDate(review.date)}
+                </span>
+              </div>
+              <p className="mb-1">
+                Оценка:{" "}
+                <span className="font-semibold">{review.rate} / 10</span>
+              </p>
+              {review.startDate != null && (
+                <p className="mb-1">
+                  Время:{" "}
+                  <span className="font-semibold">
+                    {review.startDate === review.endDate ? (
+                      <>{review.startDate && formatDate(new Date(review.startDate))}</>
+                    ) : (
+                      <>
+                        {review.startDate && formatDate(new Date(review.startDate))} -{" "}
+                        {review.endDate && formatDate(new Date(review.endDate))}
+                      </>
+                    )}
+                  </span>
+                </p>
+              )}
+              <p className="mb-1">
+                Статус:{" "}
+                <span className="font-semibold">
+                  {getStatus(review.status)}
+                </span>
+              </p>
+              {review.countOfSeasons != "" && (
+                <p className="mb-1">
+                  Часть:{" "}
+                  <span className="font-semibold">{review.countOfSeasons}</span>
+                </p>
+              )}
+              <p>{review.text}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

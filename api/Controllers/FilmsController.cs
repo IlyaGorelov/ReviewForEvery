@@ -27,14 +27,14 @@ namespace api.Controllers
         public async Task<IActionResult> GetFilms()
         {
             var films = await _context.Films.Include(f => f.Reviews!)
-            .ThenInclude(x=>x.AppUser).Select(x=>x.ToFilmDto()).ToListAsync();
+            .ThenInclude(x => x.AppUser).Select(x => x.ToFilmDto()).ToListAsync();
             return Ok(films);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetFilmById(int id)
         {
-            var film = await _context.Films.Include(f => f.Reviews!).ThenInclude(x=>x.AppUser)
+            var film = await _context.Films.Include(f => f.Reviews!).ThenInclude(x => x.AppUser)
             .FirstOrDefaultAsync(x => x.Id == id);
 
             if (film == null) return NotFound();
@@ -64,7 +64,7 @@ namespace api.Controllers
 
             filmModel.Title = updateFilm.Title;
             filmModel.ImageUrl = updateFilm.ImageUrl;
-            filmModel.Rating = updateFilm.Rating;
+            filmModel.FilmType = updateFilm.FilmType;
 
             await _context.SaveChangesAsync();
 

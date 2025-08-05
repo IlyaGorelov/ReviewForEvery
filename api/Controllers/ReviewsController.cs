@@ -24,7 +24,7 @@ namespace api.Controllers
         }
 
         [Authorize(Roles = "Admin,MainAdmin")]
-        [HttpGet]
+        [HttpGet("admin")]
         public async Task<IActionResult> GetAllReviews()
         {
             var reviews = await _context.Reviews.Include(x => x.AppUser)
@@ -97,10 +97,11 @@ namespace api.Controllers
             var appUser = await _userManager.FindByNameAsync(username);
 
             var review = reviewDto.ToReviewFromCreateDTO();
+            review.Author = username;
             review.AppUserId = appUser!.Id;
             _context.Reviews.Add(review);
             await _context.SaveChangesAsync();
-
+            
             return CreatedAtAction(nameof(GetMyReviewById), new { id = review.Id }, review);
 
         }
@@ -131,9 +132,12 @@ namespace api.Controllers
 
             if (review == null) return BadRequest("Review not found");
 
-            review.Author = updateReview.Author;
             review.Text = updateReview.Text;
             review.Rate = updateReview.Rate;
+            review.Status = updateReview.Status;
+            review.CountOfSeasons = updateReview.CountOfSeasons;
+            review.StartDate = updateReview.StartDate;
+            review.EndDate = updateReview.EndDate;
 
             await _context.SaveChangesAsync();
 

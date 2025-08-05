@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using api;
 using api.Context;
 using api.Interfaces;
@@ -13,7 +14,10 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers();
+
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
@@ -72,10 +76,19 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 app.UseHttpsRedirection();
-app.UseCors("AllowFrontend");
+
+app.UseCors(x => x
+     .AllowAnyMethod()
+     .AllowAnyHeader()
+     .AllowCredentials()
+      //.WithOrigins("https://localhost:44351))
+      .SetIsOriginAllowed(origin => true));
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+
 await app.SeedAdminAsync();
 
 app.Run();

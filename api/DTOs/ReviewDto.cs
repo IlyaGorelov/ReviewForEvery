@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Enums;
 
 namespace api.DTOs
 {
@@ -13,7 +15,14 @@ namespace api.DTOs
 
         public string Text { get; set; } = "";
 
-        public int Rate { get; set; }
+        public double Rate { get; set; }
+        public string CountOfSeasons { get; set; } = "";
+        public ReviewStatus Status { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime? StartDate { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? EndDate { get; set; }
 
         public DateTime Date { get; set; } = DateTime.UtcNow;
 

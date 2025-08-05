@@ -24,7 +24,7 @@ export default function Header() {
           {isLoggedIn() ? (
             <>
               <Link
-                to="/login"
+                to="/account"
                 className="px-4 py-2 text-sm text-blue-600 hover:underline text-center"
               >
                 Welcome, {user?.userName}

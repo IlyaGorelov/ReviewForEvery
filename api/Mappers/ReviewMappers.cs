@@ -17,7 +17,11 @@ namespace api.Mappers
                 Author = model.AppUser!.UserName!,
                 Text = model.Text,
                 Rate = model.Rate,
+                Status = model.Status,
                 Date = model.Date,
+                CountOfSeasons=model.CountOfSeasons,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
                 FilmId = model.FilmId
             };
         }
@@ -27,6 +31,10 @@ namespace api.Mappers
             return new ReviewModel
             {
                 Text = model.Text,
+                Status =  model.Status,
+                StartDate = model.StartDate,
+                CountOfSeasons = model.CountOfSeasons,
+                EndDate = model.EndDate,
                 Rate = model.Rate,
                 FilmId = model.FilmId
             };

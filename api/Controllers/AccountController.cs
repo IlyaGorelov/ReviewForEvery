@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Context;
 using api.DTOs;
+using api.Extensions;
 using api.Interfaces;
+using api.Mappers;
 using api.Models;
 using api.Service;
 using Microsoft.AspNetCore.Authorization;
@@ -40,11 +42,14 @@ namespace api.Controllers
 
             if (!result.Succeeded) return Unauthorized("Invalid email or/and password");
 
+            var roles = await _userManager.GetRolesAsync(user);
             return Ok(new NewUserDto
             {
                 UserName = user.UserName!,
                 Email = user.Email!,
-                Token = _tokenService.CreateToken(user).Result
+                Token = _tokenService.CreateToken(user).Result,
+                Role = roles[0],
+                Reviews = user.Reviews.Select(x => x.ToReviewDTO()).ToList()
             });
         }
 
@@ -69,7 +74,9 @@ namespace api.Controllers
                         {
                             UserName = user.UserName!,
                             Email = user.Email!,
-                            Token = _tokenService.CreateToken(user).Result
+                            Token = _tokenService.CreateToken(user).Result,
+                            Role = "User",
+                            Reviews = user.Reviews.Select(x => x.ToReviewDTO()).ToList()
                         });
                     else
                         return BadRequest(roleResult.Errors);
@@ -109,7 +116,9 @@ namespace api.Controllers
                         {
                             UserName = user.UserName!,
                             Email = user.Email!,
-                            Token = _tokenService.CreateToken(user).Result
+                            Token = _tokenService.CreateToken(user).Result,
+                            Role = "Admin",
+                            Reviews = user.Reviews.Select(x => x.ToReviewDTO()).ToList()
                         });
                     else
                         return BadRequest(roleResult.Errors);
@@ -127,7 +136,7 @@ namespace api.Controllers
         }
 
         [Authorize(Roles = "MainAdmin")]
-        [HttpDelete("{userId}")]
+        [HttpDelete("admin/{userId}")]
         public async Task<IActionResult> DeleteAccount(string userId)
         {
 
@@ -137,6 +146,21 @@ namespace api.Controllers
                 return NotFound("User not found");
 
 
+            var result = await _userManager.DeleteAsync(user);
+
+            if (!result.Succeeded)
+                return BadRequest("Error");
+
+            return Ok("User deleted");
+        }
+
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteMyAccount()
+        {
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null) return BadRequest("No user");
             var result = await _userManager.DeleteAsync(user);
 
             if (!result.Succeeded)

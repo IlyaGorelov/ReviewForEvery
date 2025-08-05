@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Enums;
 
 namespace api.DTOs
 {
@@ -10,14 +11,20 @@ namespace api.DTOs
     {
         [Required]
         [MinLength(1, ErrorMessage = "Title length must be at least 1")]
-        public string Author { get; set; } = "";
-
-        [Required]
-        [MinLength(1, ErrorMessage = "Title length must be at least 1")]
         public string Text { get; set; } = "";
 
         [Required]
+        public ReviewStatus Status { get; set; }
+
+        public string CountOfSeasons { get; set; } = "";
+
+        [DataType(DataType.Date)]
+        public DateTime? StartDate { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? EndDate { get; set; }
+
+        [Required]
         [Range(1, 10, ErrorMessage = "Rating should be 1-10")]
-        public int Rate { get; set; }
+        public double Rate { get; set; }
     }
 }

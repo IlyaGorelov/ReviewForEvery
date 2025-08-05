@@ -1,10 +1,12 @@
-import api from "../api/api"
+import axios from "axios";
 import { handleError } from "../Helpers/ErrorHandler";
 import { UserProfileToken } from "../Models/User";
 
+const api = "http://localhost:5257/api/";
+
 export const loginAPI = async (email: string, password: string)=>{
     try {
-        const data = await api.post<UserProfileToken>("Account/login",{
+        const data = await axios.post<UserProfileToken>(api+"Account/login",{
             email: email,
             password: password,
         });
@@ -18,11 +20,20 @@ export const loginAPI = async (email: string, password: string)=>{
 
 export const registerAPI = async (userName: string,email: string, password: string)=>{
     try {
-        const data = await api.post<UserProfileToken>("account/register",{
+        const data = await axios.post<UserProfileToken>(api+"account/register",{
             userName: userName,
             email: email,
             password: password,
         });
+        return data;
+    } catch (error) {
+        handleError(error)
+    } 
+}
+
+export const deleteMeApi = async ()=>{
+    try {
+        const data = await axios.delete(api+"account");
         return data;
     } catch (error) {
         handleError(error)

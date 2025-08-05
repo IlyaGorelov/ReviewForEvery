@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Enums;
 
 namespace api.Models
 {
@@ -16,7 +17,7 @@ namespace api.Models
         public string ImageUrl { get; set; }= "";
 
         public double Rating { get; set; }
-
-        public List<ReviewModel>? Reviews { get; set; }
+        public FilmType FilmType { get; set; }
+        public List<ReviewModel>? Reviews { get; set; } = new();
     }
 }

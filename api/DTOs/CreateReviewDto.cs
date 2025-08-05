@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using api.Enums;
 
 namespace api.DTOs
 {
@@ -14,7 +15,17 @@ namespace api.DTOs
 
         [Required]
         [Range(1, 10, ErrorMessage = "Rating should be 1-10")]
-        public int Rate { get; set; }
+        public double Rate { get; set; }
+
+        public string CountOfSeasons { get; set; } = "";
+
+        [DataType(DataType.Date)]
+        public DateTime? StartDate { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? EndDate { get; set; }
+
+        [Required]
+        public ReviewStatus Status { get; set; }
 
         [Required]
         [ForeignKey("Film")]
