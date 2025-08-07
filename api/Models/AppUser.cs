@@ -9,5 +9,6 @@ namespace api.Models
     public class AppUser : IdentityUser
     {
         public List<ReviewModel> Reviews { get; set; } = new();
+        public List<TopList> TopLists { get; set; } = new();
     }
 }

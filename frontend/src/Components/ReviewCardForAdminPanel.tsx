@@ -14,7 +14,7 @@ type Props = {
   fetchReviews: () => void;
 };
 
-const ReviewCard = ({ review, handleDelete, fetchReviews }: Props) => {
+const ReviewCardForAdminPanel = ({ review, handleDelete, fetchReviews }: Props) => {
   const navigate = useNavigate();
   const [film, setFilm] = useState<FilmGet>();
   const [showForm, setShowForm] = useState(false);
@@ -49,30 +49,27 @@ const ReviewCard = ({ review, handleDelete, fetchReviews }: Props) => {
   }, []);
   return (
     <div>
-      <div className="max-h-[1px]">
-        {showForm && (
-          <EditReview
-            initialReview={{
-              rate: review.rate,
-              text: review.text,
-              status: review.status,
-              countOfSeasons: review.countOfSeasons,
-              startDate: review.startDate,
-              endDate: review.endDate,
-            }}
-            reviewId={review.id}
-            onClose={() => setShowForm(false)}
-            onSuccess={fetchReviews}
-            hasSeasons={film?.filmType == 1}
-          />
-        )}
-      </div>
-
+      {showForm && (
+        <EditReview
+          initialReview={{
+            rate: review.rate,
+            text: review.text,
+            status: review.status,
+            countOfSeasons: review.countOfSeasons,
+            startDate: review.startDate,
+            endDate: review.endDate,
+          }}
+          reviewId={review.id}
+          onClose={() => setShowForm(false)}
+          onSuccess={fetchReviews}
+          hasSeasons={film?.filmType == 1}
+        />
+      )}
       <div className="relative flex flex-row-reverse gap-4 items-start">
         {/* Right: image */}
         <img
           src={film?.imageUrl}
-          onClick={() => navigate(`/film/${film?.id}`)}
+          onClick={()=>navigate(`/film/${film?.id}`)}
           alt="Poster"
           className="w-32 aspect-[2/3] object-cover rounded-lg shadow-md"
           onError={(e) => {
@@ -84,12 +81,8 @@ const ReviewCard = ({ review, handleDelete, fetchReviews }: Props) => {
         {/* Left: info */}
         <div className="flex-1 flex flex-col justify-between">
           <div>
-            <Link
-              to={`/film/${film?.id}`}
-              className="text-xl font-semibold mb-1"
-            >
-              {film?.title}
-            </Link>
+            <Link to={`/film/${film?.id}`} className="text-xl font-semibold mb-1">{film?.title}</Link>
+            <p className="text-md font-semibold mb-1">Автор: {review.author}</p>
             {review.rate && <p className="mb-1">Оценка: {review.rate} / 10</p>}
             {review.startDate && (
               <p className="mb-1">
@@ -99,20 +92,12 @@ const ReviewCard = ({ review, handleDelete, fetchReviews }: Props) => {
               </p>
             )}
             <p className="mb-1 font-bold">{getStatus(review.status)}</p>
-            {review.countOfSeasons && (
-              <p className="mb-1">Часть: {review.countOfSeasons}</p>
-            )}
+            {review.countOfSeasons &&<p className="mb-1">Часть: {review.countOfSeasons}</p>}
             <p className="text-gray-700 mb-4">{review.text}</p>
           </div>
 
           {/* Buttons moved to bottom */}
           <div className="absolute flex flex-col md:flex-row md:gap-4 bottom-0">
-            <button
-              onClick={() => setShowForm(true)}
-              className="text-blue-600 hover:underline"
-            >
-              Редактировать
-            </button>
             <button
               onClick={() => handleDelete(review.id)}
               className="text-red-600 hover:underline"
@@ -126,4 +111,4 @@ const ReviewCard = ({ review, handleDelete, fetchReviews }: Props) => {
   );
 };
 
-export default ReviewCard;
+export default ReviewCardForAdminPanel;

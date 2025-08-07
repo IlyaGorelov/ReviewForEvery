@@ -1,24 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { deleteMyReviewAPI, deleteReviewAPI, getAllMyReviewsApi } from "../Services/ReviewService";
+import { deleteReviewAPI, getAllMyReviewsApi, getAllReviewsApi } from "../Services/ReviewService";
 import { ReviewGet } from "../Models/Review";
 import ReviewCard from "../Components/ReviewCard";
+import ReviewCardForAdminPanel from "../Components/ReviewCardForAdminPanel";
 
-const AllMyReviews = () => {
+const AllReviewsList = () => {
   const [reviews, setReviews] = useState<ReviewGet[]>([]);
-
-  const sortedReviews = [...reviews].sort((a, b) => {
-  if (a.status === 2 && b.status !== 2) return -1;
-  if (a.status !== 2 && b.status === 2) return 1;
-
-  const dateA = new Date(a.startDate!).getTime();
-  const dateB = new Date(b.startDate!).getTime();
-  return dateB - dateA;
-});
 
   const fetchReviews = async () => {
     try {
-      const response = await getAllMyReviewsApi();
+      const response = await getAllReviewsApi();
       if (response?.data) {
         setReviews(response.data);
       }
@@ -29,7 +21,7 @@ const AllMyReviews = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await deleteMyReviewAPI(id);
+      await deleteReviewAPI(id);
       toast.success("Отзыв удалён");
       fetchReviews(); // обновляем список
     } catch (error) {
@@ -64,20 +56,20 @@ const AllMyReviews = () => {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Мои отзывы</h1>
+      <h1 className="text-3xl font-bold mb-6">Отзывы</h1>
 
       {reviews.length === 0 ? (
-        <p className="text-gray-600">Вы ещё не оставили ни одного отзыва.</p>
+        <p className="text-gray-600">Пользователи ещё не оставили ни одного отзыва.</p>
       ) : (
         <ul className="space-y-6">
-          {sortedReviews.map((review) => (
+          {reviews.map((review) => (
             <li
               key={review.id}
               className={`border rounded p-4 shadow bg-${
                 colorMap[changeReviewColor(review)]
               }`}
             >
-              <ReviewCard
+              <ReviewCardForAdminPanel
                 fetchReviews={fetchReviews}
                 review={review}
                 handleDelete={() => handleDelete(review.id)}
@@ -90,4 +82,4 @@ const AllMyReviews = () => {
   );
 };
 
-export default AllMyReviews;
+export default AllReviewsList;

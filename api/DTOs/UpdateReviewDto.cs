@@ -9,9 +9,8 @@ namespace api.DTOs
 {
     public class UpdateReviewDto
     {
-        [Required]
         [MinLength(1, ErrorMessage = "Title length must be at least 1")]
-        public string Text { get; set; } = "";
+        public string? Text { get; set; }
 
         [Required]
         public ReviewStatus Status { get; set; }
@@ -23,8 +22,7 @@ namespace api.DTOs
         [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
 
-        [Required]
         [Range(1, 10, ErrorMessage = "Rating should be 1-10")]
-        public double Rate { get; set; }
+        public double? Rate { get; set; }
     }
 }

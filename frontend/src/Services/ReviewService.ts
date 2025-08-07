@@ -6,8 +6,8 @@ import { stat } from "fs";
 const api = "http://localhost:5257/api/";
 
 export const postReviewAPI = async (
-  text: string,
-  rate: number,
+  text: string | null,
+  rate: number | null,
   status: number,
   filmId: number,
   countOfSeasons:string,
@@ -39,10 +39,19 @@ export const getAllMyReviewsApi = async () => {
   }
 };
 
+export const getAllReviewsApi = async () => {
+  try {
+    const result = await axios.get<ReviewGet[]>(api + "Reviews/admin");
+    return result;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
 export const updateMyReviewApi = async (
   reviewId: number,
-  newText: string,
-  newRate: number,
+  newText: string | null,
+  newRate: number | null,
   newStatus: number,
   newCountOfSeasons: string,
   startDate?:string|null,
@@ -66,6 +75,15 @@ export const updateMyReviewApi = async (
 export const deleteReviewAPI = async (id: number) => {
   try {
     const result = await axios.delete(api + `Reviews/admin/${id}`);
+    return result;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const deleteMyReviewAPI = async (id: number) => {
+  try {
+    const result = await axios.delete(api + `Reviews/${id}`);
     return result;
   } catch (error) {
     handleError(error);

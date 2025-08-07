@@ -10,6 +10,9 @@ import { AccountPage } from "./Pages/AccountPage";
 import ProtectedRouteForAdmin from "./ProtectedRouteForAdmin";
 import { AddFilmPage } from "./Pages/AddFilmPage";
 import AllMyReviews from "./Pages/AllMyReviews";
+import AllReviewsList from "./Pages/AllReviewsList";
+import TopListsPage from "./Pages/TopListsPage";
+import TopListPage from "./Pages/TopListPage";
 
 type Props = {};
 
@@ -23,7 +26,10 @@ const AppRoutes = (props: Props) => {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/account" element={<ProtectedRoute><AccountPage/></ProtectedRoute>}/>
       <Route path="/add-film" element={<ProtectedRouteForAdmin><AddFilmPage/></ProtectedRouteForAdmin>}/>
+      <Route path="/reviews" element={<ProtectedRouteForAdmin><AllReviewsList/></ProtectedRouteForAdmin>}/>
       <Route path="/my-reviews" element={<ProtectedRoute><AllMyReviews/></ProtectedRoute>}/>
+      <Route path="/top-lists" element={<ProtectedRoute><TopListsPage/></ProtectedRoute>}/>
+      <Route path="/top-lists/:id" element={<ProtectedRoute><TopListPage/></ProtectedRoute>}/>
     </Routes>
   );
 };

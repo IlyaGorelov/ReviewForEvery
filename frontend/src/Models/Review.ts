@@ -1,10 +1,10 @@
 export type ReviewGet = {
   id: number;
   author: string;
-  text: string;
+  text: string | null;
   status: number;
   countOfSeasons: string;
-  rate: number;
+  rate: number | null;
   date: Date;
   startDate: string | null;
   endDate: string | null;
@@ -12,8 +12,8 @@ export type ReviewGet = {
 };
 
 export type ReviewPost = {
-  text: string;
-  rate: string;
+  text: string | null;
+  rate: string | null;
   countOfSeasons: string;
   status: number;
   startDate: string | null;
@@ -22,10 +22,10 @@ export type ReviewPost = {
 };
 
 export type ReviewUpdate = {
-  text: string;
+  text: string| null;
   countOfSeasons: string;
   status: number;
   startDate: string | null;
   endDate: string | null;
-  rate: number;
+  rate: number | null;
 };

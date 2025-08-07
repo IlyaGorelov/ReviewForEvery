@@ -26,10 +26,12 @@ export default function FilmCard({ film, getFilms }: Props) {
 
   const deleteFilm = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await deleteFilmApi(film.id).catch((e) => {
-      toast.warning("Unexpected error");
-    });
-    getFilms();
+    if (window.confirm("Ты уверен?")) {
+      await deleteFilmApi(film.id).catch((e) => {
+        toast.warning("Unexpected error");
+      });
+      getFilms();
+    }
   };
 
   return (

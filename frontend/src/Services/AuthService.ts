@@ -39,3 +39,12 @@ export const deleteMeApi = async ()=>{
         handleError(error)
     } 
 }
+
+export const deleteAnyAccountApi = async (userName:string)=>{
+    try {
+        const data = await axios.delete(api+`account/admin/${userName}`);
+        return data;
+    } catch (error) {
+        handleError(error)
+    } 
+}

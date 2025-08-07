@@ -27,10 +27,12 @@ namespace api.Mappers
             double rate = 0;
             foreach (var item in list)
             {
-                rate += item.Rate;
+                rate += (double)(item.Rate!=null ? item.Rate : 0);
             }
+
+            int count = list.Where(x => x.Rate!=null).ToList().Count;
             if (rate > 0)
-                rate /= list.Count;
+                rate /= count;
 
             return Math.Round(rate,2);
 

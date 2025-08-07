@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api.Context;
 
@@ -11,9 +12,11 @@ using api.Context;
 namespace api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250806082930_Nullable")]
+    partial class Nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -316,55 +319,6 @@ namespace api.Migrations
                     b.ToTable("Reviews");
                 });
 
-            modelBuilder.Entity("api.Models.TopList", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
-
-                    b.ToTable("TopLists");
-                });
-
-            modelBuilder.Entity("api.Models.TopListFilm", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("FilmId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TopListId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TopListId");
-
-                    b.ToTable("TopListFIlms");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -434,41 +388,14 @@ namespace api.Migrations
                     b.Navigation("film");
                 });
 
-            modelBuilder.Entity("api.Models.TopList", b =>
-                {
-                    b.HasOne("api.Models.AppUser", "AppUser")
-                        .WithMany("TopLists")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("AppUser");
-                });
-
-            modelBuilder.Entity("api.Models.TopListFilm", b =>
-                {
-                    b.HasOne("api.Models.TopList", "TopList")
-                        .WithMany("TopListFilms")
-                        .HasForeignKey("TopListId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("TopList");
-                });
-
             modelBuilder.Entity("api.Models.AppUser", b =>
                 {
                     b.Navigation("Reviews");
-
-                    b.Navigation("TopLists");
                 });
 
             modelBuilder.Entity("api.Models.FilmModel", b =>
                 {
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("api.Models.TopList", b =>
-                {
-                    b.Navigation("TopListFilms");
                 });
 #pragma warning restore 612, 618
         }

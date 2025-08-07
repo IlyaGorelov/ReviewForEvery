@@ -34,7 +34,8 @@ namespace api.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetFilmById(int id)
         {
-            var film = await _context.Films.Include(f => f.Reviews!).ThenInclude(x => x.AppUser)
+            var film = await _context.Films.Include(f => f.Reviews!)
+            .ThenInclude(x => x.AppUser)
             .FirstOrDefaultAsync(x => x.Id == id);
 
             if (film == null) return NotFound();

@@ -136,11 +136,11 @@ namespace api.Controllers
         }
 
         [Authorize(Roles = "MainAdmin")]
-        [HttpDelete("admin/{userId}")]
-        public async Task<IActionResult> DeleteAccount(string userId)
+        [HttpDelete("admin/{username}")]
+        public async Task<IActionResult> DeleteAccount(string username)
         {
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByNameAsync(username);
 
             if (user == null)
                 return NotFound("User not found");

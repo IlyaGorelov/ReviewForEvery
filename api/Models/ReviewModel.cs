@@ -15,9 +15,9 @@ namespace api.Models
 
         public string Author { get; set; } = "";
 
-        public string Text { get; set; } = "";
+        public string? Text { get; set; } = "";
 
-        public double Rate { get; set; }
+        public double? Rate { get; set; }
         public ReviewStatus Status { get; set; }
 
         public DateTime Date { get; set; } = DateTime.UtcNow;

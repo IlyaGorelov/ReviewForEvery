@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../Context/useAuth";
 import { useParams } from "react-router-dom";
 import { postReviewAPI } from "../Services/ReviewService";
@@ -15,8 +15,8 @@ type Props = {
 };
 
 export interface ReviewFormsInput {
-  rate: number;
-  text: string;
+  rate: number | null;
+  text: string | null;
   status: number;
   countOfSeasons: string;
   startDate: string | null;
@@ -25,29 +25,34 @@ export interface ReviewFormsInput {
 
 const validation = Yup.object().shape({
   rate: Yup.number()
-    .required("Оценка обязательна")
     .min(0, "Минимум 0")
-    .max(10, "Максимум 10"),
-  text: Yup.string().required("Отзыв обязателен"),
+    .max(10, "Максимум 10")
+    .nullable()
+    .when("status", {
+      is: (val: number) => val !== 3,
+      then: (schema) => schema.required("Оценка обязательна"),
+      otherwise: (schema) => schema.nullable(),
+    }),
+  text: Yup.string().when("status", {
+    is: (val: number) => val !== 3,
+    then: (schema) => schema.required("Текст обязателен"),
+    otherwise: (schema) => schema.nullable(),
+  }),
   status: Yup.number()
     .oneOf([0, 1, 2, 3], "Выберите статус")
     .required("Статус обязателен"),
   countOfSeasons: Yup.string(),
   startDate: Yup.string().nullable().default(null),
-  endDate: Yup.string()
-    .nullable()
-    .default(null),
+  endDate: Yup.string().nullable().default(null),
 });
-
-const getToday = () => {
-  return new Date().toISOString().split("T")[0];
-};
 
 const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
   const { id } = useParams();
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<ReviewFormsInput>({
     resolver: yupResolver(validation),
@@ -57,8 +62,18 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
     },
   });
 
+  const status = watch("status");
+  const isWatching = Number(status) >= 2;
+
+  useEffect(() => {
+    if (isWatching) {
+      setValue("rate", null);
+      setValue("text", null);
+    }
+  }, [status, setValue]);
+
   const postReview = async (form: ReviewFormsInput) => {
-    console.log(form.startDate)
+    console.log(form.startDate);
     await postReviewAPI(
       form.text,
       form.rate,
@@ -99,6 +114,7 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
                 max="10"
                 className="w-full p-2 border rounded"
                 {...register("rate")}
+                disabled={isWatching}
                 required
               />
             </div>
@@ -150,6 +166,7 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
               className="w-full  min-h-[200px] flex-grow px-3 py-2 border rounded resize-none overflow-auto"
               {...register("text")}
               required
+              disabled={isWatching}
             />
           </div>
 

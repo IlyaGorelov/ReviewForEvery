@@ -11,7 +11,7 @@ import { deleteReviewAPI } from "../Services/ReviewService";
 import ReviewsList from "../Components/ReviewsList";
 import { blankSrc } from "../Components/SearchPage/FilmCard";
 
-function formatDate(dateStr: Date) {
+export function formatDate(dateStr: Date) {
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
@@ -45,7 +45,7 @@ export default function FilmPage() {
     }
   };
 
- const getFilm = async () => {
+  const getFilm = async () => {
     await getFilmByIdApi(Number(id))
       .then((res) => {
         if (res?.data) {
@@ -159,19 +159,26 @@ export default function FilmPage() {
                   {formatDate(review.date)}
                 </span>
               </div>
-              <p className="mb-1">
-                Оценка:{" "}
-                <span className="font-semibold">{review.rate} / 10</span>
-              </p>
+              {review.rate && (
+                <p className="mb-1">
+                  Оценка:{" "}
+                  <span className="font-semibold">{review.rate} / 10</span>
+                </p>
+              )}
               {review.startDate != null && (
                 <p className="mb-1">
                   Время:{" "}
                   <span className="font-semibold">
                     {review.startDate === review.endDate ? (
-                      <>{review.startDate && formatDate(new Date(review.startDate))}</>
+                      <>
+                        {review.startDate &&
+                          formatDate(new Date(review.startDate))}
+                      </>
                     ) : (
                       <>
-                        {review.startDate && formatDate(new Date(review.startDate))} -{" "}
+                        {review.startDate &&
+                          formatDate(new Date(review.startDate))}{" "}
+                        -{" "}
                         {review.endDate && formatDate(new Date(review.endDate))}
                       </>
                     )}

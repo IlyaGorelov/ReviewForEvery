@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import { ReviewFormsInput } from "./AddReview";
-import { deleteReviewAPI, updateMyReviewApi } from "../Services/ReviewService";
+import { deleteMyReviewAPI, deleteReviewAPI, updateMyReviewApi } from "../Services/ReviewService";
 import { data } from "react-router-dom";
 
 type Props = {
@@ -17,18 +17,25 @@ type Props = {
 
 const validation = Yup.object().shape({
   rate: Yup.number()
-    .required("Оценка обязательна")
     .min(0, "Минимум 0")
-    .max(10, "Максимум 10"),
-  text: Yup.string().required("Отзыв обязателен"),
+    .max(10, "Максимум 10")
+    .nullable()
+    .when("status", {
+      is: (val: number) => val < 2,
+      then: (schema) => schema.required("Оценка обязательна"),
+      otherwise: (schema) => schema.nullable(),
+    }),
+  text: Yup.string().when("status", {
+    is: (val: number) => val < 2,
+    then: (schema) => schema.required("Текст обязателен"),
+    otherwise: (schema) => schema.nullable(),
+  }),
   status: Yup.number()
     .oneOf([0, 1, 2, 3], "Выберите статус")
     .required("Статус обязателен"),
   countOfSeasons: Yup.string(),
-  startDate: Yup.date().nullable().default(null),
-  endDate: Yup.date()
-    .nullable()
-    .min(Yup.ref("startDate"), "End must be after start").default(null),
+  startDate: Yup.string().nullable().default(null),
+  endDate: Yup.string().nullable().default(null),
 });
 
 const EditReview = ({
@@ -41,6 +48,8 @@ const EditReview = ({
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<ReviewFormsInput>({
     resolver: yupResolver(validation),
@@ -49,19 +58,34 @@ const EditReview = ({
       text: initialReview.text,
       status: initialReview.status,
       countOfSeasons: initialReview.countOfSeasons,
-      startDate: initialReview.startDate ? initialReview.startDate : null,
-      endDate: initialReview.endDate ? initialReview.endDate : null,
+      startDate: initialReview.startDate ? initialReview.startDate.split("T")[0] : null,
+      endDate: initialReview.endDate ? initialReview.endDate.split("T")[0] : null,
     },
   });
 
+  useEffect(()=>{
+    console.log(initialReview.startDate)
+  },[])
+
+  const status = watch("status");
+  const isWatching = Number(status) >= 2;
+
+  useEffect(() => {
+    if (isWatching) {
+      setValue("rate", null);
+      setValue("text", null);
+    }
+  }, [status, setValue]);
+
   const deleteReview = async () => {
-    await deleteReviewAPI(reviewId);
+    await deleteMyReviewAPI(reviewId);
     onSuccess();
     onClose();
   };
 
   const onSubmit = async (form: ReviewFormsInput) => {
     try {
+      console.log(form.startDate);
       await updateMyReviewApi(
         reviewId,
         form.text,
@@ -89,7 +113,7 @@ const EditReview = ({
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col flex-grow"
         >
-          <div className="flex flex-col md:flex-row gap-40 mb-4">
+          <div className="flex flex-col md:flex-row gap-10 md:gap-40 mb-4">
             <div className="w-full md:w-1/2">
               <label className="block text-sm font-medium mb-1">Оценка:</label>
               <input
@@ -100,6 +124,7 @@ const EditReview = ({
                 className="w-full p-2 border rounded"
                 {...register("rate")}
                 required
+                disabled={isWatching}
               />
             </div>
 
@@ -135,11 +160,19 @@ const EditReview = ({
           <div className="flex flex-col md:flex-row gap-10 md:gap-40 mb-4">
             <div>
               <label className="block text-sm font-medium mb-1">Начало</label>
-              <input className="border rounded" type="date" {...register("startDate")} />
+              <input
+                className="border rounded"
+                type="date"
+                {...register("startDate")}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Конец</label>
-              <input className="border rounded" type="date" {...register("endDate")} />
+              <input
+                className="border rounded"
+                type="date"
+                {...register("endDate")}
+              />
               {errors.endDate && <p>{errors.endDate.message}</p>}
             </div>
           </div>
@@ -151,6 +184,7 @@ const EditReview = ({
             <textarea
               id="text"
               {...register("text")}
+              disabled={isWatching}
               className="w-full  min-h-[200px] flex-grow px-3 py-2 border rounded resize-none overflow-auto"
             />
             {errors.text && (

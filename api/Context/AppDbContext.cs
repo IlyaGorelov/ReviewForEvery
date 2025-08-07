@@ -19,6 +19,8 @@ namespace api.Context
         public DbSet<FilmModel> Films { get; set; }
 
         public DbSet<ReviewModel> Reviews { get; set; }
+        public DbSet<TopList> TopLists { get; set; }
+        public DbSet<TopListFilm> TopListFIlms { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -53,6 +55,18 @@ namespace api.Context
             .HasOne(r => r.film)
             .WithMany(u => u.Reviews)
             .HasForeignKey(r => r.FilmId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<TopList>()
+            .HasOne(r => r.AppUser)
+            .WithMany(u => u.TopLists)
+            .HasForeignKey(r => r.AppUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<TopListFilm>()
+            .HasOne(r => r.TopList)
+            .WithMany(u => u.TopListFilms)
+            .HasForeignKey(r => r.TopListId)
             .OnDelete(DeleteBehavior.Cascade);
         }
     }

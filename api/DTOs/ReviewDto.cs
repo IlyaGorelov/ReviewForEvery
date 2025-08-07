@@ -13,9 +13,9 @@ namespace api.DTOs
 
         public string Author { get; set; } = "";
 
-        public string Text { get; set; } = "";
+        public string? Text { get; set; }
 
-        public double Rate { get; set; }
+        public double? Rate { get; set; }
         public string CountOfSeasons { get; set; } = "";
         public ReviewStatus Status { get; set; }
 

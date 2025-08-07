@@ -38,7 +38,6 @@ export const UserProvider = ({ children }: Props) => {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
     setIsReady(true);
-    console.log(axios.defaults.headers.common["Authorization"])
   }, []);
 
   const registerUser = async (
