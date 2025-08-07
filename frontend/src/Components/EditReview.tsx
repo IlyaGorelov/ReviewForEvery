@@ -105,8 +105,6 @@ const EditReview = ({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-
       <div className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-full h-full max-w-5xl overflow-auto flex flex-col">
         <h2 className="text-2xl font-bold mb-4">Редактировать отзыв</h2>
         <form

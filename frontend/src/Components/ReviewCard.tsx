@@ -49,24 +49,30 @@ const ReviewCard = ({ review, handleDelete, fetchReviews }: Props) => {
   }, []);
   return (
     <div>
-      <div className="max-h-[1px]">
-        {showForm && (
-          <EditReview
-            initialReview={{
-              rate: review.rate,
-              text: review.text,
-              status: review.status,
-              countOfSeasons: review.countOfSeasons,
-              startDate: review.startDate,
-              endDate: review.endDate,
-            }}
-            reviewId={review.id}
-            onClose={() => setShowForm(false)}
-            onSuccess={fetchReviews}
-            hasSeasons={film?.filmType == 1}
-          />
-        )}
-      </div>
+      {showForm && (
+        <>
+          <div
+            onClick={() => setShowForm(false)}
+            className="absolute inset-0 bg-black bg-opacity-50 z-40"
+          ></div>
+          <div className="fixed top-1/2 left-1/2 z-50 w-full max-w-5xl p-6  transform -translate-x-1/2 -translate-y-1/2 h-[80%] md:h-[70%] md:max-h-[160vh]">
+            <EditReview
+              initialReview={{
+                rate: review.rate,
+                text: review.text,
+                status: review.status,
+                countOfSeasons: review.countOfSeasons,
+                startDate: review.startDate,
+                endDate: review.endDate,
+              }}
+              reviewId={review.id}
+              onClose={() => setShowForm(false)}
+              onSuccess={fetchReviews}
+              hasSeasons={film?.filmType == 1}
+            />
+          </div>
+        </>
+      )}
 
       <div className="relative flex flex-row-reverse gap-4 items-start">
         {/* Right: image */}
@@ -106,16 +112,16 @@ const ReviewCard = ({ review, handleDelete, fetchReviews }: Props) => {
           </div>
 
           {/* Buttons moved to bottom */}
-          <div className="absolute flex flex-col md:flex-row md:gap-4 bottom-0">
+          <div className="flex flex-col md:flex-row md:gap-4 ">
             <button
               onClick={() => setShowForm(true)}
-              className="text-blue-600 hover:underline"
+              className="text-blue-600 hover:underlinetext-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
             >
               Редактировать
             </button>
             <button
               onClick={() => handleDelete(review.id)}
-              className="text-red-600 hover:underline"
+              className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
             >
               Удалить
             </button>
