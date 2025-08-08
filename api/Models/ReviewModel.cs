@@ -19,6 +19,7 @@ namespace api.Models
 
         public double? Rate { get; set; }
         public ReviewStatus Status { get; set; }
+        public bool TakeInRating { get; set; } = true;
 
         public DateTime Date { get; set; } = DateTime.UtcNow;
         public string CountOfSeasons { get; set; } = "";

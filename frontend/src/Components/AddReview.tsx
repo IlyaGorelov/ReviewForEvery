@@ -21,6 +21,7 @@ export interface ReviewFormsInput {
   countOfSeasons: string;
   startDate: string | null;
   endDate: string | null;
+  takeInRating: boolean;
 }
 
 const validation = Yup.object().shape({
@@ -44,6 +45,7 @@ const validation = Yup.object().shape({
   countOfSeasons: Yup.string(),
   startDate: Yup.string().nullable().default(null),
   endDate: Yup.string().nullable().default(null),
+  takeInRating: Yup.boolean().required(),
 });
 
 const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
@@ -59,6 +61,7 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
     defaultValues: {
       startDate: null,
       endDate: null,
+      takeInRating: true,
     },
   });
 
@@ -80,6 +83,7 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
       form.status,
       Number(id),
       form.countOfSeasons,
+      form.takeInRating,
       form.startDate,
       form.endDate
     ).catch((e) => {
@@ -103,7 +107,7 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
           onSubmit={handleSubmit(postReview)}
           className="flex flex-col flex-grow"
         >
-          <div className="flex flex-col md:flex-row gap-10 md:gap-40 mb-4">
+          <div className="flex flex-col md:flex-row gap-10 md:gap-30 mb-4">
             <div className="w-full md:w-1/2">
               <label className="block text-sm font-medium mb-1">Оценка:</label>
               <input
@@ -116,6 +120,17 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
                 {...register("rate")}
                 disabled={isWatching}
                 required
+              />
+            </div>
+
+            <div className="w-full md:w-1/2 flex flex-col items-center">
+              <label htmlFor="takeInReview" className="text-sm font-medium">
+                Финальная оценка?
+              </label>
+              <input
+                type="checkbox"
+                {...register("takeInRating")}
+                className="mt-3 appearance-none w-6 h-6 border border-gray-400 rounded-full checked:bg-blue-500 checked:border-blue-600 transition-all duration-200"
               />
             </div>
 

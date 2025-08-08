@@ -28,7 +28,10 @@ namespace api.Controllers
         public async Task<IActionResult> GetAllReviews()
         {
             var reviews = await _context.Reviews.Include(x => x.AppUser)
-            .Select(x => x.ToReviewDTO()).ToListAsync();
+            .Include(x => x.film)
+            .Select(x => x.ToReviewDTO()).ToListAsync(); ;
+
+            // var reviewsDto = reviews  
 
             return Ok(reviews);
         }
@@ -37,7 +40,8 @@ namespace api.Controllers
         [HttpGet("admin/{id:int}")]
         public async Task<IActionResult> GetReviewById(int id)
         {
-            var review = await _context.Reviews.Include(x => x.AppUser)
+            var review = await _context.Reviews
+            .Include(x => x.AppUser).Include(x => x.film)
             .FirstOrDefaultAsync(x => x.Id == id);
 
             if (review == null) return NotFound();
@@ -66,7 +70,8 @@ namespace api.Controllers
         public async Task<IActionResult> GetAllMyReviews()
         {
             var username = User.GetUsername();
-            var reviews = await _context.Reviews.Where(x => x.Author == username).Include(x => x.AppUser)
+            var reviews = await _context.Reviews
+            .Where(x => x.Author == username).Include(x => x.AppUser).Include(x => x.film)
             .Select(x => x.ToReviewDTO()).ToListAsync();
 
             return Ok(reviews);
@@ -77,7 +82,8 @@ namespace api.Controllers
         public async Task<IActionResult> GetMyReviewById(int id)
         {
             var username = User.GetUsername();
-            var review = await _context.Reviews.Where(x => x.Author == username).Include(x => x.AppUser)
+            var review = await _context.Reviews.Where(x => x.Author == username)
+            .Include(x => x.AppUser).Include(x => x.film)
             .FirstOrDefaultAsync(x => x.Id == id);
 
             if (review == null) return NotFound();
@@ -101,7 +107,7 @@ namespace api.Controllers
             review.AppUserId = appUser!.Id;
             _context.Reviews.Add(review);
             await _context.SaveChangesAsync();
-            
+
             return CreatedAtAction(nameof(GetMyReviewById), new { id = review.Id }, review);
 
         }
@@ -135,6 +141,7 @@ namespace api.Controllers
             review.Text = updateReview.Text;
             review.Rate = updateReview.Rate;
             review.Status = updateReview.Status;
+            review.TakeInRating = updateReview.TakeInRating;
             review.CountOfSeasons = updateReview.CountOfSeasons;
             review.StartDate = updateReview.StartDate;
             review.EndDate = updateReview.EndDate;

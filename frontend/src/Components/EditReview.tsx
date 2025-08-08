@@ -36,6 +36,7 @@ const validation = Yup.object().shape({
   countOfSeasons: Yup.string(),
   startDate: Yup.string().nullable().default(null),
   endDate: Yup.string().nullable().default(null),
+  takeInRating: Yup.boolean()
 });
 
 const EditReview = ({
@@ -57,6 +58,7 @@ const EditReview = ({
       rate: initialReview.rate,
       text: initialReview.text,
       status: initialReview.status,
+      takeInRating:initialReview.takeInRating,
       countOfSeasons: initialReview.countOfSeasons,
       startDate: initialReview.startDate ? initialReview.startDate.split("T")[0] : null,
       endDate: initialReview.endDate ? initialReview.endDate.split("T")[0] : null,
@@ -92,10 +94,10 @@ const EditReview = ({
         form.rate,
         form.status,
         form.countOfSeasons,
+        form.takeInRating,
         form.startDate,
         form.endDate
       );
-      toast.success("Отзыв обновлён");
       onSuccess();
       onClose();
     } catch (error) {
@@ -111,7 +113,7 @@ const EditReview = ({
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col flex-grow"
         >
-          <div className="flex flex-col md:flex-row gap-10 md:gap-40 mb-4">
+          <div className="flex flex-col md:flex-row gap-10 md:gap-30 mb-4">
             <div className="w-full md:w-1/2">
               <label className="block text-sm font-medium mb-1">Оценка:</label>
               <input
@@ -123,6 +125,17 @@ const EditReview = ({
                 {...register("rate")}
                 required
                 disabled={isWatching}
+              />
+            </div>
+
+            <div className="w-full md:w-1/2 flex flex-col items-center">
+              <label htmlFor="takeInReview" className="text-sm font-medium">
+                Финальная оценка?
+              </label>
+              <input
+                type="checkbox"
+                {...register("takeInRating")}
+                className="mt-3 appearance-none w-6 h-6 border border-gray-400 rounded-full checked:bg-blue-500 checked:border-blue-600 transition-all duration-200"
               />
             </div>
 

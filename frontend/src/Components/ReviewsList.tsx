@@ -34,6 +34,7 @@ const ReviewsList = ({ reviews, onClose, onSuccess, hasSeasons }: Props) => {
                     status: review.status,
                     countOfSeasons: review.countOfSeasons,
                     startDate: review.startDate,
+                    takeInRating:review.takeInRating,
                     endDate: review.endDate,
                   }}
                   reviewId={review.id}

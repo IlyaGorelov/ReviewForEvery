@@ -46,6 +46,7 @@ export default function FilmCard({ film, getFilms }: Props) {
             title: film.title,
             filmType: film.filmType,
             imageUrl: film.imageUrl,
+            filmCategory: film.filmCategory,
           }}
           onClose={() => setShowEditForm(false)}
           onSuccess={getFilms}

@@ -25,13 +25,15 @@ export const getFilmByIdApi = async (id: number | undefined) => {
 export const postFilmApi = async (
   title: string,
   filmType: number,
-  imageUrl: string
+  imageUrl: string,
+  filmCategory: number
 ) => {
   try {
     const result = await axios.post<FilmPost>(api + `Films`, {
       title: title,
       filmType: filmType,
       imageUrl: imageUrl,
+      filmCategory: filmCategory
     });
     return result;
   } catch (error) {
@@ -52,13 +54,15 @@ export const updateFilmApi = async (
   filmId: number,
   title: string,
   filmType: number,
-  imageUrl: string
+  imageUrl: string,
+  filmCategory: number,
 ) => {
   try {
     const result = await axios.put<FilmPost>(api + `Films/${filmId}`, {
       title: title,
       filmType: filmType,
       imageUrl: imageUrl,
+      filmCategory: filmCategory
     });
     return result;
   } catch (error) {

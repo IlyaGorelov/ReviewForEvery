@@ -11,13 +11,11 @@ namespace api.Models
     {
         [Key]
         public int Id { get; set; }
-
         public string Title { get; set; } = "";
-
         public string ImageUrl { get; set; }= "";
-
         public double Rating { get; set; }
         public FilmType FilmType { get; set; }
+        public FilmCategory FilmCategory { get; set; } = 0;
         public List<ReviewModel>? Reviews { get; set; } = new();
     }
 }

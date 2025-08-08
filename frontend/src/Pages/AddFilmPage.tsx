@@ -10,6 +10,7 @@ export type AddFilmFormInput = {
   title: string;
   filmType: number;
   imageUrl: string;
+  filmCategory: number;
 };
 
 const validationSchema = yup.object().shape({
@@ -18,9 +19,11 @@ const validationSchema = yup.object().shape({
     .number()
     .oneOf([0, 1], "Выберите тип фильма")
     .required("Тип обязателен"),
-  imageUrl: yup
-    .string()
-    .required("Введите URL постера"),
+  imageUrl: yup.string().required("Введите URL постера"),
+  filmCategory: yup
+    .number()
+    .oneOf([0, 1, 2, 3, 4], "Выберите категорию фильма")
+    .required("Категория обязательна"),
 });
 
 export const AddFilmPage = () => {
@@ -39,8 +42,13 @@ export const AddFilmPage = () => {
 
   const onSubmit = async (data: AddFilmFormInput) => {
     try {
-        console.log(data.filmType)
-      await postFilmApi(data.title, data.filmType, data.imageUrl);
+      console.log(data.filmType);
+      await postFilmApi(
+        data.title,
+        data.filmType,
+        data.imageUrl,
+        data.filmCategory
+      );
       toast.success("Фильм добавлен");
       navigate("/add");
     } catch (error) {
@@ -63,11 +71,31 @@ export const AddFilmPage = () => {
           )}
         </div>
 
-         <div>
+        <div>
           <label className="block font-medium mb-1">Тип</label>
-          <select {...register("filmType")} className="w-full border px-3 py-2 rounded">
+          <select
+            {...register("filmType")}
+            className="w-full border px-3 py-2 rounded"
+          >
             <option value={0}>Нет частей</option>
             <option value={1}>Состоит из частей</option>
+          </select>
+          {errors.filmType && (
+            <p className="text-red-500 text-sm">{errors.filmType.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block font-medium mb-1">Категория</label>
+          <select
+            {...register("filmCategory")}
+            className="w-full border px-3 py-2 rounded"
+          >
+            <option value={0}>Фильм</option>
+            <option value={1}>Сериал</option>
+            <option value={2}>Аниме</option>
+            <option value={3}>Мультик</option>
+            <option value={4}>Книга</option>
           </select>
           {errors.filmType && (
             <p className="text-red-500 text-sm">{errors.filmType.message}</p>

@@ -19,10 +19,32 @@ namespace api.Mappers
                 Rate = model.Rate,
                 Status = model.Status,
                 Date = model.Date,
-                CountOfSeasons=model.CountOfSeasons,
+                TakeInRating = model.TakeInRating,
+                CountOfSeasons = model.CountOfSeasons,
                 StartDate = model.StartDate,
                 EndDate = model.EndDate,
-                FilmId = model.FilmId
+                FilmId = model.FilmId,
+                FilmCategory = model.film!.FilmCategory,
+                Film = model.film.ToFilmForReviewDto(),
+            };
+        }
+
+        public static ReviewFromOtherUserDto ToReviewFromOtherDTO(this ReviewModel model)
+        {
+            return new ReviewFromOtherUserDto
+            {
+                Id = model.Id,
+                Text = model.Text,
+                Rate = model.Rate,
+                Status = model.Status,
+                Date = model.Date,
+                TakeInRating = model.TakeInRating,
+                CountOfSeasons = model.CountOfSeasons,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                FilmId = model.FilmId,
+                FilmCategory = model.film!.FilmCategory,
+                Film = model.film.ToFilmForReviewDto(),
             };
         }
 
@@ -31,8 +53,9 @@ namespace api.Mappers
             return new ReviewModel
             {
                 Text = model.Text,
-                Status =  model.Status,
+                Status = model.Status,
                 StartDate = model.StartDate,
+                TakeInRating = model.TakeInRating,
                 CountOfSeasons = model.CountOfSeasons,
                 EndDate = model.EndDate,
                 Rate = model.Rate,

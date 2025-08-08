@@ -1,6 +1,6 @@
 // src/pages/FilmPage.tsx
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FilmGet } from "../Models/Film";
 import { getFilmByIdApi } from "../Services/FilmService";
 import { toast } from "react-toastify";
@@ -23,6 +23,8 @@ export function formatDate(dateStr: Date) {
 export default function FilmPage() {
   const [isFormShowed, setIsFormShowed] = useState(false);
   const [isCreateFormShowed, setIsCreateFormShowed] = useState(false);
+
+  const navigate = useNavigate();
 
   const { id } = useParams();
   const [film, setFilm] = useState<FilmGet | null>(null);
@@ -61,6 +63,21 @@ export default function FilmPage() {
     await deleteReviewAPI(reviewId);
     getFilm();
   };
+
+  function getFilmCategory(i: number) {
+    switch (i) {
+      case 0:
+        return "Фильм";
+      case 1:
+        return "Сериал";
+      case 2:
+        return "Аниме";
+      case 3:
+        return "Мультик";
+      case 4:
+        return "Книга";
+    }
+  }
 
   useEffect(() => {
     getFilm();
@@ -136,6 +153,9 @@ export default function FilmPage() {
               </>
             )}
           </div>
+          <p className="text-xl mb-4">
+            Это {getFilmCategory(Number(film?.filmCategory))}
+          </p>
         </div>
       </div>
       <div>
@@ -144,7 +164,7 @@ export default function FilmPage() {
           {film?.reviews.map((review: ReviewGet) => (
             <li key={review.id} className="border-b border-t pb-4">
               <div className="flex justify-between items-center mb-1 gap-x-4">
-                <strong>{review.author}</strong>
+                <Link to={`/user/${review.author}`} className="font-bold text-lg">{review.author}</Link>
 
                 {user?.role.includes("Admin") && (
                   <button
@@ -163,8 +183,12 @@ export default function FilmPage() {
                 <p className="mb-1">
                   Оценка:{" "}
                   <span className="font-semibold">{review.rate} / 10</span>
+                  {!review.takeInRating && (
+                    <span className="text-gray-500"> Не учитывается</span>
+                  )}
                 </p>
               )}
+
               {review.startDate != null && (
                 <p className="mb-1">
                   Время:{" "}

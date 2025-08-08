@@ -5,13 +5,32 @@ import {
   deleteReviewAPI,
   getAllMyReviewsApi,
 } from "../Services/ReviewService";
-import { ReviewGet } from "../Models/Review";
+import { ReviewFromOtherUserGet, ReviewGet } from "../Models/Review";
 import ReviewCard from "../Components/ReviewCard";
+import { getUserByNameApi } from "../Services/UserService";
+import { useParams } from "react-router-dom";
+import { UserGet } from "../Models/User";
+import ReviewCardForOtherUser from "../Components/ReviewCardForOtherUser";
 
-const AllMyReviews = () => {
-  const [reviews, setReviews] = useState<ReviewGet[]>([]);
+const AllUserReviews = () => {
+  const [reviews, setReviews] = useState<ReviewFromOtherUserGet[]>([]);
 
-  const getFilmIndexes = (reviews: ReviewGet[]) => {
+  const { username } = useParams();
+
+  const [user, setUser] = useState<UserGet>();
+
+  async function getUser() {
+    getUserByNameApi(username!)
+      .then((res) => {
+        if (res?.data) {setUser(res.data);
+          setReviews(res.data.reviews);
+        }
+      })
+      .catch((e) => toast.error("Unexpected error"));
+  }
+
+
+  const getFilmIndexes = (reviews: ReviewFromOtherUserGet[]) => {
   const typeToFilmIndexMap = new Map<number, Map<number, number>>();
   const typeCounters = new Map<number, number>();
   const result: number[] = [];
@@ -57,45 +76,23 @@ const AllMyReviews = () => {
 
   const filmIndexes = getFilmIndexes(sortedReviews).reverse();
 
-  const fetchReviews = async () => {
-    try {
-      const response = await getAllMyReviewsApi();
-      if (response?.data) {
-        setReviews(response.data);
-      }
-    } catch (error) {
-      toast.error("Не удалось загрузить отзывы");
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      await deleteMyReviewAPI(id);
-      fetchReviews();
-    } catch (error) {
-      toast.error("Ошибка при удалении");
-    }
-  };
-
   useEffect(() => {
-    fetchReviews();
+    getUser();
   }, []);
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Мои отзывы</h1>
+      <h1 className="text-3xl font-bold mb-6">Отзывы {user?.username}</h1>
 
       {reviews.length === 0 ? (
-        <p className="text-gray-600">Вы ещё не оставили ни одного отзыва.</p>
+        <p className="text-gray-600">{user?.username} не оставил ни одного отзыва.</p>
       ) : (
         <ul className="space-y-6">
           {sortedReviews.map((review, index) => (
             <li className="flex items-center gap-3" key={review.id}>
-              <ReviewCard
+              <ReviewCardForOtherUser
                 index={filmIndexes[index]}
-                fetchReviews={fetchReviews}
                 review={review}
-                handleDelete={() => handleDelete(review.id)}
               />
             </li>
           ))}
@@ -105,4 +102,4 @@ const AllMyReviews = () => {
   );
 };
 
-export default AllMyReviews;
+export default AllUserReviews;

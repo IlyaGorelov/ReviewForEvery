@@ -57,12 +57,3 @@ export const deleteTopListAPI = async (id: number) => {
     handleError(error);
   }
 };
-
-// export const deleteMyReviewAPI = async (id: number) => {
-//   try {
-//     const result = await axios.delete(api + `Reviews/${id}`);
-//     return result;
-//   } catch (error) {
-//     handleError(error);
-//   }
-// };

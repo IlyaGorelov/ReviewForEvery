@@ -65,6 +65,7 @@ namespace api.Controllers
 
             filmModel.Title = updateFilm.Title;
             filmModel.ImageUrl = updateFilm.ImageUrl;
+            filmModel.FilmCategory = updateFilm.FilmCategory;
             filmModel.FilmType = updateFilm.FilmType;
 
             await _context.SaveChangesAsync();

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Enums;
+using api.Models;
 
 namespace api.DTOs
 {
@@ -18,6 +19,8 @@ namespace api.DTOs
         public double? Rate { get; set; }
         public string CountOfSeasons { get; set; } = "";
         public ReviewStatus Status { get; set; }
+        [Required]
+        public bool TakeInRating { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime? StartDate { get; set; }
@@ -27,5 +30,7 @@ namespace api.DTOs
         public DateTime Date { get; set; } = DateTime.UtcNow;
 
         public int FilmId { get; set; }
+        public FilmCategory FilmCategory { get; set; } 
+        public FilmForReviewDto? Film { get; set; }
     }
 }

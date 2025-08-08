@@ -10,19 +10,21 @@ export const postReviewAPI = async (
   rate: number | null,
   status: number,
   filmId: number,
-  countOfSeasons:string,
-  startDate?:string|null,
-  endDate?:string|null,
+  countOfSeasons: string,
+  takeInRating: boolean,
+  startDate?: string | null,
+  endDate?: string | null
 ) => {
   try {
     const result = await axios.post<ReviewPost>(api + "Reviews", {
       text: text,
       rate: rate,
-      status:status,
+      status: status,
       filmId: filmId,
+      takeInRating: takeInRating,
       countOfSeasons: countOfSeasons,
-      startDate:startDate,
-      endDate:endDate
+      startDate: startDate,
+      endDate: endDate,
     });
     return result;
   } catch (error) {
@@ -39,6 +41,7 @@ export const getAllMyReviewsApi = async () => {
   }
 };
 
+
 export const getAllReviewsApi = async () => {
   try {
     const result = await axios.get<ReviewGet[]>(api + "Reviews/admin");
@@ -54,17 +57,19 @@ export const updateMyReviewApi = async (
   newRate: number | null,
   newStatus: number,
   newCountOfSeasons: string,
-  startDate?:string|null,
-  endDate?:string|null,
+  takeInRating: boolean,
+  startDate?: string | null,
+  endDate?: string | null
 ) => {
   try {
     const result = await axios.put<ReviewUpdate>(api + `Reviews/${reviewId}`, {
       text: newText,
       rate: newRate,
       status: newStatus,
+      takeInRating: takeInRating,
       countOfSeasons: newCountOfSeasons,
-      startDate:startDate,
-      endDate:endDate
+      startDate: startDate,
+      endDate: endDate,
     });
     return result;
   } catch (error) {

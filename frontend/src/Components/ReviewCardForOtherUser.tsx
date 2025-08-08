@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ReviewGet } from "../Models/Review";
+import { ReviewFromOtherUserGet, ReviewGet } from "../Models/Review";
 import { Link, useNavigate } from "react-router-dom";
 import { FilmGet } from "../Models/Film";
 import { getFilmByIdApi } from "../Services/FilmService";
@@ -9,13 +9,11 @@ import EditReview from "./EditReview";
 import { blankSrc } from "./SearchPage/FilmCard";
 
 type Props = {
-  review: ReviewGet;
-  handleDelete: (id: number) => void;
-  fetchReviews: () => void;
+  review: ReviewFromOtherUserGet;
   index: number;
 };
 
-const ReviewCard = ({ review, handleDelete, fetchReviews, index }: Props) => {
+const ReviewCardForOtherUser = ({ review, index }: Props) => {
   const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
 
@@ -51,7 +49,7 @@ const ReviewCard = ({ review, handleDelete, fetchReviews, index }: Props) => {
     }
   };
 
-  function changeReviewColor(review: ReviewGet) {
+  function changeReviewColor(review: ReviewFromOtherUserGet) {
     switch (review.status) {
       case 0:
         return "#D3FFC2";
@@ -75,32 +73,6 @@ const ReviewCard = ({ review, handleDelete, fetchReviews, index }: Props) => {
         className="border rounded p-4 shadow w-[100%]"
         style={{ backgroundColor: changeReviewColor(review) }}
       >
-        {showForm && (
-          <>
-            <div
-              onClick={() => setShowForm(false)}
-              className="fixed inset-0 bg-black bg-opacity-50 z-800"
-            ></div>
-            <div className="fixed top-1/2 left-1/2 z-50 w-full max-w-5xl p-6  transform -translate-x-1/2 -translate-y-1/2 h-[80%] md:h-[70%] md:max-h-[160vh]">
-              <EditReview
-                initialReview={{
-                  rate: review.rate,
-                  text: review.text,
-                  status: review.status,
-                  countOfSeasons: review.countOfSeasons,
-                  startDate: review.startDate,
-                  takeInRating: review.takeInRating,
-                  endDate: review.endDate,
-                }}
-                reviewId={review.id}
-                onClose={() => setShowForm(false)}
-                onSuccess={fetchReviews}
-                hasSeasons={review.film?.filmType == 1}
-              />
-            </div>
-          </>
-        )}
-
         <div className="relative flex flex-row-reverse gap-4 items-start">
           {/* Right: image */}
           <img
@@ -148,21 +120,7 @@ const ReviewCard = ({ review, handleDelete, fetchReviews, index }: Props) => {
               <p className="text-gray-700 mb-4">{review.text}</p>
             </div>
 
-            {/* Buttons moved to bottom */}
-            <div className="flex flex-col md:flex-row md:gap-4 ">
-              <button
-                onClick={() => setShowForm(true)}
-                className="text-blue-600 hover:underlinetext-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
-              >
-                Редактировать
-              </button>
-              <button
-                onClick={() => handleDelete(review.id)}
-                className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
-              >
-                Удалить
-              </button>
-            </div>
+           
           </div>
         </div>
       </div>
@@ -170,4 +128,4 @@ const ReviewCard = ({ review, handleDelete, fetchReviews, index }: Props) => {
   );
 };
 
-export default ReviewCard;
+export default ReviewCardForOtherUser;

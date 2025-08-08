@@ -18,6 +18,7 @@ namespace api.Mappers
                 ImageUrl = model.ImageUrl,
                 Rating = GetRating(model.Reviews!),
                 FilmType = model.FilmType,
+                FilmCategory = model.FilmCategory,
                 Reviews = model.Reviews!.Select(x => x.ToReviewDTO()).ToList()
             };
         }
@@ -27,14 +28,15 @@ namespace api.Mappers
             double rate = 0;
             foreach (var item in list)
             {
-                rate += (double)(item.Rate!=null ? item.Rate : 0);
+                if (item.Rate != null && item.TakeInRating)
+                    rate += (double)item.Rate;
             }
 
-            int count = list.Where(x => x.Rate!=null).ToList().Count;
+            int count = list.Where(x => x.Rate != null && x.TakeInRating).ToList().Count;
             if (rate > 0)
                 rate /= count;
 
-            return Math.Round(rate,2);
+            return Math.Round(rate, 2);
 
         }
 
@@ -44,7 +46,20 @@ namespace api.Mappers
             {
                 Title = model.Title,
                 FilmType = model.FilmType,
+                FilmCategory = model.FilmCategory,
                 ImageUrl = model.ImageUrl,
+            };
+        }
+
+        public static FilmForReviewDto ToFilmForReviewDto(this FilmModel model)
+        {
+            return new FilmForReviewDto
+            {
+                Id = model.Id,
+                Title = model.Title,
+                ImageUrl = model.ImageUrl,
+                FilmCategory = model.FilmCategory,
+                FilmType = model.FilmType
             };
         }
     }

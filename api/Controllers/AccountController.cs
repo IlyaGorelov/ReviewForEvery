@@ -31,6 +31,17 @@ namespace api.Controllers
             _signInManager = signInManager;
         }
 
+        [HttpGet("{name}")]
+        public async Task<IActionResult> GetUserByName(string name)
+        {
+            var user = await _userManager.Users.Include(x => x.Reviews).ThenInclude(x=>x.film)
+            .Include(x=>x.TopLists).ThenInclude(x=>x.TopListFilms).FirstOrDefaultAsync(x => x.UserName == name);
+
+            if (user == null) return NotFound();
+
+            return Ok(user.ToUserDto());
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto login)
         {
