@@ -11,13 +11,11 @@ import { blankSrc } from "./SearchPage/FilmCard";
 type Props = {
   review: ReviewGet;
   handleDelete: (id: number) => void;
-  fetchReviews: () => void;
 };
 
-const ReviewCardForAdminPanel = ({ review, handleDelete, fetchReviews }: Props) => {
+const ReviewCardForAdminPanel = ({ review, handleDelete }: Props) => {
   const navigate = useNavigate();
   const [film, setFilm] = useState<FilmGet>();
-  const [showForm, setShowForm] = useState(false);
 
   const getFilm = async () => {
     await getFilmByIdApi(Number(review.filmId))
@@ -31,41 +29,11 @@ const ReviewCardForAdminPanel = ({ review, handleDelete, fetchReviews }: Props) 
       });
   };
 
-  const getStatus = (n: number) => {
-    switch (n) {
-      case 0:
-        return "Завершён";
-      case 1:
-        return "Брошен";
-      case 2:
-        return "Отложен";
-      case 3:
-        return "Смотрю";
-    }
-  };
-
   useEffect(() => {
     getFilm();
   }, []);
   return (
     <div>
-      {showForm && (
-        <EditReview
-          initialReview={{
-            rate: review.rate,
-            text: review.text,
-            status: review.status,
-            countOfSeasons: review.countOfSeasons,
-            startDate: review.startDate,
-            takeInRating:review.takeInRating,
-            endDate: review.endDate,
-          }}
-          reviewId={review.id}
-          onClose={() => setShowForm(false)}
-          onSuccess={fetchReviews}
-          hasSeasons={film?.filmType == 1}
-        />
-      )}
       <div className="relative flex flex-row-reverse gap-4 items-start">
         {/* Right: image */}
         <img
@@ -82,8 +50,8 @@ const ReviewCardForAdminPanel = ({ review, handleDelete, fetchReviews }: Props) 
         {/* Left: info */}
         <div className="flex-1 flex flex-col justify-between">
           <div>
-            <Link to={`/film/${film?.id}`} className="text-xl font-semibold mb-1">{film?.title}</Link>
-            <p className="text-md font-semibold mb-1">Автор: {review.author}</p>
+            <Link to={`/film/${film?.id}`} className="text-xl font-semibold mb-1 hover:underline">{film?.title}</Link>
+            <p onClick={()=>navigate(`/user/${review.author}`)} className="text-md font-semibold mb-1 hover:underline">Автор: {review.author}</p>
             {review.rate && <p className="mb-1">Оценка: {review.rate} / 10</p>}
             {review.startDate && (
               <p className="mb-1">
@@ -92,7 +60,6 @@ const ReviewCardForAdminPanel = ({ review, handleDelete, fetchReviews }: Props) 
                 - {review.endDate ? formatDate(new Date(review.endDate)) : ""}
               </p>
             )}
-            <p className="mb-1 font-bold">{getStatus(review.status)}</p>
             {review.countOfSeasons &&<p className="mb-1">Часть: {review.countOfSeasons}</p>}
             <p className="text-gray-700 mb-4">{review.text}</p>
           </div>

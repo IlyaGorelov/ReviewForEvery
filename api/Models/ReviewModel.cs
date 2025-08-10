@@ -12,22 +12,20 @@ namespace api.Models
     {
         [Key]
         public int Id { get; set; }
-
         public string Author { get; set; } = "";
-
         public string? Text { get; set; } = "";
-
         public double? Rate { get; set; }
-        public ReviewStatus Status { get; set; }
         public bool TakeInRating { get; set; } = true;
 
-        public DateTime Date { get; set; } = DateTime.UtcNow;
-        public string CountOfSeasons { get; set; } = "";
+        public int? CountOfHoures {get; set; }
+        public int? CountOfMinutes {get; set; }
 
+        public ReviewStatus Status { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string CountOfSeasons { get; set; } = "";
      
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-
 
         [ForeignKey("Film")]
         public int FilmId { get; set; }

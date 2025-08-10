@@ -4,51 +4,56 @@ import {
   deleteMyReviewAPI,
   deleteReviewAPI,
   getAllMyReviewsApi,
-} from "../Services/ReviewService";
-import { ReviewGet } from "../Models/Review";
-import ReviewCard from "../Components/ReviewCard";
+} from "../../Services/ReviewService";
+import { ReviewGet } from "../../Models/Review";
+import ReviewCard from "../../Components/ReviewCard";
 
 const AllMyReviews = () => {
   const [reviews, setReviews] = useState<ReviewGet[]>([]);
 
   const getFilmIndexes = (reviews: ReviewGet[]) => {
-  const typeToFilmIndexMap = new Map<number, Map<number, number>>();
-  const typeCounters = new Map<number, number>();
-  const result: number[] = [];
+    const typeToFilmIndexMap = new Map<number, Map<number, number>>();
+    const typeCounters = new Map<number, number>();
+    const result: number[] = [];
 
-  for (const review of reviews) {
-    const type = review.film?.filmCategory || 0;
-    const filmId = review.filmId;
+    for (const review of reviews) {
+      const type = review.film?.filmCategory || 0;
+      const filmId = review.filmId;
 
-    if (!typeToFilmIndexMap.has(type)) {
-      typeToFilmIndexMap.set(type, new Map());
-      typeCounters.set(type, 1);
-    }
-
-    const filmMap = typeToFilmIndexMap.get(type)!;
-    let counter = typeCounters.get(type)!;
-
-    if (filmId != null) {
-      if (!filmMap.has(filmId)) {
-        filmMap.set(filmId, counter);
-        typeCounters.set(type, counter + 1);
+      if (!typeToFilmIndexMap.has(type)) {
+        typeToFilmIndexMap.set(type, new Map());
+        typeCounters.set(type, 1);
       }
 
-      result.push(filmMap.get(filmId)!);
-    } else {
-      // Без filmId – просто используем текущий счётчик для типа
-      result.push(counter);
-      typeCounters.set(type, counter + 1);
+      const filmMap = typeToFilmIndexMap.get(type)!;
+      let counter = typeCounters.get(type)!;
+
+      if (filmId != null) {
+        if (!filmMap.has(filmId)) {
+          filmMap.set(filmId, counter);
+          typeCounters.set(type, counter + 1);
+        }
+
+        result.push(filmMap.get(filmId)!);
+      } else {
+        // Без filmId – просто используем текущий счётчик для типа
+        result.push(counter);
+        typeCounters.set(type, counter + 1);
+      }
     }
-  }
 
-  return result;
-};
-
+    return result;
+  };
 
   const sortedReviews = [...reviews].sort((a, b) => {
     if (a.status === 2 && b.status !== 2) return -1;
     if (a.status !== 2 && b.status === 2) return 1;
+
+    if ((a.startDate === b.startDate) === null) {
+      const createDateA = new Date(a.createdAt!).getTime();
+      const createDateB = new Date(b.createdAt!).getTime();
+      return createDateB - createDateA;
+    }
 
     const dateA = new Date(a.startDate!).getTime();
     const dateB = new Date(b.startDate!).getTime();

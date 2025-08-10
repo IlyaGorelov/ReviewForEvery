@@ -145,6 +145,8 @@ namespace api.Controllers
             review.CountOfSeasons = updateReview.CountOfSeasons;
             review.StartDate = updateReview.StartDate;
             review.EndDate = updateReview.EndDate;
+            review.CountOfHoures = updateReview.CountOfHoures;
+            review.CountOfMinutes = updateReview.CountOfMinutes;
 
             await _context.SaveChangesAsync();
 

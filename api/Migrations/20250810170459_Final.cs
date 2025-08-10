@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace api.Migrations
 {
     /// <inheritdoc />
-    public partial class AddMainAdminRole : Migration
+    public partial class Final : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -60,7 +60,9 @@ namespace api.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Rating = table.Column<double>(type: "float", nullable: false)
+                    Rating = table.Column<double>(type: "float", nullable: false),
+                    FilmType = table.Column<int>(type: "int", nullable: false),
+                    FilmCategory = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -174,15 +176,42 @@ namespace api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TopLists",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TopLists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TopLists_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Reviews",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Author = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Rate = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Rate = table.Column<double>(type: "float", nullable: true),
+                    TakeInRating = table.Column<bool>(type: "bit", nullable: false),
+                    CountOfHoures = table.Column<int>(type: "int", nullable: true),
+                    CountOfMinutes = table.Column<int>(type: "int", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CountOfSeasons = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     FilmId = table.Column<int>(type: "int", nullable: false),
                     AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
@@ -199,6 +228,28 @@ namespace api.Migrations
                         name: "FK_Reviews_Films_FilmId",
                         column: x => x.FilmId,
                         principalTable: "Films",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TopListFIlms",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FilmId = table.Column<int>(type: "int", nullable: false),
+                    Position = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TopListId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TopListFIlms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TopListFIlms_TopLists_TopListId",
+                        column: x => x.TopListId,
+                        principalTable: "TopLists",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -261,6 +312,16 @@ namespace api.Migrations
                 name: "IX_Reviews_FilmId",
                 table: "Reviews",
                 column: "FilmId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TopListFIlms_TopListId",
+                table: "TopListFIlms",
+                column: "TopListId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TopLists_AppUserId",
+                table: "TopLists",
+                column: "AppUserId");
         }
 
         /// <inheritdoc />
@@ -285,13 +346,19 @@ namespace api.Migrations
                 name: "Reviews");
 
             migrationBuilder.DropTable(
+                name: "TopListFIlms");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Films");
 
             migrationBuilder.DropTable(
-                name: "Films");
+                name: "TopLists");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

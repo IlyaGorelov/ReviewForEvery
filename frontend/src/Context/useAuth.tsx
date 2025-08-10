@@ -5,7 +5,6 @@ import { loginAPI, registerAPI } from "../Services/AuthService";
 import { toast } from "react-toastify";
 import React from "react";
 import axios from "axios";
-import { ReviewGet } from "../Models/Review";
 
 type UserContextType = {
   user: UserProfile | null;

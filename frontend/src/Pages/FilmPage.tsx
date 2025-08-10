@@ -87,6 +87,7 @@ export default function FilmPage() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       {isCreateFormShowed && (
         <AddReview
+          film={film}
           closeForm={() => setIsCreateFormShowed(false)}
           updateFilm={() => getFilm()}
           hasSeasons={film?.filmType === 1}
@@ -164,7 +165,12 @@ export default function FilmPage() {
           {film?.reviews.map((review: ReviewGet) => (
             <li key={review.id} className="border-b border-t pb-4">
               <div className="flex justify-between items-center mb-1 gap-x-4">
-                <Link to={`/user/${review.author}`} className="font-bold text-lg">{review.author}</Link>
+                <Link
+                  to={`/user/${review.author}`}
+                  className="font-bold text-lg hover:underline"
+                >
+                  {review.author}
+                </Link>
 
                 {user?.role.includes("Admin") && (
                   <button
@@ -176,7 +182,7 @@ export default function FilmPage() {
                 )}
 
                 <span className="text-sm text-gray-600">
-                  {formatDate(review.date)}
+                  {formatDate(review.createdAt)}
                 </span>
               </div>
               {review.rate && (
@@ -206,9 +212,28 @@ export default function FilmPage() {
                         {review.endDate && formatDate(new Date(review.endDate))}
                       </>
                     )}
+                    {(review.countOfHoures || review.countOfMinutes) && (
+                      <span className="ml-2 font-semibold border-[2px] border-black p-1">
+                        {review.countOfHoures && <>{review.countOfHoures} ч.</>}{" "}
+                        {review.countOfMinutes && (
+                          <>{review.countOfMinutes} м.</>
+                        )}
+                      </span>
+                    )}
                   </span>
                 </p>
               )}
+
+              {review.startDate == null && (
+                <p className="mb-1">
+                  Время:{" "}
+                  <span className="font-semibold border-[2px] border-black p-1">
+                    {review.countOfHoures && <>{review.countOfHoures} ч.</>}{" "}
+                    {review.countOfMinutes && <>{review.countOfMinutes} м.</>}
+                  </span>
+                </p>
+              )}
+
               <p className="mb-1">
                 Статус:{" "}
                 <span className="font-semibold">

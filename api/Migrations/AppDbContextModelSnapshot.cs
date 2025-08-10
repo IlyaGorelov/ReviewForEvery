@@ -285,11 +285,17 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("CountOfHoures")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CountOfMinutes")
+                        .HasColumnType("int");
+
                     b.Property<string>("CountOfSeasons")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("EndDate")

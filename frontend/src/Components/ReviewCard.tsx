@@ -28,13 +28,35 @@ const ReviewCard = ({ review, handleDelete, fetchReviews, index }: Props) => {
           </span>
         );
       case 1:
-        return <span className="ml-5 border-2 border-gray-700 text-black-400  items-center text-sm md:text-lg font-medium">Сериал</span>;
+        return (
+          <span className="p-0.5 ml-5 border-2 border-gray-700 text-black-400  items-center text-sm md:text-lg font-medium">
+            Сериал
+          </span>
+        );
       case 2:
-        return <span className="ml-5 border-2 border-orange-400 text-orange-400  items-center text-sm md:text-lg font-medium">Аниме</span>;
+        return (
+          <span className="p-0.5 ml-5 border-2 border-orange-400 text-orange-400  items-center text-sm md:text-lg font-medium">
+            Аниме
+          </span>
+        );
       case 3:
-        return <span className="ml-5 border-2 border-cyan-400 text-cyan-400  items-center text-sm md:text-lg font-medium">Мультик</span>;
+        return (
+          <span className="p-0.5 ml-5 border-2 border-cyan-400 text-cyan-400  items-center text-sm md:text-lg font-medium">
+            Мультик
+          </span>
+        );
       case 4:
-        return <span className="ml-5 border-2 border-pink-400 text-pink-400  items-center text-sm md:text-lg font-medium">Книга</span>;
+        return (
+          <span className="p-0.5 ml-5 border-2 border-pink-400 text-pink-400  items-center text-sm md:text-lg font-medium">
+            Книга
+          </span>
+        );
+      case 5:
+        return (
+          <span className="p-0.5 ml-5 border-2 border-red-400 text-red-400  items-center text-sm md:text-lg font-medium">
+            Игра
+          </span>
+        );
     }
   }
 
@@ -69,7 +91,8 @@ const ReviewCard = ({ review, handleDelete, fetchReviews, index }: Props) => {
     <>
       <div className="-rotate-90 text-lg font-semibold w-6">
         <span className="absolute rotate-90">{index}</span>
-        {review.film?.filmCategory != null && getFilmCategory(review.film?.filmCategory)}
+        {review.film?.filmCategory != null &&
+          getFilmCategory(review.film?.filmCategory)}
       </div>
       <div
         className="border rounded p-4 shadow w-[100%]"
@@ -90,8 +113,11 @@ const ReviewCard = ({ review, handleDelete, fetchReviews, index }: Props) => {
                   countOfSeasons: review.countOfSeasons,
                   startDate: review.startDate,
                   takeInRating: review.takeInRating,
+                  countOfHoures: review.countOfHoures,
+                  countOfMinutes: review.countOfMinutes,
                   endDate: review.endDate,
                 }}
+                review={review}
                 reviewId={review.id}
                 onClose={() => setShowForm(false)}
                 onSuccess={fetchReviews}
@@ -119,7 +145,7 @@ const ReviewCard = ({ review, handleDelete, fetchReviews, index }: Props) => {
             <div>
               <Link
                 to={`/film/${review.film?.id}`}
-                className="text-xl font-semibold mb-1"
+                className="text-xl font-semibold mb-1 hover:underline"
               >
                 {review.film?.title}
               </Link>
@@ -135,10 +161,34 @@ const ReviewCard = ({ review, handleDelete, fetchReviews, index }: Props) => {
               {review.startDate && (
                 <p className="mb-1">
                   Время:{" "}
-                  {review.startDate
-                    ? formatDate(new Date(review.startDate))
-                    : ""}{" "}
-                  - {review.endDate ? formatDate(new Date(review.endDate)) : ""}
+                  {review.startDate === review.endDate ? (
+                    <>
+                      {review.startDate &&
+                        formatDate(new Date(review.startDate))}
+                    </>
+                  ) : (
+                    <>
+                      {review.startDate &&
+                        formatDate(new Date(review.startDate))}{" "}
+                      - {review.endDate && formatDate(new Date(review.endDate))}
+                    </>
+                  )}
+                  {(review.countOfHoures || review.countOfMinutes) && (
+                    <span className="ml-2 font-semibold border-[2px] border-black p-1">
+                      {review.countOfHoures && <>{review.countOfHoures} ч.</>}{" "}
+                      {review.countOfMinutes && <>{review.countOfMinutes} м.</>}
+                    </span>
+                  )}
+                </p>
+              )}
+
+              {!review.startDate && (
+                <p className="mb-1">
+                  Время:{" "}
+                  <span className="font-semibold border-[2px] border-black p-1">
+                    {review.countOfHoures && <>{review.countOfHoures} ч.</>}{" "}
+                    {review.countOfMinutes && <>{review.countOfMinutes} м.</>}
+                  </span>
                 </p>
               )}
               <p className="mb-1 font-bold">{getStatus(review.status)}</p>

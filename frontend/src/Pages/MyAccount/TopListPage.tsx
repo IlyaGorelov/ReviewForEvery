@@ -16,16 +16,13 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useParams } from "react-router-dom";
-import TopListFilmCard from "../Components/TopListFilmCard";
-import { TopListGet } from "../Models/TopList";
-import { getTopListByIdApi } from "../Services/TopListService";
 import { toast } from "react-toastify";
-import {
-  getAllTopFilmsApi,
-  updateTopListFilmApi,
-} from "../Services/TopListFIlmService";
-import { TopListFilmGet } from "../Models/TopListFilm";
-import AddTopListFilm from "../Components/AddTopListFilm";
+import { TopListFilmGet } from "../../Models/TopListFilm";
+import TopListFilmCard from "../../Components/TopListFilmCard";
+import { TopListGet } from "../../Models/TopList";
+import { getTopListByIdApi } from "../../Services/TopListService";
+import { getAllTopFilmsApi, updateTopListFilmApi } from "../../Services/TopListFIlmService";
+import AddTopListFilm from "../../Components/AddTopListFilm";
 
 function SortableFilm({
   film,

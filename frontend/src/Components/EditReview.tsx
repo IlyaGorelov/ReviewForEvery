@@ -4,8 +4,13 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import { ReviewFormsInput } from "./AddReview";
-import { deleteMyReviewAPI, deleteReviewAPI, updateMyReviewApi } from "../Services/ReviewService";
+import {
+  deleteMyReviewAPI,
+  deleteReviewAPI,
+  updateMyReviewApi,
+} from "../Services/ReviewService";
 import { data } from "react-router-dom";
+import { ReviewGet } from "../Models/Review";
 
 type Props = {
   initialReview: ReviewFormsInput;
@@ -13,6 +18,7 @@ type Props = {
   onClose: () => void;
   onSuccess: () => void;
   hasSeasons: boolean;
+  review: ReviewGet | null;
 };
 
 const validation = Yup.object().shape({
@@ -34,9 +40,19 @@ const validation = Yup.object().shape({
     .oneOf([0, 1, 2, 3], "Выберите статус")
     .required("Статус обязателен"),
   countOfSeasons: Yup.string(),
-  startDate: Yup.string().nullable().default(null),
-  endDate: Yup.string().nullable().default(null),
-  takeInRating: Yup.boolean()
+  startDate: Yup.string()
+    .nullable()
+    .transform((value, original) => (original === "" ? null : value)),
+  endDate: Yup.string()
+    .nullable()
+    .transform((value, original) => (original === "" ? null : value)),
+  takeInRating: Yup.boolean(),
+  countOfHoures: Yup.number()
+    .nullable()
+    .transform((value, original) => (original === "" ? null : value)),
+  countOfMinutes: Yup.number()
+    .nullable()
+    .transform((value, original) => (original === "" ? null : value)),
 });
 
 const EditReview = ({
@@ -44,7 +60,7 @@ const EditReview = ({
   reviewId,
   onClose,
   onSuccess,
-  hasSeasons,
+  hasSeasons, review
 }: Props) => {
   const {
     register,
@@ -58,19 +74,27 @@ const EditReview = ({
       rate: initialReview.rate,
       text: initialReview.text,
       status: initialReview.status,
-      takeInRating:initialReview.takeInRating,
+      takeInRating: initialReview.takeInRating,
       countOfSeasons: initialReview.countOfSeasons,
-      startDate: initialReview.startDate ? initialReview.startDate.split("T")[0] : null,
-      endDate: initialReview.endDate ? initialReview.endDate.split("T")[0] : null,
+      startDate: initialReview.startDate
+        ? initialReview.startDate.split("T")[0]
+        : null,
+      endDate: initialReview.endDate
+        ? initialReview.endDate.split("T")[0]
+        : null,
+      countOfHoures: initialReview.countOfHoures,
+      countOfMinutes: initialReview.countOfMinutes,
     },
   });
 
-  useEffect(()=>{
-    console.log(initialReview.startDate)
-  },[])
+  useEffect(() => {
+    console.log(initialReview.startDate);
+  }, []);
 
   const status = watch("status");
   const isWatching = Number(status) >= 2;
+
+  const showUsedTime = review!.film.filmCategory >= 4;
 
   useEffect(() => {
     if (isWatching) {
@@ -95,6 +119,8 @@ const EditReview = ({
         form.status,
         form.countOfSeasons,
         form.takeInRating,
+        form.countOfHoures,
+        form.countOfMinutes,
         form.startDate,
         form.endDate
       );
@@ -186,6 +212,40 @@ const EditReview = ({
               />
               {errors.endDate && <p>{errors.endDate.message}</p>}
             </div>
+
+            {showUsedTime && (
+              <div className="flex flex-col">
+                <label className="block text-sm font-medium mb-1">
+                  Использованное время
+                </label>
+
+                <div className="flex flex-row items-end">
+                  <input
+                    disabled={isWatching}
+                    type="number"
+                    min={1}
+                    className="w-[50px] p-2 border rounded"
+                    {...register("countOfHoures")}
+                  />
+                  <label className="ml-2 block text-lg font-medium mb-1">
+                    ч.
+                  </label>
+                  {errors.endDate && <p>{errors.endDate.message}</p>}
+
+                  <input
+                    disabled={isWatching}
+                    type="number"
+                    min={1}
+                    className="appearance-text ml-5 w-[50px] p-2 border rounded"
+                    {...register("countOfMinutes")}
+                  />
+                  <label className="ml-2 block text-lg font-medium mb-1">
+                    м.
+                  </label>
+                  {errors.endDate && <p>{errors.endDate.message}</p>}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex-grow flex flex-col mb-4 overflow-hidden">

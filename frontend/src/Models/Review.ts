@@ -7,8 +7,10 @@ export type ReviewGet = {
   status: number;
   countOfSeasons: string;
   rate: number | null;
-  date: Date;
+  createdAt: Date;
   takeInRating: boolean;
+  countOfHoures: number | null,
+  countOfMinutes: number | null,
   startDate: string | null;
   endDate: string | null;
   filmId: number;
@@ -23,6 +25,8 @@ export type ReviewFromOtherUserGet = {
   rate: number | null;
   date: Date;
   takeInRating: boolean;
+  countOfHoures: number | null,
+  countOfMinutes: number | null,
   startDate: string | null;
   endDate: string | null;
   filmId: number;
@@ -35,6 +39,8 @@ export type ReviewPost = {
   countOfSeasons: string;
   status: number;
   takeInRating: boolean;
+  countOfHoures: number | null,
+  countOfMinutes: number | null,
   startDate: string | null;
   endDate: string | null;
   filmId: number;
@@ -45,6 +51,8 @@ export type ReviewUpdate = {
   countOfSeasons: string;
   status: number;
   takeInRating: boolean;
+  countOfHoures: number | null,
+  countOfMinutes: number | null,
   startDate: string | null;
   endDate: string | null;
   rate: number | null;

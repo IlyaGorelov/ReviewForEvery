@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  getAllMyTopListsApi,
-  postTopListAPI,
-} from "../Services/TopListService";
+import { getAllMyTopListsApi, postTopListAPI } from "../../Services/TopListService";
+import { TopListGet } from "../../Models/TopList";
 import { toast } from "react-toastify";
-import { TopListGet } from "../Models/TopList";
-import TopListCard from "../Components/TopListCard";
+import TopListCard from "../../Components/TopListCard";
 
 type Props = {};
 

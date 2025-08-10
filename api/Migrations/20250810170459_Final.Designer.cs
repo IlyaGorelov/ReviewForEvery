@@ -12,8 +12,8 @@ using api.Context;
 namespace api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250804074714_Doublefication")]
-    partial class Doublefication
+    [Migration("20250810170459_Final")]
+    partial class Final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -251,6 +251,12 @@ namespace api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("FilmCategory")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FilmType")
+                        .HasColumnType("int");
+
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -282,17 +288,38 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<int?>("CountOfHoures")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CountOfMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CountOfSeasons")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("FilmId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Rate")
+                    b.Property<double?>("Rate")
                         .HasColumnType("float");
 
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("TakeInRating")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Text")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -302,6 +329,55 @@ namespace api.Migrations
                     b.HasIndex("FilmId");
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("api.Models.TopList", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("TopLists");
+                });
+
+            modelBuilder.Entity("api.Models.TopListFilm", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FilmId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TopListId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopListId");
+
+                    b.ToTable("TopListFIlms");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -373,14 +449,41 @@ namespace api.Migrations
                     b.Navigation("film");
                 });
 
+            modelBuilder.Entity("api.Models.TopList", b =>
+                {
+                    b.HasOne("api.Models.AppUser", "AppUser")
+                        .WithMany("TopLists")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("api.Models.TopListFilm", b =>
+                {
+                    b.HasOne("api.Models.TopList", "TopList")
+                        .WithMany("TopListFilms")
+                        .HasForeignKey("TopListId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("TopList");
+                });
+
             modelBuilder.Entity("api.Models.AppUser", b =>
                 {
                     b.Navigation("Reviews");
+
+                    b.Navigation("TopLists");
                 });
 
             modelBuilder.Entity("api.Models.FilmModel", b =>
                 {
                     b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("api.Models.TopList", b =>
+                {
+                    b.Navigation("TopListFilms");
                 });
 #pragma warning restore 612, 618
         }

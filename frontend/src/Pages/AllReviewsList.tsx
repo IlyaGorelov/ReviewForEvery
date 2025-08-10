@@ -70,7 +70,6 @@ const AllReviewsList = () => {
               }`}
             >
               <ReviewCardForAdminPanel
-                fetchReviews={fetchReviews}
                 review={review}
                 handleDelete={() => handleDelete(review.id)}
               />

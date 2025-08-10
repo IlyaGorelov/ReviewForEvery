@@ -12,8 +12,10 @@ export const postReviewAPI = async (
   filmId: number,
   countOfSeasons: string,
   takeInRating: boolean,
+  countOfHoures: number | null,
+  countOfMinutes: number | null,
   startDate?: string | null,
-  endDate?: string | null
+  endDate?: string | null,
 ) => {
   try {
     const result = await axios.post<ReviewPost>(api + "Reviews", {
@@ -25,6 +27,8 @@ export const postReviewAPI = async (
       countOfSeasons: countOfSeasons,
       startDate: startDate,
       endDate: endDate,
+      countOfHoures: countOfHoures,
+      countOfMinutes: countOfMinutes
     });
     return result;
   } catch (error) {
@@ -58,6 +62,8 @@ export const updateMyReviewApi = async (
   newStatus: number,
   newCountOfSeasons: string,
   takeInRating: boolean,
+  countOfHoures: number | null,
+  countOfMinutes: number | null,
   startDate?: string | null,
   endDate?: string | null
 ) => {
@@ -70,6 +76,8 @@ export const updateMyReviewApi = async (
       countOfSeasons: newCountOfSeasons,
       startDate: startDate,
       endDate: endDate,
+      countOfHoures: countOfHoures,
+      countOfMinutes: countOfMinutes
     });
     return result;
   } catch (error) {

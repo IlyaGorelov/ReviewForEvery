@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../Context/useAuth";
-import { deleteAnyAccountApi, deleteMeApi } from "../Services/AuthService";
 import { toast } from "react-toastify";
+import { useAuth } from "../../Context/useAuth";
+import { deleteAnyAccountApi, deleteMeApi } from "../../Services/AuthService";
 
 export const AccountPage = () => {
   const navigate = useNavigate();
@@ -79,6 +79,15 @@ export const AccountPage = () => {
             >
               Удалить любой аккаунт
             </button>
+
+            {user?.role === "MainAdmin" && (
+              <button
+                onClick={() => navigate("/register-admin")}
+                className="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800 transition"
+              >
+                Добавить админа
+              </button>
+            )}
           </>
         )}
       </div>

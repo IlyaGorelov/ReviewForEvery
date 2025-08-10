@@ -4,15 +4,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Enums;
-using api.Models;
 
 namespace api.DTOs
 {
-    public class ReviewDto
-    {
-        public int Id { get; set; }
+    public class ReviewFromOtherUserDto
+    {//You get this Dto with UserDto. 
+    // So, when other user watch your reviews this Dto is used
 
-        public string Author { get; set; } = "";
+        public int Id { get; set; }
 
         public string? Text { get; set; }
 
@@ -26,11 +25,14 @@ namespace api.DTOs
         public DateTime? StartDate { get; set; }
         [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
+        public int? CountOfHoures { get; set; }
+        public int? CountOfMinutes { get; set; }
 
-        public DateTime Date { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public int FilmId { get; set; }
-        public FilmCategory FilmCategory { get; set; } 
+        public FilmCategory FilmCategory { get; set; }
         public FilmForReviewDto? Film { get; set; }
+
     }
 }

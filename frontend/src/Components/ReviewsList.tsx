@@ -36,7 +36,10 @@ const ReviewsList = ({ reviews, onClose, onSuccess, hasSeasons }: Props) => {
                     startDate: review.startDate,
                     takeInRating:review.takeInRating,
                     endDate: review.endDate,
+                    countOfHoures:review.countOfHoures,
+                    countOfMinutes:review.countOfMinutes
                   }}
+                  review={review}
                   reviewId={review.id}
                   onClose={() => setShowEdit(false)}
                   onSuccess={onSuccess}
@@ -52,7 +55,7 @@ const ReviewsList = ({ reviews, onClose, onSuccess, hasSeasons }: Props) => {
                   <p className="mb-1">{review.text}</p>
                   <p className="text-sm text-gray-500">
                     Оценка: {review.rate} / 10 —{" "}
-                    {new Date(review.date).toLocaleDateString()}
+                    {new Date(review.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 <button

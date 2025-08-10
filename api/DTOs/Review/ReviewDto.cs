@@ -1,20 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 using api.Enums;
+using api.Models;
 
 namespace api.DTOs
 {
-    public class CreateReviewDto
+    public class ReviewDto
     {
-        [MinLength(1, ErrorMessage = "Title length must be at least 1")]
+        public int Id { get; set; }
+
+        public string Author { get; set; } = "";
+
         public string? Text { get; set; }
 
-        [Range(1, 10, ErrorMessage = "Rating should be 1-10")]
         public double? Rate { get; set; }
-
         public string CountOfSeasons { get; set; } = "";
+        public ReviewStatus Status { get; set; }
         [Required]
         public bool TakeInRating { get; set; }
 
@@ -22,12 +26,12 @@ namespace api.DTOs
         public DateTime? StartDate { get; set; }
         [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
+        public int? CountOfHoures { get; set; }
+        public int? CountOfMinutes { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Required]
-        public ReviewStatus Status { get; set; }
-
-        [Required]
-        [ForeignKey("Film")]
         public int FilmId { get; set; }
+        public FilmCategory FilmCategory { get; set; }
+        public FilmForReviewDto? Film { get; set; }
     }
 }

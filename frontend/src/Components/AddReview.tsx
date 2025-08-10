@@ -7,11 +7,13 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import { FilmGet } from "../Models/Film";
 
 type Props = {
   closeForm: () => void;
   updateFilm: () => void;
   hasSeasons: boolean;
+  film: FilmGet | null;
 };
 
 export interface ReviewFormsInput {
@@ -22,6 +24,8 @@ export interface ReviewFormsInput {
   startDate: string | null;
   endDate: string | null;
   takeInRating: boolean;
+  countOfHoures: number | null;
+  countOfMinutes: number | null;
 }
 
 const validation = Yup.object().shape({
@@ -43,12 +47,18 @@ const validation = Yup.object().shape({
     .oneOf([0, 1, 2, 3], "Выберите статус")
     .required("Статус обязателен"),
   countOfSeasons: Yup.string(),
-  startDate: Yup.string().nullable().default(null),
-  endDate: Yup.string().nullable().default(null),
+  startDate: Yup.string().nullable().transform((value, original) => (original === "" ? null : value)),
+  endDate: Yup.string().nullable().transform((value, original) => (original === "" ? null : value)),
   takeInRating: Yup.boolean().required(),
+  countOfHoures: Yup.number()
+    .nullable()
+    .transform((value, original) => (original === "" ? null : value)),
+  countOfMinutes: Yup.number()
+    .nullable()
+    .transform((value, original) => (original === "" ? null : value)),
 });
 
-const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
+const AddReview = ({ closeForm, updateFilm, hasSeasons, film }: Props) => {
   const { id } = useParams();
   const {
     register,
@@ -67,11 +77,14 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
 
   const status = watch("status");
   const isWatching = Number(status) >= 2;
+  const showUsedTime = film!.filmCategory >= 4;
 
   useEffect(() => {
     if (isWatching) {
       setValue("rate", null);
       setValue("text", null);
+      setValue("countOfHoures", null);
+      setValue("countOfMinutes", null);
     }
   }, [status, setValue]);
 
@@ -84,6 +97,8 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
       Number(id),
       form.countOfSeasons,
       form.takeInRating,
+      form.countOfHoures,
+      form.countOfMinutes,
       form.startDate,
       form.endDate
     ).catch((e) => {
@@ -103,6 +118,7 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
 
       <div className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-4/5 h-4/5 max-w-5xl overflow-auto flex flex-col">
         <h2 className="text-lg font-semibold mb-4">Оставить отзыв</h2>
+        
         <form
           onSubmit={handleSubmit(postReview)}
           className="flex flex-col flex-grow"
@@ -173,6 +189,40 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons }: Props) => {
               <input type="date" {...register("endDate")} />
               {errors.endDate && <p>{errors.endDate.message}</p>}
             </div>
+
+            {showUsedTime && (
+              <div className="flex flex-col">
+                <label className="block text-sm font-medium mb-1">
+                  Использованное время
+                </label>
+
+                <div className="flex flex-row items-end">
+                  <input
+                    disabled={isWatching}
+                    type="number"
+                    min={1}
+                    className="w-[50px] p-2 border rounded"
+                    {...register("countOfHoures")}
+                  />
+                  <label className="ml-2 block text-lg font-medium mb-1">
+                    ч.
+                  </label>
+                  {errors.endDate && <p>{errors.endDate.message}</p>}
+
+                  <input
+                    disabled={isWatching}
+                    type="number"
+                    min={1}
+                    className="appearance-text ml-5 w-[50px] p-2 border rounded"
+                    {...register("countOfMinutes")}
+                  />
+                  <label className="ml-2 block text-lg font-medium mb-1">
+                    м.
+                  </label>
+                  {errors.endDate && <p>{errors.endDate.message}</p>}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex-grow flex flex-col mb-4 overflow-hidden">

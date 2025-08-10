@@ -14,7 +14,8 @@ namespace api.DTOs
 
         [Required]
         public ReviewStatus Status { get; set; }
-
+        public int? CountOfHoures { get; set; }
+        public int? CountOfMinutes { get; set; }
         public string CountOfSeasons { get; set; } = "";
         [Required]
         public bool TakeInRating { get; set; }

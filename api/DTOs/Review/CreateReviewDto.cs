@@ -1,35 +1,35 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
 
 namespace api.DTOs
 {
-    public class ReviewFromOtherUserDto
-    {//this dto is used, when  user want to watch an account of another
-
-        public int Id { get; set; }
-
+    public class CreateReviewDto
+    {
+        [MinLength(1, ErrorMessage = "Title length must be at least 1")]
         public string? Text { get; set; }
 
+        [Range(1, 10, ErrorMessage = "Rating should be 1-10")]
         public double? Rate { get; set; }
+
         public string CountOfSeasons { get; set; } = "";
-        public ReviewStatus Status { get; set; }
         [Required]
         public bool TakeInRating { get; set; }
+        public int? CountOfHoures {get; set; }
+        public int? CountOfMinutes {get; set; }
 
         [DataType(DataType.Date)]
         public DateTime? StartDate { get; set; }
         [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
 
-        public DateTime Date { get; set; } = DateTime.UtcNow;
+        [Required]
+        public ReviewStatus Status { get; set; }
 
+        [Required]
+        [ForeignKey("Film")]
         public int FilmId { get; set; }
-        public FilmCategory FilmCategory { get; set; }
-        public FilmForReviewDto? Film { get; set; }
-
     }
 }

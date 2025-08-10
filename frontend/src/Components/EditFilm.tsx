@@ -25,7 +25,7 @@ const validation = yup.object().shape({
   imageUrl: yup.string().required("Введите URL постера"),
   filmCategory: yup
     .number()
-    .oneOf([0, 1, 2, 3, 4], "Выберите категорию фильма")
+    .oneOf([0, 1, 2, 3, 4,5], "Выберите категорию фильма")
     .required("Категория обязательна"),
 });
 
@@ -115,6 +115,7 @@ const EditFilm = ({ filmId, initialFilm, onClose, onSuccess }: Props) => {
               <option value={2}>Аниме</option>
               <option value={3}>Мультик</option>
               <option value={4}>Книга</option>
+              <option value={5}>Игра</option>
             </select>
             {errors.filmType && (
               <p className="text-red-500 text-sm">{errors.filmType.message}</p>

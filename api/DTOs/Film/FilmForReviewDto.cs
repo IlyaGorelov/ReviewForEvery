@@ -8,6 +8,7 @@ namespace api.DTOs
 {
     public class FilmForReviewDto
     {
+        //You get this Dto with ReviewDto
         public int Id { get; set; }
 
         public string Title { get; set; } = "";
