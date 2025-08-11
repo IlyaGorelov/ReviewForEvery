@@ -37,12 +37,12 @@ export type ReviewPost = {
   text: string | null;
   rate: string | null;
   countOfSeasons: string | null;
-  status: number;
   takeInRating: boolean;
   countOfHoures: number | null,
   countOfMinutes: number | null,
   startDate: string | null;
   endDate: string | null;
+  status: number;
   filmId: number;
 };
 

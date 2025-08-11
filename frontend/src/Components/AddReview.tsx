@@ -101,14 +101,14 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons, film }: Props) => {
     await postReviewAPI(
       form.text,
       form.rate,
-      form.status,
-      Number(id),
       form.countOfSeasons,
       form.takeInRating,
       form.countOfHoures,
       form.countOfMinutes,
       form.startDate,
-      form.endDate
+      form.endDate,
+      form.status,
+      Number(id),
     )
       .then((res) => {
         console.log(res?.data);

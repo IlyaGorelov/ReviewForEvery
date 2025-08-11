@@ -8,27 +8,27 @@ const api = "https://reviewforevery-production.up.railway.app/api/";
 export const postReviewAPI = async (
   text: string | null,
   rate: number | null,
-  status: number,
-  filmId: number,
   countOfSeasons: string | null,
   takeInRating: boolean,
   countOfHoures: number | null,
   countOfMinutes: number | null,
-  startDate?: string | null,
-  endDate?: string | null,
+  startDate: string | null,
+  endDate: string | null,
+  status: number,
+  filmId: number,
 ) => {
   try {
     const result = await axios.post<ReviewPost>(api + "Reviews", {
       text: text,
       rate: rate,
-      status: status,
-      filmId: filmId,
-      takeInRating: takeInRating,
       countOfSeasons: countOfSeasons,
+      takeInRating: takeInRating,
+      countOfHoures: countOfHoures,
+      countOfMinutes: countOfMinutes,
       startDate: startDate,
       endDate: endDate,
-      countOfHoures: countOfHoures,
-      countOfMinutes: countOfMinutes
+      status: status,
+      filmId: filmId,
     });
     return result;
   } catch (error) {
