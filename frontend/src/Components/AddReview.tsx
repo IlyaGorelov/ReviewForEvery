@@ -47,8 +47,12 @@ const validation = Yup.object().shape({
     .oneOf([0, 1, 2, 3], "Выберите статус")
     .required("Статус обязателен"),
   countOfSeasons: Yup.string(),
-  startDate: Yup.string().nullable().transform((value, original) => (original === "" ? null : value)),
-  endDate: Yup.string().nullable().transform((value, original) => (original === "" ? null : value)),
+  startDate: Yup.string()
+    .nullable()
+    .transform((value, original) => (original === "" ? null : value)),
+  endDate: Yup.string()
+    .nullable()
+    .transform((value, original) => (original === "" ? null : value)),
   takeInRating: Yup.boolean().required(),
   countOfHoures: Yup.number()
     .nullable()
@@ -89,7 +93,18 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons, film }: Props) => {
   }, [status, setValue]);
 
   const postReview = async (form: ReviewFormsInput) => {
-    console.log(form.startDate);
+    console.log(
+      form.text,
+      form.rate,
+      form.status,
+      Number(id),
+      form.countOfSeasons,
+      form.takeInRating,
+      form.countOfHoures,
+      form.countOfMinutes,
+      form.startDate,
+      form.endDate
+    );
     await postReviewAPI(
       form.text,
       form.rate,
@@ -101,12 +116,14 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons, film }: Props) => {
       form.countOfMinutes,
       form.startDate,
       form.endDate
-    ).then((res)=>{
-      console.log(res?.data);
-      toast.success("Отзыв добавлен");
-    }).catch((e) => {
-      toast.warning("Unexpected error");
-    });
+    )
+      .then((res) => {
+        console.log(res?.data);
+        toast.success("Отзыв добавлен");
+      })
+      .catch((e) => {
+        toast.warning("Unexpected error");
+      });
     closeForm();
     updateFilm();
   };
@@ -120,7 +137,7 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons, film }: Props) => {
 
       <div className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-4/5 h-4/5 max-w-5xl overflow-auto flex flex-col">
         <h2 className="text-lg font-semibold mb-4">Оставить отзыв</h2>
-        
+
         <form
           onSubmit={handleSubmit(postReview)}
           className="flex flex-col flex-grow"
