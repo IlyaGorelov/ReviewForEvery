@@ -76,6 +76,9 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons, film }: Props) => {
       startDate: null,
       endDate: null,
       takeInRating: true,
+      countOfSeasons: "",
+      countOfHoures: null,
+      countOfMinutes: null
     },
   });
 
