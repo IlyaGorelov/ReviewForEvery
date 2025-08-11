@@ -240,7 +240,7 @@ export default function FilmPage() {
                   {getStatus(review.status)}
                 </span>
               </p>
-              {review.countOfSeasons != "" && (
+              {review.countOfSeasons && (
                 <p className="mb-1">
                   Часть:{" "}
                   <span className="font-semibold">{review.countOfSeasons}</span>
