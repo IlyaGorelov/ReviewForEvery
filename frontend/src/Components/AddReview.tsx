@@ -98,18 +98,6 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons, film }: Props) => {
   }, [status, setValue]);
 
   const postReview = async (form: ReviewFormsInput) => {
-    console.log(
-      form.text,
-      form.rate,
-      form.status,
-      Number(id),
-      form.countOfSeasons,
-      form.takeInRating,
-      form.countOfHoures,
-      form.countOfMinutes,
-      form.startDate,
-      form.endDate
-    );
     await postReviewAPI(
       form.text,
       form.rate,
@@ -124,6 +112,7 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons, film }: Props) => {
     )
       .then((res) => {
         console.log(res?.data);
+        if(res?.data)
         toast.success("Отзыв добавлен");
       })
       .catch((e) => {
