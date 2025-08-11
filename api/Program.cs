@@ -17,7 +17,7 @@ builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<Be
 builder.Services
     .AddControllers();
 
-var connectionString = Environment.GetEnvironmentVariable("DefaultConnection",EnvironmentVariableTarget.User);
+var connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
