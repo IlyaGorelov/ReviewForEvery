@@ -70,10 +70,10 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(x => x
+     .WithOrigins("https://review-for-every.vercel.app")
      .AllowAnyMethod()
      .AllowAnyHeader()
      .AllowCredentials()
-     .WithOrigins("https://review-for-every.vercel.app")
       );
 
 app.UseAuthentication();
