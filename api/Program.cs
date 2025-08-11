@@ -17,9 +17,10 @@ builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<Be
 builder.Services
     .AddControllers();
 
+var connectionString = Environment.GetEnvironmentVariable("DefaultConnection",EnvironmentVariableTarget.User);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
     
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
