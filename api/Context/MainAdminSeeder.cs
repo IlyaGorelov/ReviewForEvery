@@ -26,7 +26,8 @@ namespace api.Context
                     Email = adminEmail
                 };
 
-                var result = await userManager.CreateAsync(newAdmin, "StrongAdminPassword123)");
+                var password = Environment.GetEnvironmentVariable("MA_Password");
+                var result = await userManager.CreateAsync(newAdmin, password!);
 
                 if (result.Succeeded)
                 {
