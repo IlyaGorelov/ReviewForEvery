@@ -144,8 +144,8 @@ namespace api.Controllers
             review.Status = updateReview.Status;
             review.TakeInRating = updateReview.TakeInRating;
             review.CountOfSeasons = updateReview.CountOfSeasons;
-            review.StartDate = updateReview.StartDate;
-            review.EndDate = updateReview.EndDate;
+            review.StartDate = updateReview.StartDate != null ? DateTime.SpecifyKind(updateReview.StartDate.Value, DateTimeKind.Utc) : DateTime.UtcNow.Date;
+            review.EndDate = updateReview.EndDate != null ? DateTime.SpecifyKind(updateReview.EndDate.Value, DateTimeKind.Utc) : (updateReview.StartDate == null ? DateTime.UtcNow.Date : null);
             review.CountOfHoures = updateReview.CountOfHoures;
             review.CountOfMinutes = updateReview.CountOfMinutes;
 
