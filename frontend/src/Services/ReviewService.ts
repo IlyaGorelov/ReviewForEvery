@@ -10,7 +10,7 @@ export const postReviewAPI = async (
   rate: number | null,
   status: number,
   filmId: number,
-  countOfSeasons: string,
+  countOfSeasons: string | null,
   takeInRating: boolean,
   countOfHoures: number | null,
   countOfMinutes: number | null,

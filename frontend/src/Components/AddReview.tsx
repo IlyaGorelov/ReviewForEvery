@@ -20,7 +20,7 @@ export interface ReviewFormsInput {
   rate: number | null;
   text: string | null;
   status: number;
-  countOfSeasons: string;
+  countOfSeasons: string | null;
   startDate: string | null;
   endDate: string | null;
   takeInRating: boolean;
@@ -46,7 +46,9 @@ const validation = Yup.object().shape({
   status: Yup.number()
     .oneOf([0, 1, 2, 3], "Выберите статус")
     .required("Статус обязателен"),
-  countOfSeasons: Yup.string(),
+  countOfSeasons: Yup.string()
+    .nullable()
+    .transform((value, original) => (original === "" ? null : value)),
   startDate: Yup.string()
     .nullable()
     .transform((value, original) => (original === "" ? null : value)),
@@ -76,9 +78,9 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons, film }: Props) => {
       startDate: null,
       endDate: null,
       takeInRating: true,
-      countOfSeasons: "",
+      countOfSeasons: null,
       countOfHoures: null,
-      countOfMinutes: null
+      countOfMinutes: null,
     },
   });
 

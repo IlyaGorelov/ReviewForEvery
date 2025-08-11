@@ -36,7 +36,7 @@ export type ReviewFromOtherUserGet = {
 export type ReviewPost = {
   text: string | null;
   rate: string | null;
-  countOfSeasons: string;
+  countOfSeasons: string | null;
   status: number;
   takeInRating: boolean;
   countOfHoures: number | null,
