@@ -101,7 +101,8 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons, film }: Props) => {
       form.countOfMinutes,
       form.startDate,
       form.endDate
-    ).then(()=>{
+    ).then((res)=>{
+      console.log(res?.data);
       toast.success("Отзыв добавлен");
     }).catch((e) => {
       toast.warning("Unexpected error");
