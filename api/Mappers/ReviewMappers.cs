@@ -58,12 +58,12 @@ namespace api.Mappers
             {
                 Text = model.Text,
                 Status = model.Status,
-                StartDate = model.StartDate!=null ? model.StartDate : DateTime.UtcNow.Date,
+                StartDate = model.StartDate != null ? DateTime.SpecifyKind(model.StartDate.Value, DateTimeKind.Utc) : DateTime.UtcNow.Date,
+                EndDate = model.EndDate != null ? DateTime.SpecifyKind(model.EndDate.Value, DateTimeKind.Utc) : DateTime.UtcNow.Date,
                 TakeInRating = model.TakeInRating,
                 CountOfHoures = model.CountOfHoures,
                 CountOfMinutes = model.CountOfMinutes,
                 CountOfSeasons = model.CountOfSeasons,
-                EndDate = model.EndDate!=null ? model.EndDate : DateTime.UtcNow.Date,
                 Rate = model.Rate,
                 FilmId = model.FilmId
             };
