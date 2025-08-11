@@ -22,7 +22,7 @@ namespace api.Models
 
         public ReviewStatus Status { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public string CountOfSeasons { get; set; } = "";
+        public string? CountOfSeasons { get; set; } = "";
      
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

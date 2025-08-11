@@ -100,7 +100,9 @@ namespace api.Controllers
             if (filmModel == null) return BadRequest("Film not found");
             var username = User.GetUsername();
             var appUser = await _userManager.FindByNameAsync(username);
+
             if (appUser == null) return BadRequest("User not found");
+
             var review = reviewDto.ToReviewFromCreateDTO();
             review.Author = username;
             review.AppUserId = appUser!.Id;
