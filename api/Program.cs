@@ -83,8 +83,7 @@ app.UseCors(x => x
      .AllowAnyMethod()
      .AllowAnyHeader()
      .AllowCredentials()
-     .WithOrigins("https://review-for-every.vercel.app")
-      .SetIsOriginAllowed(origin => true));
+     .AllowAnyOrigin());
 
 app.UseAuthentication();
 app.UseAuthorization();
