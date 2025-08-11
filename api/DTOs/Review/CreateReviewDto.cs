@@ -14,7 +14,7 @@ namespace api.DTOs
         [Range(1, 10, ErrorMessage = "Rating should be 1-10")]
         public double? Rate { get; set; }
 
-        public string CountOfSeasons { get; set; } = "";
+        public string? CountOfSeasons { get; set; } = "";
         [Required]
         public bool TakeInRating { get; set; }
         public int? CountOfHoures {get; set; }
