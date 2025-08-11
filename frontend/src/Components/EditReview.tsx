@@ -39,7 +39,9 @@ const validation = Yup.object().shape({
   status: Yup.number()
     .oneOf([0, 1, 2, 3], "Выберите статус")
     .required("Статус обязателен"),
-  countOfSeasons: Yup.string(),
+  countOfSeasons: Yup.string()
+    .nullable()
+    .transform((value, original) => (original === "" ? null : value)),
   startDate: Yup.string()
     .nullable()
     .transform((value, original) => (original === "" ? null : value)),
@@ -60,7 +62,8 @@ const EditReview = ({
   reviewId,
   onClose,
   onSuccess,
-  hasSeasons, review
+  hasSeasons,
+  review,
 }: Props) => {
   const {
     register,

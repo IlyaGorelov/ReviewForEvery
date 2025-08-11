@@ -60,7 +60,7 @@ export const updateMyReviewApi = async (
   newText: string | null,
   newRate: number | null,
   newStatus: number,
-  newCountOfSeasons: string,
+  newCountOfSeasons: string | null,
   takeInRating: boolean,
   countOfHoures: number | null,
   countOfMinutes: number | null,

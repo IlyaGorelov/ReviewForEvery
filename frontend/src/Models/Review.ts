@@ -48,7 +48,7 @@ export type ReviewPost = {
 
 export type ReviewUpdate = {
   text: string | null;
-  countOfSeasons: string;
+  countOfSeasons: string | null;
   status: number;
   takeInRating: boolean;
   countOfHoures: number | null,
