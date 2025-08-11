@@ -3,7 +3,7 @@ import { handleError } from "../Helpers/ErrorHandler";
 import { ReviewGet, ReviewPost, ReviewUpdate } from "../Models/Review";
 import { stat } from "fs";
 
-const api = "http://localhost:5257/api/";
+const api = "https://reviewforevery-production.up.railway.app/api/";
 
 export const postReviewAPI = async (
   text: string | null,

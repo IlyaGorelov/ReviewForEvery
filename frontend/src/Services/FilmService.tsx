@@ -2,7 +2,7 @@ import axios from "axios";
 import { handleError } from "../Helpers/ErrorHandler";
 import { FilmGet, FilmPost } from "../Models/Film";
 
-const api = "http://localhost:5257/api/";
+const api = "https://reviewforevery-production.up.railway.app/api/";
 
 export const getAllFilmsApi = async () => {
   try {

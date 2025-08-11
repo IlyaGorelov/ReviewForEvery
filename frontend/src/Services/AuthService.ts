@@ -3,7 +3,7 @@ import { handleError } from "../Helpers/ErrorHandler";
 import { UserProfileToken } from "../Models/User";
 import { toast } from "react-toastify";
 
-const api = "http://localhost:5257/api/";
+const api = "https://reviewforevery-production.up.railway.app/api/";
 
 export const loginAPI = async (email: string, password: string)=>{
     try {
