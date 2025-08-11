@@ -21,7 +21,7 @@ var connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
-    
+
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -83,7 +83,7 @@ app.UseCors(x => x
      .AllowAnyMethod()
      .AllowAnyHeader()
      .AllowCredentials()
-      //.WithOrigins("https://localhost:44351))
+     .WithOrigins("https://review-for-every.vercel.app/")
       .SetIsOriginAllowed(origin => true));
 
 app.UseAuthentication();
