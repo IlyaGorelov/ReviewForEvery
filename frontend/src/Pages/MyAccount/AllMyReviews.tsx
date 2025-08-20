@@ -51,7 +51,7 @@ const AllMyReviews = () => {
 
     console.log(`Created Date of 1 ${a.film.title} is ${a.createdAt} or ${createDateA}`);
     console.log(`Created Date of 2 ${b.film.title} is ${b.createdAt} or ${createDateB}`);
-    return  createDateB-createDateA;
+    return createDateB-createDateA;
   }
 
   const sortedReviews = [...reviews].sort((a, b) => {
@@ -59,7 +59,7 @@ const AllMyReviews = () => {
     if (a.status !== 2 && b.status === 2) return 1;
 
     if (a.startDate === b.startDate) {
-      sortByCreatedDate(a,b)
+     return sortByCreatedDate(a,b)
     }
 
     const dateA = new Date(a.startDate!).getTime();
