@@ -48,7 +48,7 @@ const AllMyReviews = () => {
   function sortByCreatedDate(a: ReviewGet, b: ReviewGet) {
     const createDateA = new Date(a.createdAt!).getTime();
     const createDateB = new Date(b.createdAt!).getTime();
-    return createDateB - createDateA;
+    return  createDateA-createDateB;
   }
 
   const sortedReviews = [...reviews].sort((a, b) => {
