@@ -45,14 +45,18 @@ const AllMyReviews = () => {
     return result;
   };
 
+  function sortByCreatedDate(a: ReviewGet, b: ReviewGet) {
+    const createDateA = new Date(a.createdAt!).getTime();
+    const createDateB = new Date(b.createdAt!).getTime();
+    return createDateB - createDateA;
+  }
+
   const sortedReviews = [...reviews].sort((a, b) => {
     if (a.status === 2 && b.status !== 2) return -1;
     if (a.status !== 2 && b.status === 2) return 1;
 
-    if ((a.startDate === b.startDate) === null) {
-      const createDateA = new Date(a.createdAt!).getTime();
-      const createDateB = new Date(b.createdAt!).getTime();
-      return createDateB - createDateA;
+    if (a.startDate === b.startDate) {
+      sortByCreatedDate(a,b)
     }
 
     const dateA = new Date(a.startDate!).getTime();
