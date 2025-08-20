@@ -75,7 +75,7 @@ const EditFilm = ({ filmId, initialFilm, onClose, onSuccess }: Props) => {
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-full h-3/4 max-h-[450px] max-w-5xl overflow-auto flex flex-col"
+        className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-full h-3/4 max-h-[600px] md:max-h-[450px] max-w-5xl overflow-auto flex flex-col"
       >
         <h2 className="text-2xl font-bold mb-4">Редактировать фильм</h2>
         <form

@@ -2,8 +2,7 @@ import axios from "axios";
 import { handleError } from "../Helpers/ErrorHandler";
 import { UserProfileToken } from "../Models/User";
 import { toast } from "react-toastify";
-
-const api = "https://reviewforevery-production.up.railway.app/api/";
+import { api } from "./api";
 
 export const loginAPI = async (email: string, password: string)=>{
     try {

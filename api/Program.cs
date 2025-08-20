@@ -18,6 +18,8 @@ builder.Services
     .AddControllers();
 
 var connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
+if (connectionString == null)
+    connectionString = Environment.GetEnvironmentVariable("DefaultConnection", EnvironmentVariableTarget.User);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -69,13 +71,24 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 
-app.UseCors(x => x
-     .WithOrigins("https://review-for-every.vercel.app")
-     .AllowAnyMethod()
-     .AllowAnyHeader()
-     .AllowCredentials()
-      );
-
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors(x => x
+         .WithOrigins("http://localhost:3000")
+         .AllowAnyMethod()
+         .AllowAnyHeader()
+         .AllowCredentials()
+          );
+}
+else
+{
+    app.UseCors(x => x
+         .WithOrigins("https://review-for-every.vercel.app")
+         .AllowAnyMethod()
+         .AllowAnyHeader()
+         .AllowCredentials()
+          );
+}
 app.UseAuthentication();
 app.UseAuthorization();
 

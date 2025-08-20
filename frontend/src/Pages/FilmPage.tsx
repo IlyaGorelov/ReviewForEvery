@@ -24,8 +24,6 @@ export default function FilmPage() {
   const [isFormShowed, setIsFormShowed] = useState(false);
   const [isCreateFormShowed, setIsCreateFormShowed] = useState(false);
 
-  const navigate = useNavigate();
-
   const { id } = useParams();
   const [film, setFilm] = useState<FilmGet | null>(null);
   const { isLoggedIn, user } = useAuth();
@@ -119,7 +117,7 @@ export default function FilmPage() {
         <div className="flex-1">
           <p className="text-xl mb-4">⭐ {film?.rating.toFixed(1)} / 10</p>
           {!isLoggedIn() && (
-            <div className="w-[40%] mb-6 p-4 bg-yellow-100 border border-yellow-300 rounded">
+            <div className="w-full md:w-2/4 mb-6 p-4 bg-yellow-100 border border-yellow-300 rounded">
               <p className="mb-2 text-yellow-800 font-medium">
                 Чтобы оставить отзыв, пожалуйста,{" "}
                 <Link to="/login" className="underline text-blue-600">

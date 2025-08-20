@@ -18,7 +18,7 @@ export default function Header() {
             to="/add"
             className="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition text-center"
           >
-            Add review
+            Оставить отзыв
           </Link>
 
           {isLoggedIn() ? (
@@ -27,14 +27,14 @@ export default function Header() {
                 to="/account"
                 className="px-4 py-2 text-sm text-blue-600 hover:underline text-center"
               >
-                Welcome, {user?.userName}
+                Привет, {user?.userName}
               </Link>
 
               <button
                 onClick={logout}
                 className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-blue-700 text-center"
               >
-                Logout
+                Выйти
               </button>
             </>
           ) : (
@@ -43,14 +43,14 @@ export default function Header() {
                 to="/login"
                 className="px-4 py-2 text-sm text-blue-600 hover:underline text-center"
               >
-                Login
+                Войти
               </Link>
 
               <Link
                 to="/register"
                 className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 text-center"
               >
-                Sign up
+                Создать аккаунт
               </Link>
             </>
           )}

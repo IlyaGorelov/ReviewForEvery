@@ -1,8 +1,7 @@
 import axios from "axios";
 import { handleError } from "../Helpers/ErrorHandler";
 import { UserGet } from "../Models/User";
-
-const api = "https://reviewforevery-production.up.railway.app/api/";
+import { api } from "./api";
 
 export const getUserByNameApi = async (name:string) => {
   try {

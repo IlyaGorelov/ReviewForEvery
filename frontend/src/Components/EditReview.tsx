@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -6,10 +6,8 @@ import { toast } from "react-toastify";
 import { ReviewFormsInput } from "./AddReview";
 import {
   deleteMyReviewAPI,
-  deleteReviewAPI,
   updateMyReviewApi,
 } from "../Services/ReviewService";
-import { data } from "react-router-dom";
 import { ReviewGet } from "../Models/Review";
 
 type Props = {
@@ -90,10 +88,6 @@ const EditReview = ({
     },
   });
 
-  useEffect(() => {
-    console.log(initialReview.startDate);
-  }, []);
-
   const status = watch("status");
   const isWatching = Number(status) >= 2;
 
@@ -143,29 +137,33 @@ const EditReview = ({
           className="flex flex-col flex-grow"
         >
           <div className="flex flex-col md:flex-row gap-10 md:gap-30 mb-4">
-            <div className="w-full md:w-1/2">
-              <label className="block text-sm font-medium mb-1">Оценка:</label>
-              <input
-                type="number"
-                min="1"
-                step="0.1"
-                max="10"
-                className="w-full p-2 border rounded"
-                {...register("rate")}
-                required
-                disabled={isWatching}
-              />
-            </div>
+            <div className="flex flex-row w-full">
+              <div className="w-full md:w-1/2">
+                <label className="block text-sm font-medium mb-1">
+                  Оценка:
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  step="0.1"
+                  max="10"
+                  className="w-full p-2 border rounded"
+                  {...register("rate")}
+                  required
+                  disabled={isWatching}
+                />
+              </div>
 
-            <div className="w-full md:w-1/2 flex flex-col items-center">
-              <label htmlFor="takeInReview" className="text-sm font-medium">
-                Финальная оценка?
-              </label>
-              <input
-                type="checkbox"
-                {...register("takeInRating")}
-                className="mt-3 appearance-none w-6 h-6 border border-gray-400 rounded-full checked:bg-blue-500 checked:border-blue-600 transition-all duration-200"
-              />
+              <div className="w-full md:w-1/2 flex flex-col items-center">
+                <label htmlFor="takeInReview" className="text-sm font-medium">
+                  Финальная оценка?
+                </label>
+                <input
+                  type="checkbox"
+                  {...register("takeInRating")}
+                  className="mt-3 appearance-none w-6 h-6 border border-gray-400 rounded-full checked:bg-blue-500 checked:border-blue-600 transition-all duration-200"
+                />
+              </div>
             </div>
 
             {hasSeasons && (

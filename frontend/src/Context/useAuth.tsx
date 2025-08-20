@@ -56,7 +56,6 @@ export const UserProvider = ({ children }: Props) => {
           localStorage.setItem("user", JSON.stringify(userObj));
           setToken(res?.data.token);
           setUser(userObj);
-          toast.success("Login succes!");
           navigate("/add");
         }
       })
@@ -76,7 +75,6 @@ export const UserProvider = ({ children }: Props) => {
           localStorage.setItem("user", JSON.stringify(userObj));
           setToken(res?.data.token);
           setUser(userObj);
-          toast.success("Login succes!");
           navigate("/add");
         }
       })

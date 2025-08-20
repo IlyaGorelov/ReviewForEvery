@@ -104,7 +104,7 @@ const ReviewCard = ({ review, handleDelete, fetchReviews, index }: Props) => {
               onClick={() => setShowForm(false)}
               className="fixed inset-0 bg-black bg-opacity-50 z-800"
             ></div>
-            <div className="fixed top-1/2 left-1/2 z-50 w-full max-w-5xl p-6  transform -translate-x-1/2 -translate-y-1/2 h-[80%] md:h-[70%] md:max-h-[160vh]">
+            <div className="fixed top-1/2 left-1/2 z-50 w-full max-w-5xl p-6  transform -translate-x-1/2 -translate-y-1/2 h-full md:h-[70%] md:max-h-[160vh]">
               <EditReview
                 initialReview={{
                   rate: review.rate,

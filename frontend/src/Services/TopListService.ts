@@ -1,8 +1,7 @@
 import axios from "axios";
 import { handleError } from "../Helpers/ErrorHandler";
 import { TopListGet, TopListPost } from "../Models/TopList";
-
-const api = "https://reviewforevery-production.up.railway.app/api/";
+import { api } from "./api";
 
 export const postTopListAPI = async (
   name:string

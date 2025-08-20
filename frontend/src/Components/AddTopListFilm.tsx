@@ -6,17 +6,22 @@ import { postTopListFilmApi } from "../Services/TopListFIlmService";
 import { useParams } from "react-router-dom";
 
 type Props = {
-    position: number;
-    onSuccess: ()=>void;
-}
+  position: number;
+  onSuccess: () => void;
+};
 
-export default function AddTopListFilm({position,onSuccess}:Props ) {
+export default function AddTopListFilm({ position, onSuccess }: Props) {
   const [showAddForm, setShowAddForm] = useState(false);
-  const [selectedFilm, setSelectedFilm] = useState<string>("");
+  const [selectedFilm, setSelectedFilm] = useState<number>();
   const [comment, setComment] = useState("");
   const [films, setFilms] = useState<FilmGet[]>([]);
-
+  const [query, setQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const { id } = useParams();
+
+  const filteredFilms = films.filter((film) =>
+    film.title.toLowerCase().includes(query.toLowerCase())
+  );
 
   const fetchFilms = async () => {
     await getAllFilmsApi()
@@ -36,21 +41,24 @@ export default function AddTopListFilm({position,onSuccess}:Props ) {
       return;
     }
 
-    postTopListFilmApi(
-      Number(selectedFilm),
-      position,
-      Number(id),
-      comment
-    ).then(()=>{
+    postTopListFilmApi(selectedFilm, position, Number(id), comment)
+      .then(() => {
         setShowAddForm(false);
         onSuccess();
-    }).catch((e) => toast.error("Unexpected error"));
+      })
+      .catch((e) => toast.error("Unexpected error"));
   };
 
   const handleCancel = () => {
     setShowAddForm(false);
-    setSelectedFilm("");
+    setSelectedFilm(0);
     setComment("");
+  };
+
+  const handleSelect = (film: FilmGet) => {
+    setSelectedFilm(film.id);
+    setQuery(film.title);
+    setShowSuggestions(false);
   };
 
   return (
@@ -75,18 +83,33 @@ export default function AddTopListFilm({position,onSuccess}:Props ) {
             <label className="block mb-2 font-semibold text-gray-700">
               Выберите фильм:
             </label>
-            <select
-              className="w-full border border-gray-400 rounded px-2 py-1 mb-4"
-              value={selectedFilm}
-              onChange={(e) => setSelectedFilm(e.target.value)}
-            >
-              <option value="">-- Выберите фильм --</option>
-              {films.map((film) => (
-                <option key={film.id} value={film.id}>
-                  {film.title}
-                </option>
-              ))}
-            </select>
+
+            <input
+              type="text"
+              placeholder="Название"
+              className="w-full border border-gray-400 rounded px-2 py-1"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setShowSuggestions(true);
+              }}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
+              onFocus={() => setShowSuggestions(true)}
+            />
+
+            {showSuggestions && query && filteredFilms.length > 0 && (
+              <ul className="absolute w-full border border-gray-400 rounded-b bg-white max-h-40 overflow-y-auto z-10">
+                {filteredFilms.map((film) => (
+                  <li
+                    key={film.id}
+                    className="px-2 py-1 hover:bg-gray-200 cursor-pointer"
+                    onMouseDown={() => handleSelect(film)}
+                  >
+                    {film.title}
+                  </li>
+                ))}
+              </ul>
+            )}
 
             <label className="block text-sm mb-2 font-semibold text-gray-700">
               Комментарий (если нужно):

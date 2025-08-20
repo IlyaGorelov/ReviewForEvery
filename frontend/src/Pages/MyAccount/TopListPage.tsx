@@ -12,7 +12,6 @@ import {
   rectSortingStrategy,
   SortableContext,
   useSortable,
-  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useParams } from "react-router-dom";
@@ -21,7 +20,10 @@ import { TopListFilmGet } from "../../Models/TopListFilm";
 import TopListFilmCard from "../../Components/TopListFilmCard";
 import { TopListGet } from "../../Models/TopList";
 import { getTopListByIdApi } from "../../Services/TopListService";
-import { getAllTopFilmsApi, updateTopListFilmApi } from "../../Services/TopListFIlmService";
+import {
+  getAllTopFilmsApi,
+  updateTopListFilmApi,
+} from "../../Services/TopListFIlmService";
 import AddTopListFilm from "../../Components/AddTopListFilm";
 
 function SortableFilm({

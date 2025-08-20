@@ -7,8 +7,7 @@ import {
   TopListFilmPost,
   TopListFilmUpdate,
 } from "../Models/TopListFilm";
-
-const api = "https://reviewforevery-production.up.railway.app/api/";
+import { api } from "./api";
 
 export const postTopListFilmApi = async (
   filmId: number,

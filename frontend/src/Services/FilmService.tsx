@@ -1,8 +1,8 @@
 import axios from "axios";
 import { handleError } from "../Helpers/ErrorHandler";
 import { FilmGet, FilmPost } from "../Models/Film";
+import { api } from "./api";
 
-const api = "https://reviewforevery-production.up.railway.app/api/";
 
 export const getAllFilmsApi = async () => {
   try {
@@ -33,7 +33,7 @@ export const postFilmApi = async (
       title: title,
       filmType: filmType,
       imageUrl: imageUrl,
-      filmCategory: filmCategory
+      filmCategory: filmCategory,
     });
     return result;
   } catch (error) {
@@ -55,14 +55,14 @@ export const updateFilmApi = async (
   title: string,
   filmType: number,
   imageUrl: string,
-  filmCategory: number,
+  filmCategory: number
 ) => {
   try {
     const result = await axios.put<FilmPost>(api + `Films/${filmId}`, {
       title: title,
       filmType: filmType,
       imageUrl: imageUrl,
-      filmCategory: filmCategory
+      filmCategory: filmCategory,
     });
     return result;
   } catch (error) {

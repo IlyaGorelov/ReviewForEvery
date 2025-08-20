@@ -1,9 +1,7 @@
 import axios from "axios";
 import { handleError } from "../Helpers/ErrorHandler";
 import { ReviewGet, ReviewPost, ReviewUpdate } from "../Models/Review";
-import { stat } from "fs";
-
-const api = "https://reviewforevery-production.up.railway.app/api/";
+import { api } from "./api";
 
 export const postReviewAPI = async (
   text: string | null,
