@@ -49,8 +49,8 @@ const AllMyReviews = () => {
     const createDateA = new Date(a.createdAt!).getTime();
     const createDateB = new Date(b.createdAt!).getTime();
 
-    console.log(`Created Date of 1 ${a.film.title} is ${a.createdAt}`);
-    console.log(`Created Date of 2 ${b.film.title} is ${b.createdAt}`);
+    console.log(`Created Date of 1 ${a.film.title} is ${a.createdAt} or ${createDateA}`);
+    console.log(`Created Date of 2 ${b.film.title} is ${b.createdAt} or ${createDateB}`);
     return  createDateB-createDateA;
   }
 
