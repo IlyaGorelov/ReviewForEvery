@@ -20,7 +20,6 @@ namespace api.DTOs
         public ReviewStatus Status { get; set; }
         [Required]
         public bool TakeInRating { get; set; }
-
         [DataType(DataType.Date)]
         public DateTime? StartDate { get; set; }
         [DataType(DataType.Date)]

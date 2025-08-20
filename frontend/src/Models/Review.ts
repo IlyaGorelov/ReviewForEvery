@@ -30,7 +30,8 @@ export type ReviewFromOtherUserGet = {
   startDate: string | null;
   endDate: string | null;
   filmId: number;
-  film: FilmForReviewGet
+  film: FilmForReviewGet;
+  createdAt: Date;
 };
 
 export type ReviewPost = {

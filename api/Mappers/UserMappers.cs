@@ -14,7 +14,7 @@ namespace api.Mappers
             return new UserDto
             {
                 Username = appUser.UserName!,
-                Reviews = appUser.Reviews.Select(x => x.ToReviewFromOtherDTO()).ToList(),
+                Reviews = appUser.Reviews.Select(x => x.ToReviewDtoFromOther()).ToList(),
                 TopLists = appUser.TopLists.Select(x => x.ToDto()).ToList(),
             };
         }

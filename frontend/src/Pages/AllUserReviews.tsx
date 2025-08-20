@@ -65,14 +65,26 @@ const AllUserReviews = () => {
 };
 
 
-  const sortedReviews = [...reviews].sort((a, b) => {
-    if (a.status === 2 && b.status !== 2) return -1;
-    if (a.status !== 2 && b.status === 2) return 1;
-
-    const dateA = new Date(a.startDate!).getTime();
-    const dateB = new Date(b.startDate!).getTime();
-    return dateB - dateA;
-  });
+  function sortByCreatedDate(a: ReviewFromOtherUserGet, b: ReviewFromOtherUserGet) {
+      const createDateA = new Date(a.createdAt!).getTime();
+      const createDateB = new Date(b.createdAt!).getTime();
+      // console.log(`Created Date of 1 ${a.film.title} is ${a.createdAt} or ${createDateA}`);
+      // console.log(`Created Date of 2 ${b.film.title} is ${b.createdAt} or ${createDateB}`);
+      return createDateB-createDateA;
+    }
+  
+    const sortedReviews = [...reviews].sort((a, b) => {
+      if (a.status === 2 && b.status !== 2) return -1;
+      if (a.status !== 2 && b.status === 2) return 1;
+  
+      if (a.startDate === b.startDate) {
+       return sortByCreatedDate(a,b)
+      }
+  
+      const dateA = new Date(a.startDate!).getTime();
+      const dateB = new Date(b.startDate!).getTime();
+      return dateB - dateA;
+    });
 
   const filmIndexes = getFilmIndexes(sortedReviews).reverse();
 

@@ -31,7 +31,7 @@ namespace api.Mappers
             };
         }
 
-        public static ReviewFromOtherUserDto ToReviewFromOtherDTO(this ReviewModel model)
+        public static ReviewFromOtherUserDto ToReviewDtoFromOther(this ReviewModel model)
         {
             return new ReviewFromOtherUserDto
             {
