@@ -7,7 +7,6 @@ import { getFilmByIdApi } from "../Services/FilmService";
 import { toast } from "react-toastify";
 import { blankSrc } from "./SearchPage/FilmCard";
 import { useNavigate } from "react-router-dom";
-import { deleteTopFilmApi } from "../Services/TopListFIlmService";
 
 interface Props {
   topListfilm: TopListFilmGet;

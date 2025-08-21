@@ -9,16 +9,20 @@ export const AccountPage = () => {
   const { user, logout } = useAuth();
 
   const handleDeleteMyAccount = async () => {
-    await deleteMeApi();
-    logout();
-    navigate("/register");
+    if (window.confirm("Ты уверен?")) {
+      await deleteMeApi();
+      logout();
+      navigate("/register");
+    }
   };
 
   const deleteAccount = async () => {
-    const userId = window.prompt("User name?");
-    await deleteAnyAccountApi(String(userId)).catch((e) => {
-      toast.error("Oops!");
-    });
+    if (window.confirm("Ты уверен?")) {
+      const userId = window.prompt("User name?");
+      await deleteAnyAccountApi(String(userId)).catch((e) => {
+        toast.error("Oops!");
+      });
+    }
   };
 
   return (

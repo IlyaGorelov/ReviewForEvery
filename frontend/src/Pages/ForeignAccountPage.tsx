@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../Context/useAuth";
-import { deleteAnyAccountApi, deleteMeApi } from "../Services/AuthService";
 import { toast } from "react-toastify";
 import { getUserByNameApi } from "../Services/UserService";
 import { UserGet } from "../Models/User";

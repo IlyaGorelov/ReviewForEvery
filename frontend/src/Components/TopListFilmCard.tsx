@@ -39,9 +39,11 @@ export default function TopListFilmCard({
   }
 
   async function deleteTopFilm(e: React.MouseEvent) {
-    await deleteTopFilmApi(topListfilm.id)
-      .then(() => onSuccess())
-      .catch((e) => toast.error("Unexpected error"));
+    if (window.confirm("Ты уверен?")) {
+      await deleteTopFilmApi(topListfilm.id)
+        .then(() => onSuccess())
+        .catch((e) => toast.error("Unexpected error"));
+    }
   }
 
   useEffect(() => {

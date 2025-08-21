@@ -25,47 +25,7 @@ import {
   updateTopListFilmApi,
 } from "../Services/TopListFIlmService";
 import { TopListFilmGet } from "../Models/TopListFilm";
-import AddTopListFilm from "../Components/AddTopListFilm";
-import TopListCardForOtherUser from "../Components/TopListCardForOtherUser";
 import TopListFilmCardForOtherUser from "../Components/TopListFilmCardForOtherUser";
-
-function SortableFilm({
-  film,
-  index,
-  onSuccess,
-}: {
-  film: TopListFilmGet;
-  index: number;
-  onSuccess: () => void;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: film.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div style={style}>
-      <TopListFilmCard
-        topListfilm={film}
-        position={index + 1}
-        refNode={setNodeRef}
-        listeners={listeners}
-        attributes={attributes}
-        isDragging={isDragging}
-        onSuccess={onSuccess}
-      />
-    </div>
-  );
-}
 
 export default function TopListPageForOtherUser() {
   const { listId } = useParams();

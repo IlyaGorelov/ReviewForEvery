@@ -1,12 +1,17 @@
 import axios from "axios";
 import { handleError } from "../Helpers/ErrorHandler";
-import { FilmGet, FilmPost } from "../Models/Film";
+import { FilmGet, FilmPost, FilmsWithCount } from "../Models/Film";
 import { api } from "./api";
 
-
-export const getAllFilmsApi = async () => {
+export const getAllFilmsApi = async (
+  page: number,
+  pageSize: number,
+  search: string
+) => {
   try {
-    const result = await axios.get<FilmGet[]>(api + "Films");
+    const result = await axios.get<FilmsWithCount>(
+      api + `Films?page=${page}&pageSize=${pageSize}&search=${encodeURIComponent(search)}`
+    );
     return result;
   } catch (error) {
     handleError(error);

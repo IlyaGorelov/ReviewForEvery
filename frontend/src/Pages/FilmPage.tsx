@@ -10,6 +10,7 @@ import AddReview from "../Components/AddReview";
 import { deleteReviewAPI } from "../Services/ReviewService";
 import ReviewsList from "../Components/ReviewsList";
 import { blankSrc } from "../Components/SearchPage/FilmCard";
+import TextWithToggle from "../Components/TextWithToggle";
 
 export function formatDate(dateStr: Date) {
   const options: Intl.DateTimeFormatOptions = {
@@ -58,8 +59,10 @@ export default function FilmPage() {
   };
 
   const deleteReview = async (reviewId: number) => {
-    await deleteReviewAPI(reviewId);
-    getFilm();
+    if (window.confirm("Ты уверен?")) {
+      await deleteReviewAPI(reviewId);
+      getFilm();
+    }
   };
 
   function getFilmCategory(i: number) {
@@ -244,7 +247,9 @@ export default function FilmPage() {
                   <span className="font-semibold">{review.countOfSeasons}</span>
                 </p>
               )}
-              <p>{review.text}</p>
+              <p>
+                <TextWithToggle text={review.text} />
+              </p>
             </li>
           ))}
         </ul>

@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using api.Context;
 using api.DTOs;
+using api.Enums;
 using api.Mappers;
-using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,11 +20,25 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFilms()
+        public async Task<IActionResult> GetFilms(int page = 1, int pageSize = 20, string? search = null)
         {
-            var films = await _context.Films.Include(f => f.Reviews!)
-            .ThenInclude(x => x.AppUser).Select(x => x.ToFilmDto()).ToListAsync();
-            return Ok(films);
+            var query = _context.Films.AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(x => x.Title.ToLower().Contains(search.ToLower()));
+
+            var totalCount = await query.CountAsync();
+
+            var films = await query.Include(f => f.Reviews!)
+            .ThenInclude(x => x.AppUser).Select(x => x.ToFilmDto())
+            .Skip((page - 1) * pageSize).Take(pageSize)
+            .ToListAsync();
+
+            return Ok(new
+            {
+                items = films,
+                totalCount
+            });
         }
 
         [HttpGet("{id:int}")]

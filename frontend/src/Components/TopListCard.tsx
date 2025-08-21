@@ -21,7 +21,7 @@ export default function TopListCard({ list, onUpdated }: Props) {
     navigate(`/top-lists/${list.id}`);
   };
 
-  const handleEdit = (e:React.MouseEvent) => {
+  const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsEditing(true);
   };
@@ -62,12 +62,14 @@ export default function TopListCard({ list, onUpdated }: Props) {
     }
   };
 
-  const handleDelete = async (e:React.MouseEvent) => {
+  const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await deleteTopListAPI(list.id).catch((e) =>
-      toast.error("Unexpected error")
-    );
-    onUpdated();
+    if (window.confirm("Ты уверен?")) {
+      await deleteTopListAPI(list.id).catch((e) =>
+        toast.error("Unexpected error")
+      );
+      onUpdated();
+    }
   };
 
   return (

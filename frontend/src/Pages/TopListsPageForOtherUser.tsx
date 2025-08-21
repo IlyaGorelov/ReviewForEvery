@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  getAllMyTopListsApi,
-  postTopListAPI,
-} from "../Services/TopListService";
 import { toast } from "react-toastify";
 import { TopListGet } from "../Models/TopList";
-import TopListCard from "../Components/TopListCard";
 import { getUserByNameApi } from "../Services/UserService";
 import { UserGet } from "../Models/User";
 import { useParams } from "react-router-dom";

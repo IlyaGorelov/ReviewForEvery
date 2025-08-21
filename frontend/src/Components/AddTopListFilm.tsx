@@ -19,14 +19,11 @@ export default function AddTopListFilm({ position, onSuccess }: Props) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const { id } = useParams();
 
-  const filteredFilms = films.filter((film) =>
-    film.title.toLowerCase().includes(query.toLowerCase())
-  );
 
   const fetchFilms = async () => {
-    await getAllFilmsApi()
+    await getAllFilmsApi(1,20,query)
       .then((res) => {
-        if (res?.data) setFilms(res.data);
+        if (res?.data) setFilms(res.data.items);
       })
       .catch((e) => toast.error("Unexpected error"));
   };
@@ -34,6 +31,10 @@ export default function AddTopListFilm({ position, onSuccess }: Props) {
   useEffect(() => {
     fetchFilms();
   }, []);
+
+  useEffect(() => {
+    fetchFilms();
+  }, [query]);
 
   const handlePublish = () => {
     if (!selectedFilm) {
@@ -97,9 +98,9 @@ export default function AddTopListFilm({ position, onSuccess }: Props) {
               onFocus={() => setShowSuggestions(true)}
             />
 
-            {showSuggestions && query && filteredFilms.length > 0 && (
+            {showSuggestions && query && films.length > 0 && (
               <ul className="absolute w-full border border-gray-400 rounded-b bg-white max-h-40 overflow-y-auto z-10">
-                {filteredFilms.map((film) => (
+                {films.map((film) => (
                   <li
                     key={film.id}
                     className="px-2 py-1 hover:bg-gray-200 cursor-pointer"

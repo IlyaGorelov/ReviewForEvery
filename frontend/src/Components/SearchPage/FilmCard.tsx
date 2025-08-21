@@ -5,7 +5,6 @@ import { deleteFilmApi } from "../../Services/FilmService";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import EditFilm from "../EditFilm";
-import { title } from "process";
 
 type Props = {
   film: FilmGet;

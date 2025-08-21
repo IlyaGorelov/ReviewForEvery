@@ -1,5 +1,6 @@
 using api.Context;
 using api.DTOs;
+using api.Enums;
 using api.Extensions;
 using api.Mappers;
 using api.Models;
@@ -27,7 +28,10 @@ namespace api.Controllers
         [HttpGet("admin")]
         public async Task<IActionResult> GetAllReviews()
         {
-            var reviews = await _context.Reviews.Include(x => x.AppUser)
+            var reviews = await _context.Reviews
+            .OrderByDescending(x => x.Status == ReviewStatus.Planned)
+            .ThenByDescending(x => x.StartDate).ThenByDescending(x => x.CreatedAt)
+            .Include(x => x.AppUser)
             .Include(x => x.film)
             .Select(x => x.ToReviewDTO()).ToListAsync(); ;
 
@@ -71,8 +75,11 @@ namespace api.Controllers
         {
             var username = User.GetUsername();
             var reviews = await _context.Reviews
+            .OrderByDescending(x => x.Status == ReviewStatus.Planned).
+            ThenByDescending(x => x.StartDate).ThenByDescending(x => x.CreatedAt)
             .Where(x => x.Author == username).Include(x => x.AppUser).Include(x => x.film)
-            .Select(x => x.ToReviewDTO()).ToListAsync();
+            .Select(x => x.ToReviewDTO())
+            .ToListAsync();
 
             return Ok(reviews);
         }

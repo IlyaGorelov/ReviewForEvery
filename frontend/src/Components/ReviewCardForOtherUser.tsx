@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { formatDate } from "../Pages/FilmPage";
 import EditReview from "./EditReview";
 import { blankSrc } from "./SearchPage/FilmCard";
+import TextWithToggle from "./TextWithToggle";
 
 type Props = {
   review: ReviewFromOtherUserGet;
@@ -165,7 +166,7 @@ const ReviewCardForOtherUser = ({ review, index }: Props) => {
               {review.countOfSeasons && (
                 <p className="mb-1">Часть: {review.countOfSeasons}</p>
               )}
-              <p className="text-gray-700 mb-4">{review.text}</p>
+              <p className="text-gray-700 mb-4"><TextWithToggle text={review.text}/></p>
             </div>
           </div>
         </div>

@@ -8,6 +8,11 @@ export type FilmGet = {
     reviews: any
 }
 
+export type FilmsWithCount = {
+    items: FilmGet[],
+    totalCount: number
+}
+
 export type FilmForReviewGet = {
     id: number,
     title: string,

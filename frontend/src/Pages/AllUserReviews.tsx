@@ -65,28 +65,7 @@ const AllUserReviews = () => {
 };
 
 
-  function sortByCreatedDate(a: ReviewFromOtherUserGet, b: ReviewFromOtherUserGet) {
-      const createDateA = new Date(a.createdAt!).getTime();
-      const createDateB = new Date(b.createdAt!).getTime();
-      // console.log(`Created Date of 1 ${a.film.title} is ${a.createdAt} or ${createDateA}`);
-      // console.log(`Created Date of 2 ${b.film.title} is ${b.createdAt} or ${createDateB}`);
-      return createDateB-createDateA;
-    }
-  
-    const sortedReviews = [...reviews].sort((a, b) => {
-      if (a.status === 2 && b.status !== 2) return -1;
-      if (a.status !== 2 && b.status === 2) return 1;
-  
-      if (a.startDate === b.startDate) {
-       return sortByCreatedDate(a,b)
-      }
-  
-      const dateA = new Date(a.startDate!).getTime();
-      const dateB = new Date(b.startDate!).getTime();
-      return dateB - dateA;
-    });
-
-  const filmIndexes = getFilmIndexes(sortedReviews).reverse();
+  const filmIndexes = getFilmIndexes(reviews).reverse();
 
   useEffect(() => {
     getUser();
@@ -100,7 +79,7 @@ const AllUserReviews = () => {
         <p className="text-gray-600">{user?.username} не оставил ни одного отзыва.</p>
       ) : (
         <ul className="space-y-6">
-          {sortedReviews.map((review, index) => (
+          {reviews.map((review, index) => (
             <li className="flex items-center gap-3" key={review.id}>
               <ReviewCardForOtherUser
                 index={filmIndexes[index]}

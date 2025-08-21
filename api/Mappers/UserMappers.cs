@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using api.DTOs;
+using api.Enums;
 using api.Models;
 
 namespace api.Mappers
@@ -14,7 +12,10 @@ namespace api.Mappers
             return new UserDto
             {
                 Username = appUser.UserName!,
-                Reviews = appUser.Reviews.Select(x => x.ToReviewDtoFromOther()).ToList(),
+                Reviews = appUser.Reviews
+                .OrderByDescending(x => x.Status == ReviewStatus.Planned)
+                .ThenByDescending(x => x.StartDate).ThenByDescending(x => x.CreatedAt)
+                .Select(x => x.ToReviewDtoFromOther()).ToList(),
                 TopLists = appUser.TopLists.Select(x => x.ToDto()).ToList(),
             };
         }
