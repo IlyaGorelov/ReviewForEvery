@@ -6,6 +6,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  TouchSensor,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -69,7 +70,15 @@ export default function TopListPage() {
   const [films, setFilms] = useState<TopListFilmGet[]>([]);
   const [topList, setTopList] = useState<TopListGet | null>(null);
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5,
+      },
+    })
+  );
 
   async function getTopList() {
     await getTopListByIdApi(Number(topListId))
