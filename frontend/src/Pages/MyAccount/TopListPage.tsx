@@ -48,7 +48,10 @@ function SortableFilm({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  };
+    touchAction: "none",    
+    WebkitUserDrag: "none",  
+    userSelect: "none",
+  } as React.CSSProperties;
 
   return (
     <div style={style}>
