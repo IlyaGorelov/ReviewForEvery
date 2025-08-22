@@ -8,27 +8,31 @@ import { set } from "react-hook-form";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [filmsData, setFilmsData] = useState<FilmGet[]>([]);
 
   const getFilms = async (reset = false) => {
     const pageSize = 20;
-    const currentPage = reset ? 1 : page;
+    const currentPage = reset ? 1 : Math.floor(filmsData.length / pageSize) + 1;;
 
-    const res = await getAllFilmsApi(currentPage, pageSize, query).catch((e) => {
-      toast.warning("No films found");
-    });
+    const res = await getAllFilmsApi(currentPage, pageSize, query).catch(
+      (e) => {
+        toast.warning("No films found");
+      }
+    );
 
     if (res?.data) {
       if (reset) {
         setFilmsData(res.data.items);
       } else {
         setFilmsData((prev) => [...prev, ...res.data.items]);
-        setPage((prev) => prev + 1);
       }
 
-      if ((reset ? res.data.items.length : filmsData.length + res.data.items.length) >= res.data.totalCount) {
+      if (
+        (reset
+          ? res.data.items.length
+          : filmsData.length + res.data.items.length) >= res.data.totalCount
+      ) {
         setHasMore(false);
       } else {
         setHasMore(true);
