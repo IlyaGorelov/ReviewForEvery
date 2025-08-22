@@ -75,12 +75,6 @@ export default function TopListPage() {
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 150,
-        tolerance: 5,
-      },
-    })
   );
 
   async function getTopList() {
