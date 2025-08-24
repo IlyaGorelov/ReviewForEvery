@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Context;
+using api.DTOs;
 using api.DTOs.TopListFilm;
 using api.Mappers;
 using api.Models;
@@ -30,10 +31,13 @@ namespace api.Controllers
         [Authorize]
         public async Task<IActionResult> GetAllTopFilms(int topListId)
         {
-            var topList = await _context.TopLists.Include(x=>x.TopListFilms).FirstOrDefaultAsync(x=>x.Id==topListId);
+            var topList = await _context.TopLists
+            .Include(x => x.TopListFilms).ThenInclude(x => x.Film).FirstOrDefaultAsync(x => x.Id == topListId);
             if (topList == null) return NotFound("No top list");
-            
-            var films =  topList.TopListFilms.Select(x => x.ToDto()).ToList();
+
+            var films = topList.TopListFilms
+            .Select(x => x.ToDto())
+            .ToList();
 
             return Ok(films);
         }

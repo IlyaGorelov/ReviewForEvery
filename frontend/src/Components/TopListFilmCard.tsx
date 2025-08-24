@@ -28,15 +28,15 @@ export default function TopListFilmCard({
   isDragging,
   onSuccess,
 }: Props) {
-  const [film, setFilm] = useState<FilmGet | null>(null);
+  // const [film, setFilm] = useState<FilmGet | null>(null);
 
-  async function getFilm() {
-    await getFilmByIdApi(topListfilm.filmId)
-      .then((res) => {
-        if (res?.data) setFilm(res.data);
-      })
-      .catch((e) => toast.error("Unexpected error"));
-  }
+  // async function getFilm() {
+  //   await getFilmByIdApi(topListfilm.filmId)
+  //     .then((res) => {
+  //       if (res?.data) setFilm(res.data);
+  //     })
+  //     .catch((e) => toast.error("Unexpected error"));
+  // }
 
   async function deleteTopFilm(e: React.MouseEvent) {
     if (window.confirm("Ты уверен?")) {
@@ -46,9 +46,9 @@ export default function TopListFilmCard({
     }
   }
 
-  useEffect(() => {
-    getFilm();
-  }, [topListfilm.filmId]);
+  // useEffect(() => {
+  //   getFilm();
+  // }, [topListfilm.filmId]);
 
   return (
     <div
@@ -66,8 +66,8 @@ export default function TopListFilmCard({
           Удалить
         </button>
         <img
-          src={film?.imageUrl}
-          alt={film?.title}
+          src={topListfilm.film.imageUrl}
+          alt={topListfilm.film.title}
           className="h-full w-full object-cover rounded-lg shadow-md"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
@@ -78,11 +78,11 @@ export default function TopListFilmCard({
           {...listeners}
           className="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition flex flex-col justify-center items-center text-white rounded-lg text-center px-2"
         >
-          <h3 className="text-lg md:text-2xl font-semibold">{film?.title}</h3>
+          <h3 className="text-lg md:text-2xl font-semibold">{topListfilm.film.title}</h3>
           {topListfilm.comment && (
             <h3 className="text-lg md:text-xl">{topListfilm.comment}</h3>
           )}
-          <p className="text-lg mt-1">⭐ {film?.rating} / 10</p>
+          {/* <p className="text-lg mt-1">⭐ {topListfilm.film.rating} / 10</p> */}
         </div>
       </div>
       <div className="mt-2 flex justify-center">

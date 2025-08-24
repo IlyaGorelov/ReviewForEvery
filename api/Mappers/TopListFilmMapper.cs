@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.DTOs;
 using api.DTOs.TopListFilm;
 using api.Models;
 
@@ -26,6 +27,7 @@ namespace api.Mappers
             {
                 Id = model.Id,
                 FilmId = model.FilmId,
+                Film = model.Film?.ToFilmDto(),
                 Position = model.Position,
                 Comment = model.Comment,
             };

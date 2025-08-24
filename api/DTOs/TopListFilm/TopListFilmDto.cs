@@ -9,6 +9,7 @@ namespace api.DTOs.TopListFilm
     {
         public int Id { get; set; }
         public int FilmId { get; set; }
+        public FilmDto? Film { get; set; }
         public int Position { get; set; }
         public string? Comment { get; set; }
     }

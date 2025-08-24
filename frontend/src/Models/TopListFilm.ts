@@ -1,7 +1,10 @@
+import { FilmGet } from "./Film"
+
 export type TopListFilmGet = {
     id:number,
     filmId:number,
-    position: number
+    film: FilmGet,
+    position: number,
     comment:string
 }
 

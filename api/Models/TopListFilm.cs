@@ -11,6 +11,7 @@ namespace api.Models
         [Key]
         public int Id { get; set; }
         public int FilmId { get; set; }
+        public FilmModel? Film {get; set; }
         public int Position { get; set; }
         public string? Comment { get; set; }
 

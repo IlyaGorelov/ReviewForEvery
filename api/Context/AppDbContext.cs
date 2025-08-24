@@ -68,6 +68,12 @@ namespace api.Context
             .WithMany(u => u.TopListFilms)
             .HasForeignKey(r => r.TopListId)
             .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<TopListFilm>()
+            .HasOne(r => r.Film)
+            .WithMany(u => u.TopListFilms)
+            .HasForeignKey(r => r.FilmId)
+            .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
