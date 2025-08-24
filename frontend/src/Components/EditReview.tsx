@@ -101,9 +101,11 @@ const EditReview = ({
   }, [status, setValue]);
 
   const deleteReview = async () => {
-    await deleteMyReviewAPI(reviewId);
-    onSuccess();
-    onClose();
+    if (window.confirm("Ты уверен?")) {
+      await deleteMyReviewAPI(reviewId);
+      onSuccess();
+      onClose();
+    }
   };
 
   const onSubmit = async (form: ReviewFormsInput) => {
