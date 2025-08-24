@@ -48,7 +48,7 @@ export default function TopListFilmCard({
 
   useEffect(() => {
     getFilm();
-  }, []);
+  }, [topListfilm.filmId]);
 
   return (
     <div

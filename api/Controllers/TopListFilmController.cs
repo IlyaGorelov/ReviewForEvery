@@ -32,7 +32,7 @@ namespace api.Controllers
         {
             var topList = await _context.TopLists.Include(x=>x.TopListFilms).FirstOrDefaultAsync(x=>x.Id==topListId);
             if (topList == null) return NotFound("No top list");
-
+            
             var films =  topList.TopListFilms.Select(x => x.ToDto()).ToList();
 
             return Ok(films);
