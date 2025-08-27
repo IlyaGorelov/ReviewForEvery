@@ -11,42 +11,6 @@ import ReviewCard from "../../Components/ReviewCard";
 const AllMyReviews = () => {
   const [reviews, setReviews] = useState<ReviewGet[]>([]);
 
-  const getFilmIndexes = (reviews: ReviewGet[]) => {
-    const typeToFilmIndexMap = new Map<number, Map<number, number>>();
-    const typeCounters = new Map<number, number>();
-    const result: number[] = [];
-
-    for (const review of reviews) {
-      const type = review.film?.filmCategory || 0;
-      const filmId = review.filmId;
-
-      if (!typeToFilmIndexMap.has(type)) {
-        typeToFilmIndexMap.set(type, new Map());
-        typeCounters.set(type, 1);
-      }
-
-      const filmMap = typeToFilmIndexMap.get(type)!;
-      let counter = typeCounters.get(type)!;
-
-      if (filmId != null) {
-        if (!filmMap.has(filmId)) {
-          filmMap.set(filmId, counter);
-          typeCounters.set(type, counter + 1);
-        }
-
-        result.push(filmMap.get(filmId)!);
-      } else {
-        // Без filmId – просто используем текущий счётчик для типа
-        result.push(counter);
-        typeCounters.set(type, counter + 1);
-      }
-    }
-
-    return result;
-  };
-
-  const filmIndexes = getFilmIndexes(reviews).reverse();
-
   const fetchReviews = async () => {
     try {
       const response = await getAllMyReviewsApi();
@@ -84,7 +48,7 @@ const AllMyReviews = () => {
           {reviews.map((review, index) => (
             <li className="flex items-center gap-3" key={review.id}>
               <ReviewCard
-                index={filmIndexes[index]}
+                index={reviews.length-index}
                 fetchReviews={fetchReviews}
                 review={review}
                 handleDelete={() => handleDelete(review.id)}

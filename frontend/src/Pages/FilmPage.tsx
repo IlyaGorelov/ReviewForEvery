@@ -77,6 +77,8 @@ export default function FilmPage() {
         return "Мультик";
       case 4:
         return "Книга";
+      case 5:
+        return "Игра";
     }
   }
 
