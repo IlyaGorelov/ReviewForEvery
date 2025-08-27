@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using api.Context;
 using api.DTOs;
 using api.DTOs.TopListFilm;
+using api.Extensions;
 using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -31,15 +32,18 @@ namespace api.Controllers
         [Authorize]
         public async Task<IActionResult> GetAllTopFilms(int topListId)
         {
+            var username = User.GetUsername();
+
             var topList = await _context.TopLists
-            .Include(x => x.TopListFilms).ThenInclude(x => x.Film).FirstOrDefaultAsync(x => x.Id == topListId);
+            .Include(x => x.TopListFilms).ThenInclude(x => x.Film!)
+            .ThenInclude(x => x!.Reviews.Where(x=>x.Author==username))
+            .FirstOrDefaultAsync(x => x.Id == topListId);
+
             if (topList == null) return NotFound("No top list");
 
-            var films = topList.TopListFilms
-            .Select(x => x.ToDto())
-            .ToList();
+            
 
-            return Ok(films);
+            return Ok(topList.TopListFilms);
         }
 
         [HttpGet("{id:int}")]
@@ -63,7 +67,7 @@ namespace api.Controllers
             var topListFilm = dto.ToFilmFromCreateDto();
             topListFilm.TopList = topList;
 
-            var exists = await _context.TopListFIlms.FirstOrDefaultAsync(x => x.Position == topListFilm.Position);
+            var exists = await _context.TopListFIlms.FirstOrDefaultAsync(x => x.Position == topListFilm.Position && x.TopListId == topListFilm.TopListId);
 
             if (exists != null) return BadRequest("Postion is already taken");
 

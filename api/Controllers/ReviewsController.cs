@@ -74,6 +74,7 @@ namespace api.Controllers
         public async Task<IActionResult> GetAllMyReviews()
         {
             var username = User.GetUsername();
+
             var reviews = await _context.Reviews
             .OrderByDescending(x => x.Status == ReviewStatus.Planned).
             ThenByDescending(x => x.StartDate).ThenByDescending(x => x.CreatedAt)

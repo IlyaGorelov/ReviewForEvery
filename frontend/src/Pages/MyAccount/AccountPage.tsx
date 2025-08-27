@@ -17,12 +17,11 @@ export const AccountPage = () => {
   };
 
   const deleteAccount = async () => {
-    if (window.confirm("Ты уверен?")) {
       const userId = window.prompt("User name?");
       await deleteAnyAccountApi(String(userId)).catch((e) => {
         toast.error("Oops!");
       });
-    }
+    
   };
 
   return (

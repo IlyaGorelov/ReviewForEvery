@@ -37,7 +37,7 @@ export const UserProvider = ({ children }: Props) => {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
     setIsReady(true);
-  }, []);
+  }, [token]);
 
   const registerUser = async (
     email: string,
@@ -91,6 +91,7 @@ export const UserProvider = ({ children }: Props) => {
     localStorage.removeItem("role");
     setUser(null);
     setToken("");
+    setRole("");
     navigate("/");
   };
 
