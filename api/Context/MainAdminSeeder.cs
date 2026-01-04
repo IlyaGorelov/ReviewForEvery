@@ -31,7 +31,7 @@ namespace api.Context
 
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(newAdmin, "MainAdmin");   
+                    await userManager.AddToRoleAsync(newAdmin, "MainAdmin");
                 }
             }
         }

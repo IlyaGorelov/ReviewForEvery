@@ -36,7 +36,7 @@ namespace api.Service
 
             foreach (var role in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));   
+                claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
@@ -44,7 +44,7 @@ namespace api.Service
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(30),
                 SigningCredentials = creds,
                 Issuer = _config["JWT:Issuer"],
                 Audience = _config["JWT:Audience"],

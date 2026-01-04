@@ -6,16 +6,16 @@ import { postTopListFilmApi } from "../Services/TopListFIlmService";
 import { useParams } from "react-router-dom";
 
 type Props = {
-  position: number;
   onSuccess: () => void;
 };
 
-export default function AddTopListFilm({ position, onSuccess }: Props) {
+export default function AddTopListFilm({ onSuccess }: Props) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedFilm, setSelectedFilm] = useState<number>();
   const [comment, setComment] = useState("");
   const [films, setFilms] = useState<FilmGet[]>([]);
   const [query, setQuery] = useState("");
+  const [position, setPosition] = useState<number>(0);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const { id } = useParams();
 
@@ -111,6 +111,18 @@ export default function AddTopListFilm({ position, onSuccess }: Props) {
                 ))}
               </ul>
             )}
+
+            <label className="block text-sm mb-2 font-semibold text-gray-700">
+              Позиция:
+            </label>
+            <input
+              className="w-full border border-gray-400 rounded px-2 py-1 mb-4 resize-none"
+              value={position}
+              type="number"
+              onChange={(e) => setPosition(Number(e.target.value))}
+              placeholder="Введите позицию..."
+              
+            />
 
             <label className="block text-sm mb-2 font-semibold text-gray-700">
               Комментарий (если нужно):

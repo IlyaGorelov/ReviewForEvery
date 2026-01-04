@@ -22,7 +22,15 @@ if (connectionString == null)
     connectionString = Environment.GetEnvironmentVariable("DefaultConnection", EnvironmentVariableTarget.User);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString,
+    npgsql =>
+{
+    npgsql.EnableRetryOnFailure(
+        maxRetryCount: 5,
+        maxRetryDelay: TimeSpan.FromSeconds(10),
+        errorCodesToAdd: null);
+}
+));
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
@@ -94,7 +102,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-await app.SeedAdminAsync();
+await MainAdminSeeder.SeedAdminAsync(app);
+
 
 app.Run();
 
