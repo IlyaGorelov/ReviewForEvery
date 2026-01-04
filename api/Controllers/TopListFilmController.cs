@@ -36,12 +36,12 @@ namespace api.Controllers
 
             var topList = await _context.TopLists
             .Include(x => x.TopListFilms).ThenInclude(x => x.Film!)
-            .ThenInclude(x => x!.Reviews.Where(x=>x.Author==username))
+            .ThenInclude(x => x!.Reviews.Where(x => x.Author == username))
             .FirstOrDefaultAsync(x => x.Id == topListId);
 
             if (topList == null) return NotFound("No top list");
 
-            
+
 
             return Ok(topList.TopListFilms);
         }
@@ -61,20 +61,34 @@ namespace api.Controllers
         public async Task<IActionResult> CreateTopListFilm(CreateTopListFilmDto dto)
         {
             var topList = await _context.TopLists.FindAsync(dto.TopListId);
-
             if (topList == null) return NotFound("Top list not found");
 
-            var topListFilm = dto.ToFilmFromCreateDto();
-            topListFilm.TopList = topList;
+            if (dto.Position < 1) dto.Position = 1;
 
-            var exists = await _context.TopListFIlms.FirstOrDefaultAsync(x => x.Position == topListFilm.Position && x.TopListId == topListFilm.TopListId);
+            await using var tx = await _context.Database.BeginTransactionAsync();
 
-            if (exists != null) return BadRequest("Postion is already taken");
+            try
+            {
+                await _context.TopListFIlms
+                    .Where(x => x.TopListId == dto.TopListId && x.Position >= dto.Position)
+                    .ExecuteUpdateAsync(s => s.SetProperty(x => x.Position, x => x.Position + 1));
 
-            _context.TopListFIlms.Add(topListFilm);
-            await _context.SaveChangesAsync();
+                var topListFilm = dto.ToFilmFromCreateDto();
+                topListFilm.TopListId = dto.TopListId;
+                topListFilm.TopList = topList;
 
-            return CreatedAtAction(nameof(GetTopFilmById), new { id = topListFilm.Id }, topListFilm);
+                _context.TopListFIlms.Add(topListFilm);
+                await _context.SaveChangesAsync();
+
+                await tx.CommitAsync();
+
+                return CreatedAtAction(nameof(GetTopFilmById), new { id = topListFilm.Id }, topListFilm);
+            }
+            catch
+            {
+                await tx.RollbackAsync();
+                throw;
+            }
         }
 
         [HttpDelete("{id:int}")]
