@@ -65,8 +65,6 @@ namespace api.Controllers
 
             if (dto.Position < 1) dto.Position = 1;
 
-            await using var tx = await _context.Database.BeginTransactionAsync();
-
             var strategy = _context.Database.CreateExecutionStrategy();
 
             return await strategy.ExecuteAsync(async () =>
