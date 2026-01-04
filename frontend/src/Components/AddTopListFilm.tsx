@@ -43,6 +43,7 @@ export default function AddTopListFilm({ onSuccess }: Props) {
 
     postTopListFilmApi(selectedFilm, position, Number(id), comment)
       .then(() => {
+        console.log("position state:", position);
         setShowAddForm(false);
         onSuccess();
       })
