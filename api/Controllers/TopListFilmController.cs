@@ -67,28 +67,34 @@ namespace api.Controllers
 
             await using var tx = await _context.Database.BeginTransactionAsync();
 
-            try
+            var strategy = _context.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
             {
-                await _context.TopListFIlms
-                    .Where(x => x.TopListId == dto.TopListId && x.Position >= dto.Position)
-                    .ExecuteUpdateAsync(s => s.SetProperty(x => x.Position, x => x.Position + 1));
+                await using var tx = await _context.Database.BeginTransactionAsync();
 
-                var topListFilm = dto.ToFilmFromCreateDto();
-                topListFilm.TopListId = dto.TopListId;
-                topListFilm.TopList = topList;
+                try
+                {
+                    await _context.TopListFIlms
+                        .Where(x => x.TopListId == dto.TopListId && x.Position >= dto.Position)
+                        .ExecuteUpdateAsync(s => s.SetProperty(x => x.Position, x => x.Position + 1));
 
-                _context.TopListFIlms.Add(topListFilm);
-                await _context.SaveChangesAsync();
+                    var topListFilm = dto.ToFilmFromCreateDto();
+                    topListFilm.TopListId = dto.TopListId;
 
-                await tx.CommitAsync();
+                    _context.TopListFIlms.Add(topListFilm);
+                    await _context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetTopFilmById), new { id = topListFilm.Id }, topListFilm);
-            }
-            catch
-            {
-                await tx.RollbackAsync();
-                throw;
-            }
+                    await tx.CommitAsync();
+
+                    return CreatedAtAction(nameof(GetTopFilmById), new { id = topListFilm.Id }, topListFilm);
+                }
+                catch
+                {
+                    await tx.RollbackAsync();
+                    throw;
+                }
+            });
         }
 
         [HttpDelete("{id:int}")]

@@ -19,9 +19,8 @@ export default function AddTopListFilm({ onSuccess }: Props) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const { id } = useParams();
 
-
   const fetchFilms = async () => {
-    await getAllFilmsApi(1,20,query)
+    await getAllFilmsApi(1, 20, query)
       .then((res) => {
         if (res?.data) setFilms(res.data.items);
       })
@@ -119,9 +118,9 @@ export default function AddTopListFilm({ onSuccess }: Props) {
               className="w-full border border-gray-400 rounded px-2 py-1 mb-4 resize-none"
               value={position}
               type="number"
+              min={1}
               onChange={(e) => setPosition(Number(e.target.value))}
               placeholder="Введите позицию..."
-              
             />
 
             <label className="block text-sm mb-2 font-semibold text-gray-700">
