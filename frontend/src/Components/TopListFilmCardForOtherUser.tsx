@@ -13,7 +13,7 @@ interface Props {
   position: number;
 }
 
-export default function TopListFilmCardForOtherUser({
+export default function TopListFilmCardWithoutDnD({
   topListfilm,
   position,
 }: Props) {
@@ -47,11 +47,12 @@ export default function TopListFilmCardForOtherUser({
           onClick={() => navigate(`/film/${topListfilm.film.id}`)}
           className="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition flex flex-col justify-center items-center text-white rounded-lg text-center px-2"
         >
-          <h3 className="text-lg md:text-3xl font-semibold">{topListfilm.film.title}</h3>
+          <h3 className="text-lg md:text-3xl font-semibold">
+            {topListfilm.film.title}
+          </h3>
           {topListfilm.comment && (
             <h3 className="text-lg md:text-xl">{topListfilm.comment}</h3>
           )}
-        
         </div>
       </div>
       <div className="mt-2 flex justify-center">

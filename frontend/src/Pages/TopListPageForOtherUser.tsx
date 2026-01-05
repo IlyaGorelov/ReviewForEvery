@@ -25,7 +25,7 @@ import {
   updateTopListFilmApi,
 } from "../Services/TopListFIlmService";
 import { TopListFilmGet } from "../Models/TopListFilm";
-import TopListFilmCardForOtherUser from "../Components/TopListFilmCardForOtherUser";
+import TopListFilmCardWithoutDnD from "../Components/TopListFilmCardForOtherUser";
 
 export default function TopListPageForOtherUser() {
   const { listId } = useParams();
@@ -86,12 +86,11 @@ export default function TopListPageForOtherUser() {
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">{topList?.name}</h1>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {films.map((film, index) => (
-              <TopListFilmCardForOtherUser topListfilm={film} position={index+1}
-              />
-            ))}
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {films.map((film, index) => (
+          <TopListFilmCardWithoutDnD topListfilm={film} position={index + 1} />
+        ))}
+      </div>
     </div>
   );
 }

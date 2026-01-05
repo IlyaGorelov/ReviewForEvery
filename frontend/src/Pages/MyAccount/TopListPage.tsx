@@ -32,11 +32,13 @@ function SortableFilm({
   index,
   onSuccess,
   disabled,
+  isEditing,
 }: {
   film: TopListFilmGet;
   index: number;
   onSuccess: () => void;
   disabled: boolean;
+  isEditing: boolean;
 }) {
   const {
     attributes,
@@ -55,17 +57,27 @@ function SortableFilm({
     userSelect: "none",
   } as React.CSSProperties;
 
+  const delayClass = ["delay-0", "delay-75", "delay-150", "delay-200"][
+    index % 4
+  ];
+
   return (
-    <div style={style}>
-      <TopListFilmCard
-        topListfilm={film}
-        position={index + 1}
-        refNode={setNodeRef}
-        listeners={listeners}
-        attributes={attributes}
-        isDragging={isDragging}
-        onSuccess={onSuccess}
-      />
+    <div style={style} ref={setNodeRef}>
+      <div
+        className={[
+          isEditing && !isDragging ? `animate-jiggle ${delayClass}` : "",
+        ].join(" ")}
+      >
+        <TopListFilmCard
+          topListfilm={film}
+          position={index + 1}
+          refNode={setNodeRef}
+          listeners={listeners}
+          attributes={attributes}
+          isDragging={isDragging}
+          onSuccess={onSuccess}
+        />
+      </div>
     </div>
   );
 }
@@ -210,6 +222,7 @@ export default function TopListPage() {
                   index={index}
                   onSuccess={fetchFilms}
                   disabled={false}
+                  isEditing={isEditing}
                 />
               ))}
             </SortableContext>
