@@ -26,6 +26,7 @@ import {
   updateTopListFilmApi,
 } from "../../Services/TopListFIlmService";
 import AddTopListFilm from "../../Components/AddTopListFilm";
+import { Spinner } from "../../Components/Loader";
 
 function SortableFilm({
   film,
@@ -89,6 +90,7 @@ export default function TopListPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [originalFilms, setOriginalFilms] = useState<TopListFilmGet[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const sensors = useSensors(
     useSensor(TouchSensor, {
@@ -120,6 +122,7 @@ export default function TopListPage() {
   }, [topListId]);
 
   const fetchFilms = async () => {
+    setIsLoading(true);
     await getAllTopFilmsApi(Number(topListId))
       .then((res) => {
         if (res?.data) {
@@ -128,7 +131,8 @@ export default function TopListPage() {
           if (!isEditing) setOriginalFilms(sorted);
         }
       })
-      .catch((e) => toast.error("Unexpected error"));
+      .catch((e) => toast.error("Unexpected error"))
+      .finally(() => setIsLoading(false));
   };
 
   const handleDragEnd = async (event: any) => {
@@ -204,46 +208,52 @@ export default function TopListPage() {
         )}
       </div>
 
-      {isEditing ? (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <SortableContext
-              items={films.map((f) => f.id)}
-              strategy={rectSortingStrategy}
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <>
+          {isEditing ? (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
             >
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <SortableContext
+                  items={films.map((f) => f.id)}
+                  strategy={rectSortingStrategy}
+                >
+                  {films.map((film, index) => (
+                    <SortableFilm
+                      key={film.id}
+                      film={film}
+                      index={index}
+                      onSuccess={fetchFilms}
+                      disabled={false}
+                      isEditing={isEditing}
+                    />
+                  ))}
+                </SortableContext>
+              </div>
+            </DndContext>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {films.map((film, index) => (
-                <SortableFilm
+                <TopListFilmCard
                   key={film.id}
-                  film={film}
-                  index={index}
+                  topListfilm={film}
+                  attributes={undefined}
+                  listeners={undefined}
+                  isDragging={false}
+                  refNode={() => {}}
+                  position={index + 1}
                   onSuccess={fetchFilms}
-                  disabled={false}
-                  isEditing={isEditing}
                 />
               ))}
-            </SortableContext>
-          </div>
-        </DndContext>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {films.map((film, index) => (
-            <TopListFilmCard
-              key={film.id}
-              topListfilm={film}
-              attributes={undefined}
-              listeners={undefined}
-              isDragging={false}
-              refNode={() => {}}
-              position={index + 1}
-              onSuccess={fetchFilms}
-            />
-          ))}
-          <AddTopListFilm onSuccess={fetchFilms} />
-        </div>
+              <AddTopListFilm onSuccess={fetchFilms} />
+            </div>
+          )}
+        </>
       )}
     </div>
   );
