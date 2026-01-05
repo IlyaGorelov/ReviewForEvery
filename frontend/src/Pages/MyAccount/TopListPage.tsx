@@ -192,29 +192,46 @@ export default function TopListPage() {
         )}
       </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={isEditing ? handleDragEnd : undefined}
-      >
+      {isEditing ? (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <SortableContext
+              items={films.map((f) => f.id)}
+              strategy={rectSortingStrategy}
+            >
+              {films.map((film, index) => (
+                <SortableFilm
+                  key={film.id}
+                  film={film}
+                  index={index}
+                  onSuccess={fetchFilms}
+                  disabled={false}
+                />
+              ))}
+            </SortableContext>
+          </div>
+        </DndContext>
+      ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <SortableContext
-            items={films.map((f) => f.id)}
-            strategy={rectSortingStrategy}
-          >
-            {films.map((film, index) => (
-              <SortableFilm
-                key={film.id}
-                film={film}
-                index={index}
-                onSuccess={fetchFilms}
-                disabled={!isEditing}
-              />
-            ))}
-          </SortableContext>
-          {!isEditing && <AddTopListFilm onSuccess={fetchFilms} />}
+          {films.map((film, index) => (
+            <TopListFilmCard
+              key={film.id}
+              topListfilm={film}
+              attributes={undefined}
+              listeners={undefined}
+              isDragging={false}
+              refNode={() => {}}
+              position={index + 1}
+              onSuccess={fetchFilms}
+            />
+          ))}
+          <AddTopListFilm onSuccess={fetchFilms} />
         </div>
-      </DndContext>
+      )}
     </div>
   );
 }
