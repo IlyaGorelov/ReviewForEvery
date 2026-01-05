@@ -7,11 +7,14 @@ import {
 } from "../../Services/ReviewService";
 import { ReviewGet } from "../../Models/Review";
 import ReviewCard from "../../Components/ReviewCard";
+import { Spinner } from "../../Components/Loader";
 
 const AllMyReviews = () => {
   const [reviews, setReviews] = useState<ReviewGet[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchReviews = async () => {
+    setIsLoading(true);
     try {
       const response = await getAllMyReviewsApi();
       if (response?.data) {
@@ -19,6 +22,8 @@ const AllMyReviews = () => {
       }
     } catch (error) {
       toast.error("Не удалось загрузить отзывы");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -41,21 +46,29 @@ const AllMyReviews = () => {
     <div className="max-w-4xl mx-auto py-8 px-4">
       <h1 className="text-3xl font-bold mb-6">Мои отзывы</h1>
 
-      {reviews.length === 0 ? (
-        <p className="text-gray-600">Вы ещё не оставили ни одного отзыва.</p>
+      {isLoading ? (
+        <Spinner />
       ) : (
-        <ul className="space-y-6">
-          {reviews.map((review, index) => (
-            <li className="flex items-center gap-3" key={review.id}>
-              <ReviewCard
-                index={reviews.length-index}
-                fetchReviews={fetchReviews}
-                review={review}
-                handleDelete={() => handleDelete(review.id)}
-              />
-            </li>
-          ))}
-        </ul>
+        <>
+          {reviews.length === 0 ? (
+            <p className="text-gray-600">
+              Вы ещё не оставили ни одного отзыва.
+            </p>
+          ) : (
+            <ul className="space-y-6">
+              {reviews.map((review, index) => (
+                <li className="flex items-center gap-3" key={review.id}>
+                  <ReviewCard
+                    index={reviews.length - index}
+                    fetchReviews={fetchReviews}
+                    review={review}
+                    handleDelete={() => handleDelete(review.id)}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </div>
   );

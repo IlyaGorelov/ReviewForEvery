@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { getAllMyTopListsApi, postTopListAPI } from "../../Services/TopListService";
+import {
+  getAllMyTopListsApi,
+  postTopListAPI,
+} from "../../Services/TopListService";
 import { TopListGet } from "../../Models/TopList";
 import { toast } from "react-toastify";
 import TopListCard from "../../Components/TopListCard";
 import AddTopListFilm from "../../Components/AddTopListFilm";
+import { Spinner } from "../../Components/Loader";
 
 type Props = {};
 
 const TopListsPage = (props: Props) => {
   const [newName, setNewName] = useState("");
   const [topLists, setTopLists] = useState<TopListGet[] | null>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getTopLists = async () => {
+    setIsLoading(true);
     await getAllMyTopListsApi()
       .then((res) => {
         if (res?.data) {
@@ -20,7 +26,8 @@ const TopListsPage = (props: Props) => {
       })
       .catch((e) => {
         toast.error("Unexpected error");
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const createTop = async (name: string) => {
@@ -55,11 +62,17 @@ const TopListsPage = (props: Props) => {
         </button>
       </div>
 
-      <div className="grid gap-4">
-        {topLists?.map((list:TopListGet) => (
-          <TopListCard key={list.id} list={list} onUpdated={getTopLists}/>
-        ))}
-      </div>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <>
+          <div className="grid gap-4">
+            {topLists?.map((list: TopListGet) => (
+              <TopListCard key={list.id} list={list} onUpdated={getTopLists} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { FilmGet } from "../Models/Film";
 import { getAllFilmsApi } from "../Services/FilmService";
 import { toast } from "react-toastify";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { set } from "react-hook-form";
+import { Spinner } from "../Components/Loader";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -13,7 +13,7 @@ export default function SearchPage() {
 
   const getFilms = async (reset = false) => {
     const pageSize = 20;
-    const currentPage = reset ? 1 : Math.floor(filmsData.length / pageSize) + 1;;
+    const currentPage = reset ? 1 : Math.floor(filmsData.length / pageSize) + 1;
 
     const res = await getAllFilmsApi(currentPage, pageSize, query).catch(
       (e) => {
@@ -45,7 +45,7 @@ export default function SearchPage() {
   }, []);
 
   useEffect(() => {
-      getFilms(true);
+    getFilms(true);
   }, [query]);
 
   return (
@@ -65,7 +65,7 @@ export default function SearchPage() {
         dataLength={filmsData.length}
         next={getFilms}
         hasMore={hasMore}
-        loader={<h4>Loading...</h4>}
+        loader={<Spinner />}
       >
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {filmsData === null ? (
