@@ -78,7 +78,19 @@ export default function TopListPage() {
   const [originalFilms, setOriginalFilms] = useState<TopListFilmGet[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 8,
+      },
+    }),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   async function getTopList() {
     await getTopListByIdApi(Number(topListId))
@@ -181,7 +193,7 @@ export default function TopListPage() {
       </div>
 
       <DndContext
-        sensors={isEditing ? sensors : undefined}
+        sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={isEditing ? handleDragEnd : undefined}
       >
