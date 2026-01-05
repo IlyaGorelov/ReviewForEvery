@@ -119,7 +119,7 @@ export default function AddTopListFilm({ onSuccess }: Props) {
               className="w-full border border-gray-400 rounded px-2 py-1 mb-4 resize-none"
               value={position}
               type="number"
-              min={1}
+              min="1"
               onChange={(e) => setPosition(Number(e.target.value))}
               placeholder="Введите позицию..."
             />
@@ -129,7 +129,7 @@ export default function AddTopListFilm({ onSuccess }: Props) {
             </label>
             <textarea
               className="w-full border border-gray-400 rounded px-2 py-1 mb-4 resize-none"
-              rows={3}
+              rows={2}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Введите комментарий..."
