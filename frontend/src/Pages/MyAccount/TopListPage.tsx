@@ -181,7 +181,7 @@ export default function TopListPage() {
       </div>
 
       <DndContext
-        sensors={sensors}
+        sensors={isEditing ? sensors : undefined}
         collisionDetection={closestCenter}
         onDragEnd={isEditing ? handleDragEnd : undefined}
       >

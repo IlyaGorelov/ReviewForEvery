@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,15 +23,11 @@ if (connectionString == null)
     connectionString = Environment.GetEnvironmentVariable("DefaultConnection", EnvironmentVariableTarget.User);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString,
-    npgsql =>
 {
-    npgsql.EnableRetryOnFailure(
-        maxRetryCount: 5,
-        maxRetryDelay: TimeSpan.FromSeconds(10),
-        errorCodesToAdd: null);
-}
-));
+    options.UseNpgsql(connectionString);
+    options.EnableSensitiveDataLogging(); // только для dev
+    options.LogTo(Console.WriteLine, LogLevel.Information);
+});
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
@@ -101,6 +98,16 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    var canConnect = await db.Database.CanConnectAsync();
+    Console.WriteLine($"DB can connect: {canConnect}");
+}
+
+
 
 await MainAdminSeeder.SeedAdminAsync(app);
 
