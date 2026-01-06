@@ -22,6 +22,7 @@ import { TopListGet } from "../../Models/TopList";
 import { getTopListByIdApi } from "../../Services/TopListService";
 import {
   getAllTopFilmsApi,
+  reorderTopListFilmsApi,
   updateTopListFilmApi,
 } from "../../Services/TopListFIlmService";
 import AddTopListFilm from "../../Components/AddTopListFilm";
@@ -167,17 +168,12 @@ export default function TopListPage() {
               onClick={async () => {
                 setIsSaving(true);
                 try {
-                  const tmpBase = 1000000; // больше, чем возможное кол-во фильмов
+                  const items = films.map((film, index) => ({
+                    id: film.id, // TopListFilm.Id (id строки в таблице TopListFIlms)
+                    position: index + 1,
+                  }));
 
-                  // 1) временные позиции (уникальные)
-                  for (let i = 0; i < films.length; i++) {
-                    await updateTopListFilmApi(films[i].id, tmpBase + i + 1);
-                  }
-
-                  // 2) финальные позиции
-                  for (let i = 0; i < films.length; i++) {
-                    await updateTopListFilmApi(films[i].id, i + 1);
-                  }
+                  await reorderTopListFilmsApi(Number(topListId), items);
 
                   toast.success("Сохранено");
                   setIsEditing(false);

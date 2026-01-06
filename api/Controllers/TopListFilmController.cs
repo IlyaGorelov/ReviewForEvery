@@ -63,8 +63,7 @@ namespace api.Controllers
             var topList = await _context.TopLists.FindAsync(dto.TopListId);
             if (topList == null) return NotFound("Top list not found");
 
-            if (dto.Position < 1) dto.Position = 1;
-            else if (dto.Position > topList.TopListFilms.Count) dto.Position = topList.TopListFilms.Count;
+            dto.Position = Math.Clamp(dto.Position, 1, topList.TopListFilms.Count + 1);
 
             var strategy = _context.Database.CreateExecutionStrategy();
 
@@ -123,6 +122,73 @@ namespace api.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpPut("{topListId:int}/reorder")]
+        [Authorize]
+        public async Task<IActionResult> Reorder(int topListId, [FromBody] List<ReorderListFilmDto> filmsDto)
+        {
+            if (filmsDto == null || filmsDto.Count == 0)
+                return Ok();
+
+            var normalized = filmsDto
+                            .OrderBy(x => x.Position)
+                            .Select((x, i) => new { x.Id, Position = i + 1 })
+                            .ToList();
+
+            var ids = normalized.Select(x => x.Id).ToArray();
+            var pos = normalized.Select(x => x.Position).ToArray();
+
+            var strategy = _context.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
+            {
+                await using var tx = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    await _context.Database.ExecuteSqlRawAsync(
+                        "SELECT pg_advisory_xact_lock({0});",
+                        topListId
+                    );
+
+                    const int tmpBase = 1_000_000;
+
+                    // Фаза 1: уводим позиции из диапазона (избегаем UNIQUE коллизий)
+                    await _context.Database.ExecuteSqlRawAsync(
+                        """
+                UPDATE "TopListFIlms"
+                SET "Position" = {0} + "Position"
+                WHERE "TopListId" = {1} AND "Id" = ANY({2});
+                """,
+                        tmpBase, topListId, ids
+                    );
+
+                    // Фаза 2: ставим финальные позиции одним UPDATE через unnest
+                    var pIds = new Npgsql.NpgsqlParameter<int[]>("p_ids", ids);
+                    var pPos = new Npgsql.NpgsqlParameter<int[]>("p_pos", pos);
+
+                    await _context.Database.ExecuteSqlRawAsync(
+                        """
+                WITH v AS (
+                  SELECT * FROM unnest(@p_ids::int[], @p_pos::int[]) AS t("Id","Position")
+                )
+                UPDATE "TopListFIlms" t
+                SET "Position" = v."Position"
+                FROM v
+                WHERE t."TopListId" = {0} AND t."Id" = v."Id";
+                """,
+                        topListId, pIds, pPos
+                    );
+
+                    await tx.CommitAsync();
+                    return Ok();
+                }
+                catch
+                {
+                    await tx.RollbackAsync();
+                    throw;
+                }
+            });
         }
 
     }

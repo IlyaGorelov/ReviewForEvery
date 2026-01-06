@@ -61,3 +61,14 @@ export const deleteTopFilmApi = async (id: number) => {
     handleError(error);
   }
 };
+
+export const reorderTopListFilmsApi = async (
+  topListId: number,
+  items: { id: number; position: number }[]) => {
+  try {
+    const result = await axios.put(api + `TopListFilm/${topListId}/reorder`, { items });;
+    return result;
+  } catch (error) {
+    handleError(error);
+  }
+};
