@@ -142,15 +142,6 @@ export default function TopListPage() {
 
     const newFilms = arrayMove(films, oldIndex, newIndex);
     setFilms(newFilms);
-
-    const updatedOrder = newFilms.map((film, index) => ({
-      filmId: film.id,
-      position: index + 1,
-    }));
-    for (let i of updatedOrder) {
-      await updateTopListFilmApi(i.filmId, i.position);
-      console.log(i.filmId, i.position);
-    }
   };
 
   return (
@@ -176,13 +167,16 @@ export default function TopListPage() {
               onClick={async () => {
                 setIsSaving(true);
                 try {
-                  const updatedOrder = films.map((film, index) => ({
-                    filmId: film.id,
-                    position: index + 1,
-                  }));
-                  for (let i of updatedOrder) {
-                    await updateTopListFilmApi(i.filmId, i.position);
-                    console.log(i.filmId, i.position);
+                  const tmpBase = 1000000; // больше, чем возможное кол-во фильмов
+
+                  // 1) временные позиции (уникальные)
+                  for (let i = 0; i < films.length; i++) {
+                    await updateTopListFilmApi(films[i].id, tmpBase + i + 1);
+                  }
+
+                  // 2) финальные позиции
+                  for (let i = 0; i < films.length; i++) {
+                    await updateTopListFilmApi(films[i].id, i + 1);
                   }
 
                   toast.success("Сохранено");
