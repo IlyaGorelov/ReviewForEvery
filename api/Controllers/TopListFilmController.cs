@@ -60,31 +60,39 @@ namespace api.Controllers
         [Authorize]
         public async Task<IActionResult> CreateTopListFilm(CreateTopListFilmDto dto)
         {
-            var topList = await _context.TopLists.FindAsync(dto.TopListId);
-            if (topList == null) return NotFound("Top list not found");
-
-            dto.Position = Math.Clamp(dto.Position, 1, topList.TopListFilms.Count + 1);
+            var topListExists = await _context.TopLists.AnyAsync(x => x.Id == dto.TopListId);
+            if (!topListExists) return NotFound("Top list not found");
 
             var strategy = _context.Database.CreateExecutionStrategy();
 
             return await strategy.ExecuteAsync(async () =>
             {
                 await using var tx = await _context.Database.BeginTransactionAsync();
-
                 try
                 {
+                    await _context.Database.ExecuteSqlRawAsync(
+                        "SELECT pg_advisory_xact_lock({0});",
+                        dto.TopListId
+                    );
+
+                    var count = await _context.TopListFIlms
+                        .Where(x => x.TopListId == dto.TopListId)
+                        .CountAsync();
+
+                    dto.Position = Math.Clamp(dto.Position, 1, count + 1);
+
                     await _context.TopListFIlms
                         .Where(x => x.TopListId == dto.TopListId && x.Position >= dto.Position)
                         .ExecuteUpdateAsync(s => s.SetProperty(x => x.Position, x => x.Position + 1));
 
                     var topListFilm = dto.ToFilmFromCreateDto();
                     topListFilm.TopListId = dto.TopListId;
+                    topListFilm.Position = dto.Position;
 
                     _context.TopListFIlms.Add(topListFilm);
                     await _context.SaveChangesAsync();
 
                     await tx.CommitAsync();
-
                     return CreatedAtAction(nameof(GetTopFilmById), new { id = topListFilm.Id }, topListFilm);
                 }
                 catch
