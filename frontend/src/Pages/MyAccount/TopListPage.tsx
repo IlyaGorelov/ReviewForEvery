@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import {
   DndContext,
   closestCenter,
@@ -71,7 +70,6 @@ function SortableFilm({
       >
         <TopListFilmCard
           topListfilm={film}
-          position={index + 1}
           refNode={setNodeRef}
           listeners={listeners}
           attributes={attributes}
@@ -238,7 +236,7 @@ export default function TopListPage() {
             </DndContext>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {films.map((film, index) => (
+              {films.map((film) => (
                 <TopListFilmCard
                   key={film.id}
                   topListfilm={film}
@@ -246,7 +244,6 @@ export default function TopListPage() {
                   listeners={undefined}
                   isDragging={false}
                   refNode={() => {}}
-                  position={index + 1}
                   onSuccess={fetchFilms}
                 />
               ))}

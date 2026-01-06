@@ -1,18 +1,13 @@
 // /src/components/TopListFilmCard.tsx
 
-import { useEffect, useState } from "react";
 import { TopListFilmGet } from "../Models/TopListFilm";
-import { FilmGet } from "../Models/Film";
-import { getFilmByIdApi } from "../Services/FilmService";
 import { toast } from "react-toastify";
 import { blankSrc } from "./SearchPage/FilmCard";
-import { useNavigate } from "react-router-dom";
 import { deleteTopFilmApi } from "../Services/TopListFIlmService";
 import { ReviewGet } from "../Models/Review";
 
 interface Props {
   topListfilm: TopListFilmGet;
-  position: number;
   attributes: any;
   listeners: any;
   refNode: (element: HTMLElement | null) => void;
@@ -22,22 +17,12 @@ interface Props {
 
 export default function TopListFilmCard({
   topListfilm,
-  position,
   attributes,
   listeners,
   refNode,
   isDragging,
   onSuccess,
 }: Props) {
-  // const [film, setFilm] = useState<FilmGet | null>(null);
-
-  // async function getFilm() {
-  //   await getFilmByIdApi(topListfilm.filmId)
-  //     .then((res) => {
-  //       if (res?.data) setFilm(res.data);
-  //     })
-  //     .catch((e) => toast.error("Unexpected error"));
-  // }
 
   async function deleteTopFilm(e: React.MouseEvent) {
     if (window.confirm("Ты уверен?")) {
@@ -100,7 +85,7 @@ export default function TopListFilmCard({
       </div>
       <div className="mt-2 flex justify-center">
         <div className="border border-gray-400 rounded-lg px-3 py-1 text-sm text-gray-600 font-medium shadow-sm bg-white">
-          {position}
+          {topListfilm.position}
         </div>
       </div>
     </div>
