@@ -64,6 +64,7 @@ namespace api.Controllers
             if (topList == null) return NotFound("Top list not found");
 
             if (dto.Position < 1) dto.Position = 1;
+            else if (dto.Position > topList.TopListFilms.Count) dto.Position = topList.TopListFilms.Count;
 
             var strategy = _context.Database.CreateExecutionStrategy();
 

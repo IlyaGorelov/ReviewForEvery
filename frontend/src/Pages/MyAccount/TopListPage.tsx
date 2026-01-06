@@ -167,16 +167,10 @@ export default function TopListPage() {
               onClick={async () => {
                 setIsSaving(true);
                 try {
-                  const updatedOrder = films.map((film, index) => ({
-                    filmId: film.id,
-                    position: index + 1,
-                  }));
-
-                  await Promise.all(
-                    updatedOrder.map((i) =>
-                      updateTopListFilmApi(i.filmId, i.position)
-                    )
-                  );
+                  for (let index = 0; index < films.length; index++) {
+                    const film = films[index];
+                    await updateTopListFilmApi(film.id, index + 1);
+                  }
 
                   toast.success("Сохранено");
                   setOriginalFilms(films);
