@@ -143,7 +143,14 @@ export default function TopListPage() {
     const newFilms = arrayMove(films, oldIndex, newIndex);
     setFilms(newFilms);
 
-    console.log(films);
+    const updatedOrder = newFilms.map((film, index) => ({
+      filmId: film.id,
+      position: index + 1,
+    }));
+    for (let i of updatedOrder) {
+      await updateTopListFilmApi(i.filmId, i.position);
+      console.log(i.filmId, i.position);
+    }
   };
 
   return (
