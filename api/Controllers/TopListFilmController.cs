@@ -81,9 +81,25 @@ namespace api.Controllers
 
                     dto.Position = Math.Clamp(dto.Position, 1, count + 1);
 
-                    await _context.TopListFIlms
-                        .Where(x => x.TopListId == dto.TopListId && x.Position >= dto.Position)
-                        .ExecuteUpdateAsync(s => s.SetProperty(x => x.Position, x => x.Position + 1));
+                    const int tmpBase = 1_000_000;
+
+                    await _context.Database.ExecuteSqlRawAsync(
+                        """
+                UPDATE "TopListFIlms"
+                SET "Position" = "Position" + {0}
+                WHERE "TopListId" = {1} AND "Position" >= {2};
+                """,
+                        tmpBase, dto.TopListId, dto.Position
+                    );
+
+                    await _context.Database.ExecuteSqlRawAsync(
+                        """
+                UPDATE "TopListFIlms"
+                SET "Position" = "Position" - {0} + 1
+                WHERE "TopListId" = {1} AND "Position" >= {0} + {2};
+                """,
+                        tmpBase, dto.TopListId, dto.Position
+                    );
 
                     var topListFilm = dto.ToFilmFromCreateDto();
                     topListFilm.TopListId = dto.TopListId;
