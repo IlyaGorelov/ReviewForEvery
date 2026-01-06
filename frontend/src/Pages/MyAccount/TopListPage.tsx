@@ -181,6 +181,7 @@ export default function TopListPage() {
                   toast.error("Не удалось сохранить");
                 } finally {
                   setIsSaving(false);
+                  fetchFilms();
                 }
               }}
             >
