@@ -142,6 +142,8 @@ export default function TopListPage() {
 
     const newFilms = arrayMove(films, oldIndex, newIndex);
     setFilms(newFilms);
+
+    console.log(films);
   };
 
   return (
@@ -173,6 +175,7 @@ export default function TopListPage() {
                   }));
                   for (let i of updatedOrder) {
                     await updateTopListFilmApi(i.filmId, i.position);
+                    console.log(i.filmId, i.position);
                   }
 
                   toast.success("Сохранено");
