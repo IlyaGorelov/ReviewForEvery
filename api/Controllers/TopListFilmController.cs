@@ -126,12 +126,12 @@ namespace api.Controllers
 
         [HttpPut("{topListId:int}/reorder")]
         [Authorize]
-        public async Task<IActionResult> Reorder(int topListId, [FromBody] List<ReorderListFilmDto> filmsDto)
+        public async Task<IActionResult> Reorder(int topListId, [FromBody] ReorderListFilmsDto dto)
         {
-            if (filmsDto == null || filmsDto.Count == 0)
+            if (dto.Items == null || dto.Items.Count == 0)
                 return Ok();
 
-            var normalized = filmsDto
+            var normalized = dto.Items
                             .OrderBy(x => x.Position)
                             .Select((x, i) => new { x.Id, Position = i + 1 })
                             .ToList();
