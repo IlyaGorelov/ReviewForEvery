@@ -167,6 +167,10 @@ namespace api.Controllers
             {
                 review.ChangedAt = DateTime.UtcNow;
             }
+            else if (oldStatus != ReviewStatus.Planned && review.Status == ReviewStatus.Planned)
+            {
+                review.ChangedAt = DateTime.UtcNow;
+            }
 
             await _context.SaveChangesAsync();
 
