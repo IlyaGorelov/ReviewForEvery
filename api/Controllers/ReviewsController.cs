@@ -31,7 +31,7 @@ namespace api.Controllers
             var reviews = await _context.Reviews
             .OrderByDescending(x => x.Status == ReviewStatus.Planned)
             .ThenByDescending(x => x.StartDate).ThenByDescending(x => x.CreatedAt)
-            .ThenByDescending(x => x.ChangedAt)
+            .ThenBy(x => x.ChangedAt)
             .Include(x => x.AppUser)
             .Include(x => x.film)
             .Select(x => x.ToReviewDTO()).ToListAsync(); ;
@@ -79,7 +79,7 @@ namespace api.Controllers
             var reviews = await _context.Reviews
             .OrderByDescending(x => x.Status == ReviewStatus.Planned).
             ThenByDescending(x => x.StartDate).ThenByDescending(x => x.CreatedAt)
-            .ThenByDescending(x => x.ChangedAt)
+            .ThenBy(x => x.ChangedAt)
             .Where(x => x.Author == username).Include(x => x.AppUser).Include(x => x.film)
             .Select(x => x.ToReviewDTO())
             .ToListAsync();
