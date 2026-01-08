@@ -29,6 +29,7 @@ namespace api.DTOs
         public int? CountOfHoures { get; set; }
         public int? CountOfMinutes { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime ChangedAt { get; set; } = DateTime.UtcNow;
 
         public int FilmId { get; set; }
         public FilmCategory FilmCategory { get; set; }

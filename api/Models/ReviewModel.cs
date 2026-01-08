@@ -17,13 +17,14 @@ namespace api.Models
         public double? Rate { get; set; }
         public bool TakeInRating { get; set; } = true;
 
-        public int? CountOfHoures {get; set; }
-        public int? CountOfMinutes {get; set; }
+        public int? CountOfHoures { get; set; }
+        public int? CountOfMinutes { get; set; }
 
         public ReviewStatus Status { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime ChangedAt { get; set; } = DateTime.UtcNow;
         public string? CountOfSeasons { get; set; } = "";
-     
+
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 

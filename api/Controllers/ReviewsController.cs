@@ -31,6 +31,7 @@ namespace api.Controllers
             var reviews = await _context.Reviews
             .OrderByDescending(x => x.Status == ReviewStatus.Planned)
             .ThenByDescending(x => x.StartDate).ThenByDescending(x => x.CreatedAt)
+            .ThenByDescending(x => x.ChangedAt)
             .Include(x => x.AppUser)
             .Include(x => x.film)
             .Select(x => x.ToReviewDTO()).ToListAsync(); ;
@@ -78,6 +79,7 @@ namespace api.Controllers
             var reviews = await _context.Reviews
             .OrderByDescending(x => x.Status == ReviewStatus.Planned).
             ThenByDescending(x => x.StartDate).ThenByDescending(x => x.CreatedAt)
+            .ThenByDescending(x => x.ChangedAt)
             .Where(x => x.Author == username).Include(x => x.AppUser).Include(x => x.film)
             .Select(x => x.ToReviewDTO())
             .ToListAsync();
@@ -147,6 +149,8 @@ namespace api.Controllers
 
             if (review == null) return BadRequest("Review not found");
 
+            var oldStatus = review.Status;
+
             review.Text = updateReview.Text;
             review.Rate = updateReview.Rate;
             review.Status = updateReview.Status;
@@ -156,6 +160,11 @@ namespace api.Controllers
             review.EndDate = updateReview.EndDate != null ? DateTime.SpecifyKind(updateReview.EndDate.Value, DateTimeKind.Utc) : (updateReview.StartDate == null ? DateTime.UtcNow.Date : null);
             review.CountOfHoures = updateReview.CountOfHoures;
             review.CountOfMinutes = updateReview.CountOfMinutes;
+
+            if (oldStatus == ReviewStatus.Planned && review.Status != ReviewStatus.Planned)
+            {
+                review.ChangedAt = DateTime.UtcNow;
+            }
 
             await _context.SaveChangesAsync();
 
