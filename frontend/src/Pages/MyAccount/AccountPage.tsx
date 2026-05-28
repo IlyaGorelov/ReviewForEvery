@@ -53,8 +53,6 @@ const AccountPage = () => {
     }
   };
 
-  // Data to display
-  const displayUser = isForeign ? foreignUser : authUser;
   const displayName = isForeign ? foreignUser?.username : authUser?.userName;
 
   if (isForeign && !foreignUser) {

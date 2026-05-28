@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { UserProfile } from "../Models/User";
-import { data, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { loginAPI, registerAPI } from "../Services/AuthService";
 import { toast } from "react-toastify";
 import React from "react";
@@ -31,7 +31,6 @@ function isTokenExpired(token: string): boolean {
 export const UserProvider = ({ children }: Props) => {
   const navigate = useNavigate();
   const [token, setToken] = useState<string | null>(null);
-  const [role, setRole] = useState<string | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -66,8 +65,6 @@ export const UserProvider = ({ children }: Props) => {
     } else {
       setUser(null);
     }
-
-    setRole(role);
   }
 
   const registerUser = async (
@@ -122,7 +119,6 @@ export const UserProvider = ({ children }: Props) => {
     localStorage.removeItem("role");
     setUser(null);
     setToken("");
-    setRole("");
     navigate("/");
   };
 

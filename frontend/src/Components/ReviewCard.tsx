@@ -370,7 +370,7 @@ const ReviewCard = ({
             reviewId={review.id}
             onClose={() => setShowForm(false)}
             onSuccess={fetchReviews || (() => {})}
-            hasSeasons={filmData.filmType == 1}
+            hasSeasons={filmData.filmType === 1}
           />,
           document.body,
         )}

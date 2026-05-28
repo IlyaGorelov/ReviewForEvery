@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   getAllMyTopListsApi,
@@ -48,7 +47,7 @@ const TopListsPage = ({ variant, username }: Props) => {
 
   useEffect(() => {
     fetchData();
-  }, [variant, username]);
+  }, [variant, username, fetchData]);
 
   const createTop = async (name: string) => {
     if (!name.trim()) {
