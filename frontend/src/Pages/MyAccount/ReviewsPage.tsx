@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { ReviewGet, ReviewFromOtherUserGet } from "../../Models/Review";
 import {
@@ -24,7 +24,7 @@ const ReviewsPage = ({ variant, username }: Props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<UserGet | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       if (variant === "all") {
@@ -45,11 +45,11 @@ const ReviewsPage = ({ variant, username }: Props) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [variant, username]);
 
   useEffect(() => {
     fetchData();
-  }, [variant, username]);
+  }, [fetchData]);
 
   // Delete handler – only for "all" and "my" variants
   const handleDelete = async (id: number) => {

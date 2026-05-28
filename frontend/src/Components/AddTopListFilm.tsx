@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FilmGet } from "../Models/Film";
 import { getAllFilmsApi } from "../Services/FilmService";
 import { toast } from "react-toastify";
@@ -19,21 +19,17 @@ export default function AddTopListFilm({ onSuccess }: Props) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const { id } = useParams();
 
-  const fetchFilms = async () => {
+  const fetchFilms = useCallback(async () => {
     await getAllFilmsApi(1, 20, query)
       .then((res) => {
         if (res?.data) setFilms(res.data.items);
       })
       .catch(() => toast.error("Unexpected error"));
-  };
-
-  useEffect(() => {
-    fetchFilms();
-  }, []);
-
-  useEffect(() => {
-    fetchFilms();
   }, [query]);
+
+  useEffect(() => {
+    fetchFilms();
+  }, [fetchFilms]);
 
   const handlePublish = () => {
     if (!selectedFilm) {

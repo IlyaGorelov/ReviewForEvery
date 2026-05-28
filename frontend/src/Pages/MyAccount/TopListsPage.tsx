@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
   getAllMyTopListsApi,
@@ -25,7 +25,7 @@ const TopListsPage = ({ variant, username }: Props) => {
 
   const isOwner = variant === "my";
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       if (isOwner) {
@@ -43,11 +43,11 @@ const TopListsPage = ({ variant, username }: Props) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isOwner, variant, username]);
 
   useEffect(() => {
     fetchData();
-  }, [variant, username]);
+  }, [fetchData]);
 
   const createTop = async (name: string) => {
     if (!name.trim()) {

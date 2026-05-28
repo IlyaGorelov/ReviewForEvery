@@ -11,40 +11,42 @@ export default function SearchPage() {
   const [hasMore, setHasMore] = useState(true);
   const [filmsData, setFilmsData] = useState<FilmGet[]>([]);
 
-  const getFilms = async (reset = false) => {
+  useEffect(() => {
+    const fetchFirstPage = async () => {
+      const pageSize = 20;
+      const res = await getAllFilmsApi(1, pageSize, query).catch(() => {
+        toast.warning("No films found");
+      });
+
+      if (res?.data) {
+        setFilmsData(res.data.items);
+        setHasMore(res.data.items.length < res.data.totalCount);
+      } else {
+        setFilmsData([]);
+        setHasMore(false);
+      }
+    };
+
+    fetchFirstPage();
+  }, [query]);
+
+  const getFilms = async () => {
     const pageSize = 20;
-    const currentPage = reset ? 1 : Math.floor(filmsData.length / pageSize) + 1;
+    const currentPage = Math.floor(filmsData.length / pageSize) + 1;
 
     const res = await getAllFilmsApi(currentPage, pageSize, query).catch(() => {
-      toast.warning("No films found");
+      toast.warning("Error loading more");
     });
 
     if (res?.data) {
-      if (reset) {
-        setFilmsData(res.data.items);
-      } else {
-        setFilmsData((prev) => [...prev, ...res.data.items]);
-      }
-
-      if (
-        (reset
-          ? res.data.items.length
-          : filmsData.length + res.data.items.length) >= res.data.totalCount
-      ) {
+      setFilmsData((prev) => [...prev, ...res.data.items]);
+      if (filmsData.length + res.data.items.length >= res.data.totalCount) {
         setHasMore(false);
       } else {
         setHasMore(true);
       }
     }
   };
-
-  useEffect(() => {
-    getFilms(true);
-  }, []);
-
-  useEffect(() => {
-    getFilms(true);
-  }, [query]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -94,6 +94,11 @@ export default function TopListPage({ variant = "edit" }: Props) {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const isEditingRef = useRef(isEditing);
+  useEffect(() => {
+    isEditingRef.current = isEditing;
+  });
+
   const sensors = useSensors(
     useSensor(TouchSensor, {
       activationConstraint: { delay: 250, tolerance: 8 },
@@ -103,16 +108,7 @@ export default function TopListPage({ variant = "edit" }: Props) {
     }),
   );
 
-  const fetchTopList = async () => {
-    try {
-      const res = await getTopListByIdApi(Number(topListId));
-      if (res?.data) setTopList(res.data);
-    } catch {
-      toast.error("Could not load list");
-    }
-  };
-
-  const fetchFilms = async () => {
+  const fetchFilms = useCallback(async () => {
     setIsLoading(true);
     try {
       const res = await getAllTopFilmsApi(Number(topListId));
@@ -126,11 +122,36 @@ export default function TopListPage({ variant = "edit" }: Props) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [topListId, isEditing]);
 
   useEffect(() => {
-    fetchTopList();
-    fetchFilms();
+    const loadTopList = async () => {
+      try {
+        const res = await getTopListByIdApi(Number(topListId));
+        if (res?.data) setTopList(res.data);
+      } catch {
+        toast.error("Could not load list");
+      }
+    };
+
+    const loadFilms = async () => {
+      setIsLoading(true);
+      try {
+        const res = await getAllTopFilmsApi(Number(topListId));
+        if (res?.data) {
+          const sorted = res.data.sort((a, b) => a.position - b.position);
+          setFilms(sorted);
+          if (!isEditingRef.current) setOriginalFilms(sorted);
+        }
+      } catch {
+        toast.error("Could not load films");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadTopList();
+    loadFilms();
   }, [topListId]);
 
   const handleDragEnd = (event: any) => {

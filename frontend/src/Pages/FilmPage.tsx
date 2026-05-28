@@ -1,5 +1,5 @@
 // src/pages/FilmPage.tsx
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { FilmGet } from "../Models/Film";
 import { getFilmByIdApi } from "../Services/FilmService";
@@ -48,7 +48,7 @@ export default function FilmPage() {
     }
   };
 
-  const getFilm = async () => {
+  const getFilm = useCallback(async () => {
     await getFilmByIdApi(Number(id))
       .then((res) => {
         if (res?.data) {
@@ -58,7 +58,7 @@ export default function FilmPage() {
       .catch(() => {
         toast.warning("No film found");
       });
-  };
+  }, [id]);
 
   const deleteReview = async (reviewId: number) => {
     if (window.confirm("Are you sure?")) {
@@ -88,7 +88,7 @@ export default function FilmPage() {
 
   useEffect(() => {
     getFilm();
-  }, []);
+  }, [getFilm]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
