@@ -131,7 +131,7 @@ export default function TopListPage({ variant = "edit" }: Props) {
   useEffect(() => {
     fetchTopList();
     fetchFilms();
-  }, [topListId, fetchTopList, fetchFilms]);
+  }, [topListId]);
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;

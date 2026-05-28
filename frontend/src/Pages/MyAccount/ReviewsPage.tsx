@@ -49,7 +49,7 @@ const ReviewsPage = ({ variant, username }: Props) => {
 
   useEffect(() => {
     fetchData();
-  }, [variant, username, fetchData]);
+  }, [variant, username]);
 
   // Delete handler – only for "all" and "my" variants
   const handleDelete = async (id: number) => {

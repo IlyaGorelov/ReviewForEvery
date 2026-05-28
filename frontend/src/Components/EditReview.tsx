@@ -98,7 +98,7 @@ const EditReview = ({
       setValue("rate", null);
       setValue("text", null);
     }
-  }, [status, setValue]);
+  }, [status]);
 
   const deleteReview = async () => {
     if (window.confirm("Are you sure?")) {

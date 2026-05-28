@@ -29,11 +29,11 @@ export default function AddTopListFilm({ onSuccess }: Props) {
 
   useEffect(() => {
     fetchFilms();
-  }, [fetchFilms]);
+  }, []);
 
   useEffect(() => {
     fetchFilms();
-  }, [query, fetchFilms]);
+  }, [query]);
 
   const handlePublish = () => {
     if (!selectedFilm) {

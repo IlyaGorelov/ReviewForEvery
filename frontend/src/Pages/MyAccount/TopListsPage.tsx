@@ -47,7 +47,7 @@ const TopListsPage = ({ variant, username }: Props) => {
 
   useEffect(() => {
     fetchData();
-  }, [variant, username, fetchData]);
+  }, [variant, username]);
 
   const createTop = async (name: string) => {
     if (!name.trim()) {
