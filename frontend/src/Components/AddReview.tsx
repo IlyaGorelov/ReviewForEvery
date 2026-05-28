@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { postReviewAPI } from "../Services/ReviewService";
 import { toast } from "react-toastify";
@@ -93,7 +93,7 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons, film }: Props) => {
       setValue("countOfHoures", null);
       setValue("countOfMinutes", null);
     }
-  }, [status, setValue]);
+  }, [status, setValue, hideInputs]);
 
   const postReview = async (form: ReviewFormsInput) => {
     await postReviewAPI(
