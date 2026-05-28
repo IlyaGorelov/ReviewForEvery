@@ -23,22 +23,20 @@ import { getTopListByIdApi } from "../../Services/TopListService";
 import {
   getAllTopFilmsApi,
   reorderTopListFilmsApi,
-  updateTopListFilmApi,
 } from "../../Services/TopListFIlmService";
 import AddTopListFilm from "../../Components/AddTopListFilm";
 import { Spinner } from "../../Components/Loader";
 
+// DnD wrapper component (only used during editing)
 function SortableFilm({
   film,
   index,
   onSuccess,
-  disabled,
   isEditing,
 }: {
   film: TopListFilmGet;
   index: number;
   onSuccess: () => void;
-  disabled: boolean;
   isEditing: boolean;
 }) {
   const {
@@ -48,7 +46,7 @@ function SortableFilm({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: film.id, disabled });
+  } = useSortable({ id: film.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -65,9 +63,9 @@ function SortableFilm({
   return (
     <div style={style} ref={setNodeRef}>
       <div
-        className={[
-          isEditing && !isDragging ? `animate-jiggle ${delayClass}` : "",
-        ].join(" ")}
+        className={
+          isEditing && !isDragging ? `animate-jiggle ${delayClass}` : ""
+        }
       >
         <TopListFilmCard
           topListfilm={film}
@@ -82,8 +80,13 @@ function SortableFilm({
   );
 }
 
-export default function TopListPage() {
-  const { id: topListId } = useParams();
+type Props = {
+  /** "edit" = owner can rearrange, "readonly" = view only */
+  variant?: "edit" | "readonly";
+};
+
+export default function TopListPage({ variant = "edit" }: Props) {
+  const { id: topListId } = useParams(); // unified route param
   const [films, setFilms] = useState<TopListFilmGet[]>([]);
   const [topList, setTopList] = useState<TopListGet | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -93,162 +96,235 @@ export default function TopListPage() {
 
   const sensors = useSensors(
     useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 250,
-        tolerance: 8,
-      },
+      activationConstraint: { delay: 250, tolerance: 8 },
     }),
     useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
+      activationConstraint: { distance: 8 },
+    }),
   );
 
-  async function getTopList() {
-    await getTopListByIdApi(Number(topListId))
-      .then((res) => {
-        if (res?.data) setTopList(res.data);
-      })
-      .catch((e) => {
-        toast.error("Unexpected error");
-      });
-  }
-
-  useEffect(() => {
-    getTopList();
-    fetchFilms();
-  }, [topListId]);
+  const fetchTopList = async () => {
+    try {
+      const res = await getTopListByIdApi(Number(topListId));
+      if (res?.data) setTopList(res.data);
+    } catch {
+      toast.error("Could not load list");
+    }
+  };
 
   const fetchFilms = async () => {
     setIsLoading(true);
-    await getAllTopFilmsApi(Number(topListId))
-      .then((res) => {
-        if (res?.data) {
-          const sorted = res.data.sort((a, b) => a.position - b.position);
-          setFilms(sorted);
-          if (!isEditing) setOriginalFilms(sorted);
-        }
-      })
-      .catch((e) => toast.error("Unexpected error"))
-      .finally(() => setIsLoading(false));
+    try {
+      const res = await getAllTopFilmsApi(Number(topListId));
+      if (res?.data) {
+        const sorted = res.data.sort((a, b) => a.position - b.position);
+        setFilms(sorted);
+        if (!isEditing) setOriginalFilms(sorted);
+      }
+    } catch {
+      toast.error("Could not load films");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleDragEnd = async (event: any) => {
+  useEffect(() => {
+    fetchTopList();
+    fetchFilms();
+  }, [topListId]);
+
+  const handleDragEnd = (event: any) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-
     const oldIndex = films.findIndex((f) => f.id === active.id);
     const newIndex = films.findIndex((f) => f.id === over.id);
-
-    const newFilms = arrayMove(films, oldIndex, newIndex);
-    setFilms(newFilms);
+    setFilms(arrayMove(films, oldIndex, newIndex));
   };
 
+  const saveOrder = async () => {
+    setIsSaving(true);
+    try {
+      const items = films.map((film, idx) => ({
+        id: film.id,
+        position: idx + 1,
+      }));
+      await reorderTopListFilmsApi(Number(topListId), items);
+      toast.success("Order saved");
+      setIsEditing(false);
+      fetchFilms();
+    } catch {
+      toast.error("Failed to save order");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const cancelEdit = () => {
+    setFilms(originalFilms);
+    setIsEditing(false);
+    toast.info("Changes cancelled");
+  };
+
+  const isEditable = variant === "edit";
+
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">{topList?.name}</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                {topList?.name || "Top List"}
+              </h1>
+              <div className="mt-2 h-1 w-24 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
+              <p className="mt-3 text-gray-500 text-lg">
+                {films.length} {films.length === 1 ? "item" : "items"}
+              </p>
+            </div>
 
-        {!isEditing ? (
-          <button
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition"
-            onClick={() => {
-              setOriginalFilms(films);
-              setIsEditing(true);
-            }}
-          >
-            Изменить
-          </button>
-        ) : (
-          <div className="flex gap-2">
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded hover:bg-green-700 transition disabled:opacity-50"
-              disabled={isSaving}
-              onClick={async () => {
-                setIsSaving(true);
-                try {
-                  const items = films.map((film, index) => ({
-                    id: film.id, // TopListFilm.Id (id строки в таблице TopListFIlms)
-                    position: index + 1,
-                  }));
-
-                  await reorderTopListFilmsApi(Number(topListId), items);
-
-                  toast.success("Сохранено");
-                  setIsEditing(false);
-                } catch (e) {
-                  toast.error("Не удалось сохранить");
-                } finally {
-                  setIsSaving(false);
-                  fetchFilms();
-                }
-              }}
-            >
-              Сохранить
-            </button>
-
-            <button
-              className="px-4 py-2 text-sm font-medium text-gray-800 bg-gray-200 rounded hover:bg-gray-300 transition"
-              disabled={isSaving}
-              onClick={() => {
-                setFilms(originalFilms);
-                setIsEditing(false);
-                toast.info("Изменения отменены");
-              }}
-            >
-              Отменить
-            </button>
+            {/* Edit / Save / Cancel buttons – only for editable variant */}
+            {isEditable && !isEditing && (
+              <button
+                className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all shadow-sm"
+                onClick={() => {
+                  setOriginalFilms(films);
+                  setIsEditing(true);
+                }}
+              >
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+                Edit Order
+              </button>
+            )}
+            {isEditable && isEditing && (
+              <div className="flex gap-3">
+                <button
+                  className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 shadow-sm"
+                  disabled={isSaving}
+                  onClick={saveOrder}
+                >
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Save
+                </button>
+                <button
+                  className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-all disabled:opacity-50 shadow-sm"
+                  disabled={isSaving}
+                  onClick={cancelEdit}
+                >
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
+        </div>
+
+        {/* Content */}
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <Spinner />
+          </div>
+        ) : films.length === 0 && !isEditable ? (
+          /* Empty state for readonly variant */
+          <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-12 text-center">
+            <div className="text-6xl mb-4">📋</div>
+            <p className="text-gray-500 text-lg">This list is empty.</p>
+            <p className="text-gray-400 mt-1">No items have been added yet.</p>
+          </div>
+        ) : (
+          <>
+            {isEditing ? (
+              /* Drag & drop grid when editing */
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  <SortableContext
+                    items={films.map((f) => f.id)}
+                    strategy={rectSortingStrategy}
+                  >
+                    {films.map((film, index) => (
+                      <SortableFilm
+                        key={film.id}
+                        film={film}
+                        index={index}
+                        onSuccess={fetchFilms}
+                        isEditing={isEditing}
+                      />
+                    ))}
+                  </SortableContext>
+                </div>
+              </DndContext>
+            ) : isEditable ? (
+              /* View mode for owner – shows cards + add button */
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {films.map((film) => (
+                  <TopListFilmCard
+                    key={film.id}
+                    topListfilm={film}
+                    attributes={undefined}
+                    listeners={undefined}
+                    isDragging={false}
+                    refNode={() => {}}
+                    onSuccess={fetchFilms}
+                  />
+                ))}
+                <AddTopListFilm onSuccess={fetchFilms} />
+              </div>
+            ) : (
+              /* Read‑only variant – uses a simpler card without DnD hooks */
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                {films.map((film, index) => (
+                  <div
+                    key={film.id}
+                    className="transform transition-all duration-200 hover:-translate-y-1"
+                  >
+                    <TopListFilmCard topListfilm={film} variant={"otherUser"} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
-
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <>
-          {isEditing ? (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <SortableContext
-                  items={films.map((f) => f.id)}
-                  strategy={rectSortingStrategy}
-                >
-                  {films.map((film, index) => (
-                    <SortableFilm
-                      key={film.id}
-                      film={film}
-                      index={index}
-                      onSuccess={fetchFilms}
-                      disabled={false}
-                      isEditing={isEditing}
-                    />
-                  ))}
-                </SortableContext>
-              </div>
-            </DndContext>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {films.map((film) => (
-                <TopListFilmCard
-                  key={film.id}
-                  topListfilm={film}
-                  attributes={undefined}
-                  listeners={undefined}
-                  isDragging={false}
-                  refNode={() => {}}
-                  onSuccess={fetchFilms}
-                />
-              ))}
-              <AddTopListFilm onSuccess={fetchFilms} />
-            </div>
-          )}
-        </>
-      )}
     </div>
   );
 }

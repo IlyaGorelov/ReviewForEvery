@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
-import { ReviewFormsInput } from "./AddReview";
-import { deleteReviewAPI, updateMyReviewApi } from "../Services/ReviewService";
-import { data } from "react-router-dom";
 import { AddFilmFormInput } from "../Pages/AddFilmPage";
 import { updateFilmApi } from "../Services/FilmService";
 
@@ -17,16 +13,16 @@ type Props = {
 };
 
 const validation = yup.object().shape({
-  title: yup.string().required("Введите название"),
+  title: yup.string().required("Title is required"),
   filmType: yup
     .number()
-    .oneOf([0, 1], "Выберите тип фильма")
-    .required("Тип обязателен"),
-  imageUrl: yup.string().required("Введите URL постера"),
+    .oneOf([0, 1], "Select film type")
+    .required("Type is required"),
+  imageUrl: yup.string().required("Poster URL is required"),
   filmCategory: yup
     .number()
-    .oneOf([0, 1, 2, 3, 4,5], "Выберите категорию фильма")
-    .required("Категория обязательна"),
+    .oneOf([0, 1, 2, 3, 4, 5], "Select category")
+    .required("Category is required"),
 });
 
 const EditFilm = ({ filmId, initialFilm, onClose, onSuccess }: Props) => {
@@ -51,96 +47,147 @@ const EditFilm = ({ filmId, initialFilm, onClose, onSuccess }: Props) => {
         form.title,
         form.filmType,
         form.imageUrl,
-        form.filmCategory
+        form.filmCategory,
       );
-      toast.success("Фильм обновлён");
+      toast.success("Film updated");
       onSuccess();
       onClose();
     } catch (error) {
-      toast.error("Не удалось обновить фильм");
+      toast.error("Failed to update film");
     }
   };
 
   return (
-    <div>
+    <>
+      {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={(e) => {
-          e.stopPropagation();
-          onClose();
-        }}
-      ></div>
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+        onClick={onClose}
+      />
 
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-        className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-full h-3/4 max-h-[600px] md:max-h-[450px] max-w-5xl overflow-auto flex flex-col"
-      >
-        <h2 className="text-2xl font-bold mb-4">Редактировать фильм</h2>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col flex-grow gap-8"
-        >
-          <div className="w-full md:w-full">
-            <label className="block text-lg font-medium mb-1">Название:</label>
+      {/* Modal */}
+      <div className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-[95%] max-w-2xl max-h-[90vh] overflow-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 rounded-t-2xl">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+            Edit Film
+          </h2>
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+          {/* Title */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Title <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
-              className="w-full p-2 border-2 rounded tw-border-solid"
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               {...register("title")}
-              required
             />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Тип</label>
-            <select
-              {...register("filmType")}
-              className="w-full border px-3 py-2 rounded"
-            >
-              <option value={0}>Нет частей</option>
-              <option value={1}>Состоит из частей</option>
-            </select>
-            {errors.filmType && (
-              <p className="text-red-500 text-sm">{errors.filmType.message}</p>
-            )}
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Категория</label>
-            <select
-              {...register("filmCategory")}
-              className="w-full border px-3 py-2 rounded"
-            >
-              <option value={0}>Фильм</option>
-              <option value={1}>Сериал</option>
-              <option value={2}>Аниме</option>
-              <option value={3}>Мультик</option>
-              <option value={4}>Книга</option>
-              <option value={5}>Игра</option>
-            </select>
-            {errors.filmType && (
-              <p className="text-red-500 text-sm">{errors.filmType.message}</p>
-            )}
-          </div>
-          <div>
-            <label className="block font-medium mb-1">URL постера</label>
-            <input
-              {...register("imageUrl")}
-              className="w-full border px-3 py-2 rounded"
-            />
-            {errors.imageUrl && (
-              <p className="text-red-500 text-sm">{errors.imageUrl.message}</p>
+            {errors.title && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.title.message}
+              </p>
             )}
           </div>
 
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-          >
-            Обновить фильм
-          </button>
+          {/* Film Type */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Type <span className="text-red-500">*</span>
+            </label>
+            <select
+              {...register("filmType")}
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value={0}>No parts / standalone</option>
+              <option value={1}>Consists of parts (series, seasons)</option>
+            </select>
+            {errors.filmType && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.filmType.message}
+              </p>
+            )}
+          </div>
+
+          {/* Film Category */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Category <span className="text-red-500">*</span>
+            </label>
+            <select
+              {...register("filmCategory")}
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value={0}>Movie</option>
+              <option value={1}>Series</option>
+              <option value={2}>Anime</option>
+              <option value={3}>Cartoon</option>
+              <option value={4}>Book</option>
+              <option value={5}>Game</option>
+            </select>
+            {errors.filmCategory && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.filmCategory.message}
+              </p>
+            )}
+          </div>
+
+          {/* Poster URL */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Poster URL <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              {...register("imageUrl")}
+              placeholder="https://example.com/poster.jpg"
+            />
+            {errors.imageUrl && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.imageUrl.message}
+              </p>
+            )}
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 bg-gray-200 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-300 transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-2.5 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition shadow-sm"
+            >
+              Update Film
+            </button>
+          </div>
         </form>
       </div>
-    </div>
+    </>
   );
 };
 

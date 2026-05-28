@@ -24,7 +24,7 @@ export default function AddTopListFilm({ onSuccess }: Props) {
       .then((res) => {
         if (res?.data) setFilms(res.data.items);
       })
-      .catch((e) => toast.error("Unexpected error"));
+      .catch(() => toast.error("Unexpected error"));
   };
 
   useEffect(() => {
@@ -37,23 +37,24 @@ export default function AddTopListFilm({ onSuccess }: Props) {
 
   const handlePublish = () => {
     if (!selectedFilm) {
-      alert("Пожалуйста, выберите фильм");
+      alert("Please select a film");
       return;
     }
 
     postTopListFilmApi(selectedFilm, position, Number(id), comment)
       .then(() => {
-        console.log("position state:", position);
         setShowAddForm(false);
         onSuccess();
       })
-      .catch((e) => toast.error("Unexpected error"));
+      .catch(() => toast.error("Unexpected error"));
   };
 
   const handleCancel = () => {
     setShowAddForm(false);
-    setSelectedFilm(0);
+    setSelectedFilm(undefined);
     setComment("");
+    setPosition(0);
+    setQuery("");
   };
 
   const handleSelect = (film: FilmGet) => {
@@ -65,91 +66,111 @@ export default function AddTopListFilm({ onSuccess }: Props) {
   return (
     <div className="relative group w-full aspect-[2/3]">
       {!showAddForm && (
-        <>
-          <img
-            src="/img/Plus.png"
-            alt="Add Film"
-            className="h-full w-full object-cover border-[10px] border-gray-300 border-dashed rounded-lg shadow-md"
-          />
-          <div
-            onClick={() => setShowAddForm(true)}
-            className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition flex flex-col justify-center items-center text-white rounded-lg text-center px-2"
-          ></div>
-        </>
+        <div
+          onClick={() => setShowAddForm(true)}
+          className="cursor-pointer h-full w-full rounded-xl border-4 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 transition-all duration-200 flex flex-col items-center justify-center gap-3 shadow-sm hover:shadow-md"
+        >
+          <svg
+            className="w-12 h-12 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          <span className="text-gray-500 font-medium">Add film</span>
+        </div>
       )}
 
       {showAddForm && (
-        <div className="absolute inset-0 bg-white p-4 rounded-lg flex flex-col justify-between">
-          <div>
-            <label className="block mb-2 font-semibold text-gray-700">
-              Выберите фильм:
-            </label>
+        <div className="absolute inset-0 bg-white rounded-xl shadow-xl p-4 flex flex-col justify-between z-20">
+          <div className="space-y-4">
+            {/* Film search */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Select film <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search by title..."
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  onBlur={() =>
+                    setTimeout(() => setShowSuggestions(false), 150)
+                  }
+                  onFocus={() => setShowSuggestions(true)}
+                />
+                {showSuggestions && query && films.length > 0 && (
+                  <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    {films.map((film) => (
+                      <li
+                        key={film.id}
+                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer transition"
+                        onMouseDown={() => handleSelect(film)}
+                      >
+                        {film.title}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
 
-            <input
-              type="text"
-              placeholder="Название"
-              className="w-full border border-gray-400 rounded px-2 py-1"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setShowSuggestions(true);
-              }}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
-              onFocus={() => setShowSuggestions(true)}
-            />
+            {/* Position */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Position <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={position}
+                onChange={(e) => setPosition(Number(e.target.value))}
+                placeholder="Enter position (1, 2, 3...)"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-            {showSuggestions && query && films.length > 0 && (
-              <ul className="absolute w-full border border-gray-400 rounded-b bg-white max-h-40 overflow-y-auto z-10">
-                {films.map((film) => (
-                  <li
-                    key={film.id}
-                    className="px-2 py-1 hover:bg-gray-200 cursor-pointer"
-                    onMouseDown={() => handleSelect(film)}
-                  >
-                    {film.title}
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <label className="block text-sm mb-2 font-semibold text-gray-700">
-              Позиция:
-            </label>
-            <input
-              className="w-full border border-gray-400 rounded px-2 py-1 mb-4 resize-none"
-              value={position}
-              type="number"
-              min="1"
-              onChange={(e) => setPosition(Number(e.target.value))}
-              placeholder="Введите позицию..."
-            />
-
-            <label className="block text-sm mb-2 font-semibold text-gray-700">
-              Комментарий (если нужно):
-            </label>
-            <textarea
-              className="w-full border border-gray-400 rounded px-2 py-1 mb-4 resize-none"
-              rows={2}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Введите комментарий..."
-            />
+            {/* Comment */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Comment (optional)
+              </label>
+              <textarea
+                rows={3}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Add a personal note..."
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
 
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-            onClick={handlePublish}
-            type="button"
-          >
-            Опубликовать
-          </button>
-          <button
-            className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded"
-            onClick={handleCancel}
-            type="button"
-          >
-            Отмена
-          </button>
+          {/* Buttons */}
+          <div className="flex gap-2 mt-4 pt-2">
+            <button
+              onClick={handlePublish}
+              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-2 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition shadow-sm"
+            >
+              Publish
+            </button>
+            <button
+              onClick={handleCancel}
+              className="flex-1 bg-gray-200 text-gray-700 font-medium py-2 rounded-lg hover:bg-gray-300 transition"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
     </div>

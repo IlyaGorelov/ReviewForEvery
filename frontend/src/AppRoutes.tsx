@@ -8,16 +8,11 @@ import RegisterPage from "./Pages/RegisterPage";
 import ProtectedRoute from "./ProtectedRoute";
 import ProtectedRouteForAdmin from "./ProtectedRouteForAdmin";
 import { AddFilmPage } from "./Pages/AddFilmPage";
-import AllMyReviews from "./Pages/MyAccount/AllMyReviews";
-import AllReviewsList from "./Pages/AllReviewsList";
-import { ForeignAccountPage } from "./Pages/ForeignAccountPage";
-import AllUserReviews from "./Pages/AllUserReviews";
-import TopListsPageForOtherUser from "./Pages/TopListsPageForOtherUser";
-import TopListPageForOtherUser from "./Pages/TopListPageForOtherUser";
-import { AccountPage } from "./Pages/MyAccount/AccountPage";
 import TopListsPage from "./Pages/MyAccount/TopListsPage";
 import TopListPage from "./Pages/MyAccount/TopListPage";
 import RegisterAdminPage from "./Pages/RegisterAdminPage";
+import ReviewsPage from "./Pages/MyAccount/ReviewsPage";
+import AccountPage from "./Pages/MyAccount/AccountPage";
 
 type Props = {};
 
@@ -37,15 +32,18 @@ const AppRoutes = (props: Props) => {
           </ProtectedRoute>
         }
       />
-      <Route path="/user/:username" element={<ForeignAccountPage />} />
-      <Route path="/user/:username/all-reviews" element={<AllUserReviews />} />
+      <Route path="/user/:username" element={<AccountPage />} />
+      <Route
+        path="/user/:username/all-reviews"
+        element={<ReviewsPage variant={"user"} />}
+      />
       <Route
         path="/user/:username/top-lists"
-        element={<TopListsPageForOtherUser />}
+        element={<TopListsPage variant={"user"} />}
       />
       <Route
         path="/user/:username/top-lists/:listId"
-        element={<TopListPageForOtherUser />}
+        element={<TopListPage variant={"readonly"} />}
       />
       <Route
         path="/add-film"
@@ -59,7 +57,7 @@ const AppRoutes = (props: Props) => {
         path="/reviews"
         element={
           <ProtectedRouteForAdmin>
-            <AllReviewsList />
+            <ReviewsPage variant={"all"} />
           </ProtectedRouteForAdmin>
         }
       />
@@ -75,7 +73,7 @@ const AppRoutes = (props: Props) => {
         path="/my-reviews"
         element={
           <ProtectedRoute>
-            <AllMyReviews />
+            <ReviewsPage variant={"my"} />
           </ProtectedRoute>
         }
       />
@@ -83,7 +81,7 @@ const AppRoutes = (props: Props) => {
         path="/top-lists"
         element={
           <ProtectedRoute>
-            <TopListsPage />
+            <TopListsPage variant={"my"} />
           </ProtectedRoute>
         }
       />

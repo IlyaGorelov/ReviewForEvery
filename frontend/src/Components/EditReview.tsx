@@ -21,22 +21,22 @@ type Props = {
 
 const validation = Yup.object().shape({
   rate: Yup.number()
-    .min(0, "Минимум 0")
-    .max(10, "Максимум 10")
+    .min(0, "Minimum 0")
+    .max(10, "Maximum 10")
     .nullable()
     .when("status", {
       is: (val: number) => val < 2,
-      then: (schema) => schema.required("Оценка обязательна"),
+      then: (schema) => schema.required("Rating is required"),
       otherwise: (schema) => schema.nullable(),
     }),
   text: Yup.string().when("status", {
     is: (val: number) => val < 2,
-    then: (schema) => schema.required("Текст обязателен"),
+    then: (schema) => schema.required("Text is required"),
     otherwise: (schema) => schema.nullable(),
   }),
   status: Yup.number()
-    .oneOf([0, 1, 2, 3], "Выберите статус")
-    .required("Статус обязателен"),
+    .oneOf([0, 1, 2, 3], "Select status")
+    .required("Status is required"),
   countOfSeasons: Yup.string()
     .nullable()
     .transform((value, original) => (original === "" ? null : value)),
@@ -89,19 +89,19 @@ const EditReview = ({
   });
 
   const status = watch("status");
-  const isWatching = Number(status) >= 2;
+  const hideInputs = Number(status) >= 2;
 
   const showUsedTime = review!.film.filmCategory >= 4;
 
   useEffect(() => {
-    if (isWatching) {
+    if (hideInputs) {
       setValue("rate", null);
       setValue("text", null);
     }
   }, [status, setValue]);
 
   const deleteReview = async () => {
-    if (window.confirm("Ты уверен?")) {
+    if (window.confirm("Are you sure?")) {
       await deleteMyReviewAPI(reviewId);
       onSuccess();
       onClose();
@@ -110,7 +110,6 @@ const EditReview = ({
 
   const onSubmit = async (form: ReviewFormsInput) => {
     try {
-      console.log(form.startDate);
       await updateMyReviewApi(
         reviewId,
         form.text,
@@ -121,171 +120,224 @@ const EditReview = ({
         form.countOfHoures,
         form.countOfMinutes,
         form.startDate,
-        form.endDate
+        form.endDate,
       );
       onSuccess();
       onClose();
     } catch (error) {
-      toast.error("Не удалось обновить отзыв");
+      toast.error("Failed to update review");
     }
   };
 
   return (
     <>
-      <div className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-full h-full max-w-5xl overflow-auto flex flex-col">
-        <h2 className="text-2xl font-bold mb-4">Редактировать отзыв</h2>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col flex-grow"
-        >
-          <div className="flex flex-col md:flex-row gap-10 md:gap-30 mb-4">
-            <div className="flex flex-row w-full">
-              <div className="w-full md:w-1/2">
-                <label className="block text-sm font-medium mb-1">
-                  Оценка:
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  step="0.1"
-                  max="10"
-                  className="w-full p-2 border rounded"
-                  {...register("rate")}
-                  required
-                  disabled={isWatching}
-                />
-              </div>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+        onClick={onClose}
+      />
 
-              <div className="w-full md:w-1/2 flex flex-col items-center">
-                <label htmlFor="takeInReview" className="text-sm font-medium">
-                  Финальная оценка?
-                </label>
+      {/* Modal */}
+      <div className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-[95%] max-w-5xl max-h-[90vh] overflow-auto flex flex-col">
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 rounded-t-2xl">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+            Edit Review
+          </h2>
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+          {/* Row 1: Rating + Final + Part (if seasons) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Rating */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Rating <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                min="1"
+                max="10"
+                className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  hideInputs ? "bg-gray-100" : "border-gray-200"
+                }`}
+                {...register("rate")}
+                disabled={hideInputs}
+              />
+              {errors.rate && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.rate.message}
+                </p>
+              )}
+            </div>
+
+            {/* Final rating checkbox */}
+            <div className="flex flex-col items-start justify-end">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   {...register("takeInRating")}
-                  className="mt-3 appearance-none w-6 h-6 border border-gray-400 rounded-full checked:bg-blue-500 checked:border-blue-600 transition-all duration-200"
+                  className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-              </div>
+                <span className="text-sm font-medium text-gray-700">
+                  Include in average?
+                </span>
+              </label>
+              <p className="text-xs text-gray-400 mt-1">
+                If unchecked, this rating won't affect overall score
+              </p>
             </div>
 
+            {/* Part (season) */}
             {hasSeasons && (
-              <div className="w-full md:w-1/2">
-                <label className="block text-sm font-medium mb-1">Часть</label>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Part / Season
+                </label>
                 <input
-                  placeholder="Сезон 1 | Сезоны 1-2 | Том 1"
                   type="text"
-                  className="w-full p-2 border rounded"
+                  placeholder="e.g., Season 1, Vol. 2"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   {...register("countOfSeasons")}
                 />
               </div>
             )}
-
-            <div className="w-full md:w-1/2">
-              <label className="block text-sm font-medium mb-1">Статус</label>
-              <select
-                {...register("status")}
-                className="w-full p-2 border rounded mb-2"
-              >
-                <option value={0}>Завершён</option>
-                <option value={1}>Брошен</option>
-                <option value={2}>Отложен</option>
-                <option value={3}>Смотрю</option>
-              </select>
-              {errors.status && (
-                <p className="text-red-500 text-sm">{errors.status.message}</p>
-              )}
-            </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-10 md:gap-40 mb-4">
+          {/* Row 2: Status + Date range + Time spent */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Status */}
             <div>
-              <label className="block text-sm font-medium mb-1">Начало</label>
-              <input
-                className="border rounded"
-                type="date"
-                {...register("startDate")}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Конец</label>
-              <input
-                className="border rounded"
-                type="date"
-                {...register("endDate")}
-              />
-              {errors.endDate && <p>{errors.endDate.message}</p>}
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Status <span className="text-red-500">*</span>
+              </label>
+              <select
+                {...register("status")}
+                className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value={0}>Completed</option>
+                <option value={1}>Abandoned</option>
+                <option value={2}>Backlogged</option>
+                <option value={3}>In progress</option>
+              </select>
+              {errors.status && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.status.message}
+                </p>
+              )}
             </div>
 
+            {/* Date range */}
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Period
+              </label>
+              <div className="flex gap-3">
+                <input
+                  type="date"
+                  className="flex-1 px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  {...register("startDate")}
+                />
+                <span className="text-gray-400 self-center">—</span>
+                <input
+                  type="date"
+                  className="flex-1 px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  {...register("endDate")}
+                />
+              </div>
+            </div>
+
+            {/* Time spent (books/games) */}
             {showUsedTime && (
-              <div className="flex flex-col">
-                <label className="block text-sm font-medium mb-1">
-                  Использованное время
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Time spent
                 </label>
-
-                <div className="flex flex-row items-end">
+                <div className="flex gap-3 items-center">
                   <input
-                    disabled={isWatching}
                     type="number"
-                    min={1}
-                    className="w-[50px] p-2 border rounded"
+                    min="0"
+                    placeholder="Hours"
+                    className={`w-24 px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      hideInputs ? "bg-gray-100" : "border-gray-200"
+                    }`}
                     {...register("countOfHoures")}
+                    disabled={hideInputs}
                   />
-                  <label className="ml-2 block text-lg font-medium mb-1">
-                    ч.
-                  </label>
-                  {errors.endDate && <p>{errors.endDate.message}</p>}
-
+                  <span className="text-gray-600">h</span>
                   <input
-                    disabled={isWatching}
                     type="number"
-                    min={1}
-                    className="appearance-text ml-5 w-[50px] p-2 border rounded"
+                    min="0"
+                    placeholder="Minutes"
+                    className={`w-24 px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      hideInputs ? "bg-gray-100" : "border-gray-200"
+                    }`}
                     {...register("countOfMinutes")}
+                    disabled={hideInputs}
                   />
-                  <label className="ml-2 block text-lg font-medium mb-1">
-                    м.
-                  </label>
-                  {errors.endDate && <p>{errors.endDate.message}</p>}
+                  <span className="text-gray-600">min</span>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="flex-grow flex flex-col mb-4 overflow-hidden">
-            <label htmlFor="text" className="block font-medium">
-              Текст:
+          {/* Review text */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Review <span className="text-red-500">*</span>
             </label>
             <textarea
-              id="text"
+              className={`w-full min-h-[200px] px-3 py-2 border rounded-xl resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                hideInputs ? "bg-gray-100" : "border-gray-200"
+              }`}
               {...register("text")}
-              disabled={isWatching}
-              className="w-full  min-h-[200px] flex-grow px-3 py-2 border rounded resize-none overflow-auto"
+              disabled={hideInputs}
+              placeholder="Write your thoughts here..."
             />
             {errors.text && (
-              <p className="text-red-500 text-sm">{errors.text.message}</p>
+              <p className="text-red-500 text-sm mt-1">{errors.text.message}</p>
             )}
           </div>
 
-          <div className="flex justify-end gap-2">
+          {/* Buttons */}
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+              className="px-5 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition font-medium"
             >
-              Отмена
+              Cancel
             </button>
             <button
               type="button"
               onClick={deleteReview}
-              className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white"
+              className="px-5 py-2 bg-gradient-to-r from-red-600 to-rose-600 text-white font-medium rounded-xl hover:from-red-700 hover:to-rose-700 transition shadow-sm"
             >
-              Удалить
+              Delete
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white"
+              className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-indigo-700 transition shadow-sm"
             >
-              Сохранить
+              Save Changes
             </button>
           </div>
         </form>

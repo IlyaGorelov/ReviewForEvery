@@ -19,10 +19,19 @@ type Props = { children: React.ReactNode };
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
+function isTokenExpired(token: string): boolean {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+}
+
 export const UserProvider = ({ children }: Props) => {
   const navigate = useNavigate();
   const [token, setToken] = useState<string | null>(null);
-  const [role,setRole] = useState<string | null> (null)
+  const [role, setRole] = useState<string | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -31,18 +40,40 @@ export const UserProvider = ({ children }: Props) => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
     if (user && token) {
-      setUser(JSON.parse(user));
-      setToken(token);
-      setRole(role)
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      if (!isTokenExpired(token)) {
+        setData(user, token, role);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      } else {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("role");
+        setData(null, null, null);
+        delete axios.defaults.headers.common["Authorization"];
+      }
     }
     setIsReady(true);
   }, [token]);
 
+  function setData(
+    user: string | null,
+    token: string | null,
+    role: string | null,
+  ) {
+    setToken(token);
+
+    if (user) {
+      setUser(JSON.parse(user));
+    } else {
+      setUser(null);
+    }
+
+    setRole(role);
+  }
+
   const registerUser = async (
     email: string,
     userName: string,
-    password: string
+    password: string,
   ) => {
     await registerAPI(userName, email, password)
       .then((res) => {
@@ -51,7 +82,7 @@ export const UserProvider = ({ children }: Props) => {
           const userObj = {
             userName: res?.data.userName,
             email: res?.data.email,
-            role: res?.data.role
+            role: res?.data.role,
           };
           localStorage.setItem("user", JSON.stringify(userObj));
           setToken(res?.data.token);
@@ -70,7 +101,7 @@ export const UserProvider = ({ children }: Props) => {
           const userObj = {
             userName: res?.data.userName,
             email: res?.data.email,
-            role: res?.data.role
+            role: res?.data.role,
           };
           localStorage.setItem("user", JSON.stringify(userObj));
           setToken(res?.data.token);

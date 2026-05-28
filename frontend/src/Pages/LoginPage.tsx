@@ -3,6 +3,7 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useAuth } from "../Context/useAuth";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 
 type Props = {};
 
@@ -12,7 +13,9 @@ type LoginFormsInput = {
 };
 
 const validation = Yup.object().shape({
-  email: Yup.string().required("Email is required"),
+  email: Yup.string()
+    .required("Email is required")
+    .email("Invalid email format"),
   password: Yup.string()
     .matches(/[A-Z]/, "There must be at least one capital letter")
     .matches(/[0-9]/, "There must be at least one digit.")
@@ -31,37 +34,86 @@ const LoginPage = (props: Props) => {
   const handleLogin = (form: LoginFormsInput) => {
     loginUser(form.email, form.password);
   };
+
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow">
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
-      <form onSubmit={handleSubmit(handleLogin)}>
-        <div className="mb-4">
-          <label className="block mb-1">Email</label>
-          <input
-            type="email"
-            className="w-full p-2 border rounded"
-            {...register("email")}
-          />
-          {errors.email ? <p>{errors.email.message}</p> : ""}
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md mx-auto">
+        <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+          <div className="px-6 py-8 sm:p-10">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-extrabold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                Welcome Back
+              </h2>
+              <p className="mt-2 text-gray-500">Sign in to your account</p>
+            </div>
 
-        <div className="mb-4">
-          <label className="block mb-1">Password</label>
-          <input
-            type="password"
-            className="w-full p-2 border rounded"
-            {...register("password")}
-          />
-          {errors.password ? <p>{errors.password.message}</p> : ""}
-        </div>
+            {/* Form */}
+            <form onSubmit={handleSubmit(handleLogin)} className="space-y-5">
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  className={`w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                    errors.email ? "border-red-500" : "border-gray-200"
+                  }`}
+                  placeholder="you@example.com"
+                  {...register("email")}
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Login
-        </button>
-      </form>
+              {/* Password */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  className={`w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                    errors.password ? "border-red-500" : "border-gray-200"
+                  }`}
+                  placeholder="••••••••"
+                  {...register("password")}
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full inline-flex justify-center items-center px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all shadow-sm"
+              >
+                Sign In
+              </button>
+            </form>
+
+            {/* Register link */}
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Don't have an account?{" "}
+                <Link
+                  to="/register"
+                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Sign up
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
