@@ -25,7 +25,9 @@ namespace api.Controllers
             var query = _context.Films.AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
-                query = query.Where(x => x.Title.ToLower().Contains(search.ToLower()));
+            {
+                query = query.Where(x => EF.Functions.ILike(x.Title, $"%{search}%"));
+            }
 
             var totalCount = await query.CountAsync();
 
