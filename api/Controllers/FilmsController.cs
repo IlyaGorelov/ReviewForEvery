@@ -32,12 +32,12 @@ namespace api.Controllers
             var totalCount = await query.CountAsync();
 
             var films = await query
-                .OrderByDescending(f => f.Rating)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Include(f => f.Reviews!)
                     .ThenInclude(r => r.AppUser)
                 .AsSplitQuery()
+                .OrderByDescending(f => f.Rating)
                 .Select(f => f.ToFilmDto())
                 .ToListAsync();
 
