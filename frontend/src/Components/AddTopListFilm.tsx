@@ -4,6 +4,7 @@ import { getAllFilmsApi } from "../Services/FilmService";
 import { toast } from "react-toastify";
 import { postTopListFilmApi } from "../Services/TopListFIlmService";
 import { useParams } from "react-router-dom";
+import { useDebounce } from "../Context/useDebounce";
 
 type Props = {
   onSuccess: () => void;
@@ -15,17 +16,23 @@ export default function AddTopListFilm({ onSuccess }: Props) {
   const [comment, setComment] = useState("");
   const [films, setFilms] = useState<FilmGet[]>([]);
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 300);
   const [position, setPosition] = useState<number>(0);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const { id } = useParams();
 
   const fetchFilms = useCallback(async () => {
-    await getAllFilmsApi(1, 20, query)
+    if (!debouncedQuery) {
+      setFilms([]);
+      return;
+    }
+
+    await getAllFilmsApi(1, 20, debouncedQuery)
       .then((res) => {
         if (res?.data) setFilms(res.data.items);
       })
       .catch(() => toast.error("Unexpected error"));
-  }, [query]);
+  }, [debouncedQuery]);
 
   useEffect(() => {
     fetchFilms();

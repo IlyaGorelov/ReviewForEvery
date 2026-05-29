@@ -5,36 +5,58 @@ import { getAllFilmsApi } from "../Services/FilmService";
 import { toast } from "react-toastify";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Spinner } from "../Components/Loader";
+import { useDebounce } from "../Context/useDebounce";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 300);
   const [hasMore, setHasMore] = useState(true);
   const [filmsData, setFilmsData] = useState<FilmGet[]>([]);
 
   useEffect(() => {
-    const fetchFirstPage = async () => {
-      const pageSize = 20;
-      const res = await getAllFilmsApi(1, pageSize, query).catch(() => {
-        toast.warning("No films found");
-      });
+    let ignore = false;
 
-      if (res?.data) {
-        setFilmsData(res.data.items);
-        setHasMore(res.data.items.length < res.data.totalCount);
-      } else {
+    const fetchFirstPage = async () => {
+      if (!debouncedQuery) {
         setFilmsData([]);
         setHasMore(false);
+        return;
+      }
+
+      const pageSize = 20;
+      const res = await getAllFilmsApi(1, pageSize, debouncedQuery).catch(
+        () => {
+          toast.warning("No films found");
+        },
+      );
+
+      if (!ignore) {
+        if (res?.data) {
+          setFilmsData(res.data.items);
+          setHasMore(res.data.items.length < res.data.totalCount);
+        } else {
+          setFilmsData([]);
+          setHasMore(false);
+        }
       }
     };
 
     fetchFirstPage();
-  }, [query]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [debouncedQuery]);
 
   const getFilms = async () => {
     const pageSize = 20;
     const currentPage = Math.floor(filmsData.length / pageSize) + 1;
 
-    const res = await getAllFilmsApi(currentPage, pageSize, query).catch(() => {
+    const res = await getAllFilmsApi(
+      currentPage,
+      pageSize,
+      debouncedQuery,
+    ).catch(() => {
       toast.warning("Error loading more");
     });
 
