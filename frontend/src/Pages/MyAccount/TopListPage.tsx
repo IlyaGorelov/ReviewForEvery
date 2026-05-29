@@ -316,7 +316,7 @@ export default function TopListPage({ variant = "edit" }: Props) {
               </DndContext>
             ) : isEditable ? (
               /* View mode for owner – shows cards + add button */
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {films.map((film) => (
                   <TopListFilmCard
                     key={film.id}
