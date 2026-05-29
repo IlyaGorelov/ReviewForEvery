@@ -24,7 +24,7 @@ if (connectionString == null)
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseNpgsql(connectionString);
+    options.UseNpgsql(connectionString, o => o.CommandTimeout(60));
     options.EnableSensitiveDataLogging(); // только для dev
     options.LogTo(Console.WriteLine, LogLevel.Information);
 });
