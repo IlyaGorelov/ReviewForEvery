@@ -17,12 +17,6 @@ export default function SearchPage() {
     let ignore = false;
 
     const fetchFirstPage = async () => {
-      if (!debouncedQuery) {
-        setFilmsData([]);
-        setHasMore(false);
-        return;
-      }
-
       const pageSize = 20;
       const res = await getAllFilmsApi(1, pageSize, debouncedQuery).catch(
         () => {
