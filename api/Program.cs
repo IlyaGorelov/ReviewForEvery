@@ -105,9 +105,8 @@ using (var scope = app.Services.CreateScope())
 
     var canConnect = await db.Database.CanConnectAsync();
     Console.WriteLine($"DB can connect: {canConnect}");
+
 }
-
-
 
 await MainAdminSeeder.SeedAdminAsync(app);
 

@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"; // NEW: useMemo, useRef
 import { toast } from "react-toastify";
 import { ReviewGet, ReviewFromOtherUserGet } from "../../Models/Review";
 import {
@@ -17,12 +24,91 @@ type Props = {
   username?: string;
 };
 
+type ReviewLine = {
+  reviewId: number;
+  overlapId: number;
+  top: number;
+  bottom: number;
+  height: number;
+  track: number;
+};
+
+// --- Helper to get a display name for a review (any variant) ---
+const getReviewName = (review: ReviewGet | ReviewFromOtherUserGet): string => {
+  // Try film name from nested object (user variant)
+  if ("film" in review && review.film?.title) {
+    return review.film.title;
+  }
+  // Fallback fields that might exist
+  if ("filmName" in review && (review as any).filmName) {
+    return (review as any).filmName;
+  }
+  if ("movieTitle" in review && (review as any).movieTitle) {
+    return (review as any).movieTitle;
+  }
+  return `Review #${review.id}`;
+};
+
+const computeOverlaps = (
+  reviews: (ReviewGet | ReviewFromOtherUserGet)[],
+): Map<number, { id: number; name: string }[]> => {
+  const now = new Date();
+
+  const processed = reviews
+    .filter((r) => r.startDate != null)
+    .map((r) => {
+      const start = new Date(r.startDate!);
+      const end = r.endDate ? new Date(r.endDate) : now;
+      return { ...r, _start: start, _end: end };
+    });
+
+  const map = new Map<number, { id: number; name: string }[]>();
+  processed.forEach((r) => map.set(r.id, []));
+
+  for (let i = 0; i < processed.length; i++) {
+    const reviewI = processed[i];
+    for (let j = i + 1; j < processed.length; j++) {
+      const reviewJ = processed[j];
+
+      if (
+        reviewI._start.getTime() === reviewJ._start.getTime() &&
+        reviewI._end.getTime() === reviewJ._end.getTime()
+      )
+        continue;
+
+      if (reviewJ._start.getTime() === reviewJ._end.getTime()) continue;
+
+      // Проверка пересечения
+      if (reviewI._start <= reviewJ._end && reviewJ._start <= reviewI._end) {
+        map
+          .get(reviewI.id)!
+          .push({ id: reviewJ.id, name: getReviewName(reviewJ) });
+      }
+    }
+  }
+
+  return map;
+};
+
 const ReviewsPage = ({ variant, username }: Props) => {
   const [reviews, setReviews] = useState<
     (ReviewGet | ReviewFromOtherUserGet)[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<UserGet | null>(null);
+
+  const reviewRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+
+  const overlapsMap = useMemo(() => computeOverlaps(reviews), [reviews]);
+
+  const [reviewLines, setReviewLines] = useState<ReviewLine[]>([]);
+
+  const scrollToReview = (id: number) => {
+    const el = reviewRefs.current.get(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -51,7 +137,67 @@ const ReviewsPage = ({ variant, username }: Props) => {
     fetchData();
   }, [fetchData]);
 
-  // Delete handler – only for "all" and "my" variants
+  useLayoutEffect(() => {
+    const rawLines: Omit<ReviewLine, "track">[] = [];
+
+    reviews.forEach((review) => {
+      const overlaps = overlapsMap.get(review.id) || [];
+
+      overlaps.forEach((overlap) => {
+        const startEl = reviewRefs.current.get(review.id);
+        const endEl = reviewRefs.current.get(overlap.id);
+
+        if (!startEl || !endEl) return;
+
+        const top = Math.min(startEl.offsetTop, endEl.offsetTop);
+
+        const bottom = Math.max(
+          startEl.offsetTop + startEl.offsetHeight,
+          endEl.offsetTop + endEl.offsetHeight,
+        );
+
+        rawLines.push({
+          reviewId: review.id,
+          overlapId: overlap.id,
+          top,
+          bottom,
+          height: bottom - top,
+        });
+      });
+    });
+
+    const uniqueLines = new Map<string, Omit<ReviewLine, "track">>();
+
+    rawLines.forEach((line) => {
+      if (!uniqueLines.has(String(line.overlapId))) {
+        uniqueLines.set(String(line.overlapId), line);
+      }
+    });
+
+    const filteredLines = Array.from(uniqueLines.values());
+
+    filteredLines.sort((a, b) => a.top - b.top);
+
+    const trackEnds: number[] = [];
+
+    const lines: ReviewLine[] = filteredLines.map((line) => {
+      let track = 0;
+
+      while (track < trackEnds.length && line.top <= trackEnds[track]) {
+        track++;
+      }
+
+      trackEnds[track] = line.bottom;
+
+      return {
+        ...line,
+        track,
+      };
+    });
+
+    setReviewLines(lines);
+  }, [reviews, overlapsMap]);
+
   const handleDelete = async (id: number) => {
     if (window.confirm("Are you sure?")) {
       try {
@@ -68,41 +214,6 @@ const ReviewsPage = ({ variant, username }: Props) => {
     }
   };
 
-  // Compute film indexes only for the "user" variant
-  const getFilmIndexes = (reviews: ReviewFromOtherUserGet[]): number[] => {
-    const typeToFilmIndexMap = new Map<number, Map<number, number>>();
-    const typeCounters = new Map<number, number>();
-    const result: number[] = [];
-
-    for (const review of reviews) {
-      const type = review.film?.filmCategory || 0;
-      const filmId = review.filmId;
-      if (!typeToFilmIndexMap.has(type)) {
-        typeToFilmIndexMap.set(type, new Map());
-        typeCounters.set(type, 1);
-      }
-      const filmMap = typeToFilmIndexMap.get(type)!;
-      let counter = typeCounters.get(type)!;
-      if (filmId != null) {
-        if (!filmMap.has(filmId)) {
-          filmMap.set(filmId, counter);
-          typeCounters.set(type, counter + 1);
-        }
-        result.push(filmMap.get(filmId)!);
-      } else {
-        result.push(counter);
-        typeCounters.set(type, counter + 1);
-      }
-    }
-    return result.reverse();
-  };
-
-  const filmIndexes =
-    variant === "user"
-      ? getFilmIndexes(reviews as ReviewFromOtherUserGet[])
-      : [];
-
-  // Derive UI text and settings
   const title =
     variant === "all"
       ? "All Reviews"
@@ -172,29 +283,92 @@ const ReviewsPage = ({ variant, username }: Props) => {
             )}
           </div>
         ) : (
-          <div className="space-y-6">
-            {reviews.map((review, index) => (
-              <div
-                key={review.id}
-                className="transform transition-all duration-200 hover:-translate-y-1 hover:shadow-xl"
-              >
-                <ReviewCard
-                  variant={reviewCardVariant}
-                  review={review}
-                  handleDelete={
-                    showDelete ? () => handleDelete(review.id) : undefined
-                  }
-                  fetchReviews={variant === "my" ? fetchData : undefined}
-                  index={
-                    variant === "user"
-                      ? filmIndexes[index]
-                      : variant === "my"
-                        ? reviews.length - index
-                        : undefined
-                  }
-                />
-              </div>
-            ))}
+          <div className="space-y-6 relative">
+            {reviewLines.map((line) => {
+              const overlap = overlapsMap
+                .get(line.reviewId)
+                ?.find((o) => o.id === line.overlapId);
+
+              return (
+                <div
+                  key={`${line.reviewId}-${line.overlapId}`}
+                  className="absolute pointer-events-none"
+                  style={{
+                    right: `${-20 - line.track * 28}px`,
+                    top: line.top,
+                    height: line.height,
+                    width: "4px",
+                  }}
+                >
+                  {/* линия */}
+                  <div className="absolute h-full w-full bg-blue-500 rounded-full" />
+
+                  {/* подпись */}
+                  {overlap && (
+                    <button
+                      onClick={() => scrollToReview(overlap.id)}
+                      className="
+                          sticky
+                          top-1/2 
+                          left-1/2
+                          -translate-x-1/2
+                          -translate-y-1/2
+                          rotate-90
+                          pointer-events-auto
+                          whitespace-nowrap
+                          bg-blue-100
+                          text-blue-800
+                          text-xs
+                          font-medium
+                          px-2
+                          py-1
+                          rounded-full
+                          shadow-sm
+                          hover:bg-blue-200
+                        "
+                    >
+                      {overlap.name}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+
+            {reviews.map((review, index) => {
+              return (
+                <div
+                  key={review.id}
+                  ref={(el) => {
+                    // NEW: Store ref for each review container
+                    if (el) reviewRefs.current.set(review.id, el);
+                    else reviewRefs.current.delete(review.id);
+                  }}
+                  className="transform transition-all duration-200 hover:-translate-y-1 hover:shadow-xl"
+                >
+                  {/* NEW: Flex row to place card and overlap indicator */}
+                  <div className="flex items-start">
+                    {/* Card takes remaining space */}
+                    <div className="flex-1 min-w-0 ml-1">
+                      <ReviewCard
+                        variant={reviewCardVariant}
+                        review={review}
+                        handleDelete={
+                          showDelete ? () => handleDelete(review.id) : undefined
+                        }
+                        fetchReviews={variant === "my" ? fetchData : undefined}
+                        index={
+                          variant === "user"
+                            ? index
+                            : variant === "my"
+                              ? reviews.length - index
+                              : undefined
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
