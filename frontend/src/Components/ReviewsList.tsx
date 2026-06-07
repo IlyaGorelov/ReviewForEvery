@@ -18,7 +18,7 @@ const ReviewsList = ({ reviews, onClose, onSuccess, hasSeasons }: Props) => {
         onClick={onClose}
       ></div>
 
-      <div className="fixed top-1/2 left-1/2 z-50 w-full max-w-5xl p-6 bg-white rounded-lg shadow-lg transform -translate-x-1/2 -translate-y-1/2 h-full md:h-[70%]  overflow-auto">
+      <div className="fixed top-1/2 left-1/2 z-50 w-full max-w-7xl p-6 bg-white rounded-lg shadow-lg transform -translate-x-1/2 -translate-y-1/2 h-full md:h-[70%]  overflow-auto">
         <h2 className="text-xl font-semibold mb-4">Мои отзывы</h2>
         <ul>
           {reviews.length === 0 && <p>У вас пока нет отзывов.</p>}
@@ -32,10 +32,10 @@ const ReviewsList = ({ reviews, onClose, onSuccess, hasSeasons }: Props) => {
                     status: review.status,
                     countOfSeasons: review.countOfSeasons,
                     startDate: review.startDate,
-                    takeInRating:review.takeInRating,
+                    takeInRating: review.takeInRating,
                     endDate: review.endDate,
-                    countOfHoures:review.countOfHoures,
-                    countOfMinutes:review.countOfMinutes
+                    countOfHoures: review.countOfHoures,
+                    countOfMinutes: review.countOfMinutes,
                   }}
                   review={review}
                   reviewId={review.id}

@@ -121,7 +121,7 @@ const AddReview = ({ closeForm, updateFilm, hasSeasons, film }: Props) => {
         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
       ></div>
 
-      <div className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-[95%] md:w-4/5 max-w-5xl h-[90%] md:h-4/5 overflow-auto flex flex-col">
+      <div className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-[100%] md:w-4/5 max-w-6xl h-[90%] md:h-4/5 overflow-auto flex flex-col">
         <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 rounded-t-2xl z-10">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
             Add Review

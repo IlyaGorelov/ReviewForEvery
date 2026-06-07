@@ -138,7 +138,7 @@ const EditReview = ({
       />
 
       {/* Modal */}
-      <div className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-[95%] max-w-5xl max-h-[90vh] overflow-auto flex flex-col">
+      <div className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl w-[100%] max-w-6xl max-h-[90vh] overflow-auto flex flex-col">
         <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 rounded-t-2xl">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
             Edit Review
