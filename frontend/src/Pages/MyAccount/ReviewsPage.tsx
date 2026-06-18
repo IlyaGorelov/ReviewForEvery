@@ -54,35 +54,60 @@ const computeOverlaps = (
 ): Map<number, { id: number; name: string }[]> => {
   const now = new Date();
 
+  // Count reviews for each film
+  const reviewCountByFilm = new Map<number, number>();
+
+  reviews.forEach((review) => {
+    const count = reviewCountByFilm.get(review.filmId) ?? 0;
+    reviewCountByFilm.set(review.filmId, count + 1);
+  });
+
   const processed = reviews
-    .filter((r) => r.startDate != null)
-    .map((r) => {
-      const start = new Date(r.startDate!);
-      const end = r.endDate ? new Date(r.endDate) : now;
-      return { ...r, _start: start, _end: end };
-    });
+    .filter((review) => {
+      if (!review.startDate) return false;
+
+      const reviewCount = reviewCountByFilm.get(review.filmId) ?? 0;
+
+      // Multiple reviews for the same film (seasons)
+      if (reviewCount > 1) {
+        return !review.takeInRating;
+      }
+
+      // Single review for the film
+      return review.takeInRating;
+    })
+    .map((review) => ({
+      ...review,
+      _start: new Date(review.startDate!),
+      _end: review.endDate ? new Date(review.endDate) : now,
+    }));
 
   const map = new Map<number, { id: number; name: string }[]>();
-  processed.forEach((r) => map.set(r.id, []));
+
+  processed.forEach((review) => map.set(review.id, []));
 
   for (let i = 0; i < processed.length; i++) {
     const reviewI = processed[i];
+
     for (let j = i + 1; j < processed.length; j++) {
       const reviewJ = processed[j];
 
       if (
         reviewI._start.getTime() === reviewJ._start.getTime() &&
         reviewI._end.getTime() === reviewJ._end.getTime()
-      )
+      ) {
         continue;
+      }
 
-      if (reviewJ._start.getTime() === reviewJ._end.getTime()) continue;
+      if (reviewJ._start.getTime() === reviewJ._end.getTime()) {
+        continue;
+      }
 
-      // Проверка пересечения
       if (reviewI._start <= reviewJ._end && reviewJ._start <= reviewI._end) {
-        map
-          .get(reviewI.id)!
-          .push({ id: reviewJ.id, name: getReviewName(reviewJ) });
+        map.get(reviewI.id)?.push({
+          id: reviewJ.id,
+          name: getReviewName(reviewJ),
+        });
       }
     }
   }
