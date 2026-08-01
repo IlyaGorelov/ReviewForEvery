@@ -88,7 +88,9 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseCors(x => x
-         .WithOrigins("https://review-for-every.vercel.app")
+         .WithOrigins("https://review-for-every.vercel.app",
+             "https://reviewforevery.space",
+             "https://www.reviewforevery.space")
          .AllowAnyMethod()
          .AllowAnyHeader()
          .AllowCredentials()
