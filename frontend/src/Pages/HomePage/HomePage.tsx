@@ -12,9 +12,6 @@ export default function HomePage() {
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           {/* Text section */}
           <div className="flex-1 space-y-6 text-center lg:text-left">
-            <span className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-4 py-1.5 rounded-full tracking-wide uppercase">
-              Share your opinion
-            </span>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
               Welcome to{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
@@ -22,8 +19,8 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Read honest reviews, rate products, and share your experience with
-              thousands of users.
+              Read reviews, rate products, and share your experience with
+              thousands(only 1) of users.
             </p>
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <Link
@@ -43,12 +40,6 @@ export default function HomePage() {
                   />
                 </svg>
                 Find a product
-              </Link>
-              <Link
-                to="/add"
-                className="inline-flex items-center gap-2 bg-white border border-gray-200 hover:border-blue-300 text-gray-700 font-semibold px-8 py-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
-              >
-                Leave a review
               </Link>
             </div>
           </div>

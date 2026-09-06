@@ -309,55 +309,57 @@ const ReviewsPage = ({ variant, username }: Props) => {
           </div>
         ) : (
           <div className="space-y-6 relative">
-            {reviewLines.map((line) => {
-              const overlap = overlapsMap
-                .get(line.reviewId)
-                ?.find((o) => o.id === line.overlapId);
+            <div className="hidden md:block">
+              {reviewLines.map((line) => {
+                const overlap = overlapsMap
+                  .get(line.reviewId)
+                  ?.find((o) => o.id === line.overlapId);
 
-              return (
-                <div
-                  key={`${line.reviewId}-${line.overlapId}`}
-                  className="absolute pointer-events-none"
-                  style={{
-                    right: `${-20 - line.track * 28}px`,
-                    top: line.top,
-                    height: line.height,
-                    width: "4px",
-                  }}
-                >
-                  {/* линия */}
-                  <div className="absolute h-full w-full bg-blue-500 rounded-full" />
+                return (
+                  <div
+                    key={`${line.reviewId}-${line.overlapId}`}
+                    className="absolute pointer-events-none"
+                    style={{
+                      right: `${-20 - line.track * 28}px`,
+                      top: line.top,
+                      height: line.height,
+                      width: "4px",
+                    }}
+                  >
+                    {/* линия */}
+                    <div className="absolute h-full w-full bg-blue-500 rounded-full" />
 
-                  {/* подпись */}
-                  {overlap && (
-                    <button
-                      onClick={() => scrollToReview(overlap.id)}
-                      className="
-                          sticky
-                          top-1/2 
-                          left-1/2
-                          -translate-x-1/2
-                          -translate-y-1/2
-                          rotate-90
-                          pointer-events-auto
-                          whitespace-nowrap
-                          bg-blue-100
-                          text-blue-800
-                          text-xs
-                          font-medium
-                          px-2
-                          py-1
-                          rounded-full
-                          shadow-sm
-                          hover:bg-blue-200
-                        "
-                    >
-                      {overlap.name}
-                    </button>
-                  )}
-                </div>
-              );
-            })}
+                    {/* подпись */}
+                    {overlap && (
+                      <button
+                        onClick={() => scrollToReview(overlap.id)}
+                        className="
+                sticky
+                top-1/2 
+                left-1/2
+                -translate-x-1/2
+                -translate-y-1/2
+                rotate-90
+                pointer-events-auto
+                whitespace-nowrap
+                bg-blue-100
+                text-blue-800
+                text-xs
+                font-medium
+                px-2
+                py-1
+                rounded-full
+                shadow-sm
+                hover:bg-blue-200
+              "
+                      >
+                        {overlap.name}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
 
             {reviews.map((review, index) => {
               return (

@@ -222,9 +222,9 @@ const EditReview = ({
             )}
           </div>
 
-          {/* Row 2: Status + Date range + Time spent */}
+          {/* Row 2: Status + Date range + Time spent (now under date) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Status */}
+            {/* Status - Column 1 */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Status <span className="text-red-500">*</span>
@@ -245,58 +245,63 @@ const EditReview = ({
               )}
             </div>
 
-            {/* Date range */}
-            <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Period
-              </label>
-              <div className="flex gap-3">
-                <input
-                  type="date"
-                  className="flex-1 px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  {...register("startDate")}
-                />
-                <span className="text-gray-400 self-center">—</span>
-                <input
-                  type="date"
-                  className="flex-1 px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  {...register("endDate")}
-                />
+            {/* Columns 2-3: Date range + Time spent stacked */}
+            <div className="md:col-span-2">
+              <div className="space-y-4">
+                {/* Date range */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Period
+                  </label>
+                  <div className="flex gap-3">
+                    <input
+                      type="date"
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      {...register("startDate")}
+                    />
+                    <span className="text-gray-400 self-center">—</span>
+                    <input
+                      type="date"
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      {...register("endDate")}
+                    />
+                  </div>
+                </div>
+
+                {/* Time spent (books/games) - Directly under date */}
+                {showUsedTime && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Time spent
+                    </label>
+                    <div className="flex gap-3 items-center">
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="Hours"
+                        className={`w-24 px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                          hideInputs ? "bg-gray-100" : "border-gray-200"
+                        }`}
+                        {...register("countOfHoures")}
+                        disabled={hideInputs}
+                      />
+                      <span className="text-gray-600">h</span>
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="Minutes"
+                        className={`w-24 px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                          hideInputs ? "bg-gray-100" : "border-gray-200"
+                        }`}
+                        {...register("countOfMinutes")}
+                        disabled={hideInputs}
+                      />
+                      <span className="text-gray-600">min</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-
-            {/* Time spent (books/games) */}
-            {showUsedTime && (
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Time spent
-                </label>
-                <div className="flex gap-3 items-center">
-                  <input
-                    type="number"
-                    min="0"
-                    placeholder="Hours"
-                    className={`w-24 px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      hideInputs ? "bg-gray-100" : "border-gray-200"
-                    }`}
-                    {...register("countOfHoures")}
-                    disabled={hideInputs}
-                  />
-                  <span className="text-gray-600">h</span>
-                  <input
-                    type="number"
-                    min="0"
-                    placeholder="Minutes"
-                    className={`w-24 px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      hideInputs ? "bg-gray-100" : "border-gray-200"
-                    }`}
-                    {...register("countOfMinutes")}
-                    disabled={hideInputs}
-                  />
-                  <span className="text-gray-600">min</span>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Review text */}

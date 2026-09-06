@@ -71,7 +71,7 @@ export default function FilmCard({ film, getFilms }: Props) {
 
           {/* Overlay on hover */}
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-center items-center text-white p-3">
-            <h3 className="text-base md:text-lg font-bold text-center leading-tight line-clamp-2 mb-1">
+            <h3 className="text-sm md:text-lg sm:text-5 font-bold text-center leading-tight line-clamp-2 mb-1">
               {film.title}
             </h3>
             <div className="flex items-center gap-1 mt-1">
