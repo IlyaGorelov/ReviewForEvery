@@ -20,9 +20,7 @@ builder.Services
 
 var connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
 if (connectionString == null)
-    connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
-
-Console.WriteLine("Connection String: "+connectionString);
+    connectionString = Environment.GetEnvironmentVariable("DefaultConnection", EnvironmentVariableTarget.User);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
